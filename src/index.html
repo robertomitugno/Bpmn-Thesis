@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>bpmn-js-react-properties-panel</title>
+
+  <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
+  <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css" />
+
+  <style>
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+
+      margin: 0;
+
+      display: flex;
+      flex-direction: row;
+    }
+
+    .modeler-parent {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #modeler-container {
+      flex: 1;
+    }
+
+    #properties-container {
+      overflow-y: auto;
+
+      border-left: solid 2px #CCC;
+      background: #FAFAFA;
+
+      padding: 5px;
+      width: 300px;
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="modeler-parent">
+    <div id="modeler-container"></div>
+  </div>
+  <div id="properties-container"></div>
+  <script type="text/javascript" src="app.js"></script>
+</body>
+
+</html>
