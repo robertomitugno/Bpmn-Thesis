@@ -2,6 +2,7 @@ import Modeler from 'bpmn-js/lib/Modeler';
 import PropertiesPanel from './properties-panel';
 import customModdleExtension from './moddle/custom.json';
 import diagramXML from './diagram.bpmn';
+import customControlsModule from './custom';
 
 const $modelerContainer = document.querySelector('#modeler-container');
 const $propertiesContainer = document.querySelector('#properties-container');
@@ -14,8 +15,12 @@ const modeler = new Modeler({
   },
   keyboard: {
     bindTo: document.body
-  }
+  },
+  additionalModules: [
+    customControlsModule
+  ]
 });
+
 
 const propertiesPanel = new PropertiesPanel({
   container: $propertiesContainer,
@@ -32,15 +37,15 @@ document.addEventListener('keydown', function (event) {
 
   modeler.saveXML({ format: true }).then(function (result) {
     download(result.xml, 'testing.bpmn', 'application/xml');
-  }).catch(function(err) {
+  }).catch(function (err) {
     console.error('Failed to save BPMN XML', err);
   });
 });
 
-$downloadButton.addEventListener('click', function() {
+$downloadButton.addEventListener('click', function () {
   modeler.saveXML({ format: true }).then(function (result) {
     download(result.xml, 'testing.bpmn', 'application/xml');
-  }).catch(function(err) {
+  }).catch(function (err) {
     console.error('Failed to save BPMN XML', err);
   });
 });
