@@ -37,7 +37,8 @@ export default function CustomElementFactory(bpmnFactory, moddle) {
     if (/^custom:/.test(type)) {
       if (!attrs.businessObject) {
         attrs.businessObject = {
-          type: type
+          type: type,
+          name: ''
         };
 
         if (attrs.id) {
@@ -47,7 +48,6 @@ export default function CustomElementFactory(bpmnFactory, moddle) {
         }
       }
 
-      // add width and height if shape
       if (!/:connection$/.test(type)) {
         assign(attrs, self._getCustomElementSize(type));
       }

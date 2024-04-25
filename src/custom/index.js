@@ -13,7 +13,8 @@ export default {
     'customRenderer',
     'customRules',
     'customUpdater',
-    'paletteProvider'
+    'paletteProvider',
+    'elementFactory'
   ],
   contextPadProvider: [ 'type', CustomContextPadProvider ],
   customOrderingProvider: [ 'type', CustomOrderingProvider ],

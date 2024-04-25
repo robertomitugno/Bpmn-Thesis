@@ -107,8 +107,9 @@ function ElementProperties(props) {
 
   function updateName(name) {
     const modeling = modeler.get('modeling');
-
     modeling.updateLabel(element, name);
+
+    element.businessObject.name = name;
   }
 
   function updateTopic(topic) {
