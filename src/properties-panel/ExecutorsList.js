@@ -1,51 +1,54 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import React, { Component } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-class ExecutorsList extends Component {
-  state = {
-    activities: []
-  };
+function ExecutorsList({ modeler }) {
+  const [activities, setActivities] = useState([]);
+  const modelerRef = useRef(modeler);
 
-  componentDidMount() {
-    const { modeler } = this.props;
+  useEffect(() => {
+    modelerRef.current = modeler;
+  }, [modeler]);
 
-    modeler.on('elements.changed', () => {
-      this.updateActivities();
-    });
+  useEffect(() => {
+    const eventBus = modelerRef.current.get('eventBus');
 
-    this.updateActivities();
-  }
+    eventBus.on('elements.changed', updateActivities);
 
-  updateActivities = () => {
-    const { modeler } = this.props;
-    const elements = modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Task'));
+    updateActivities();
+
+    return () => {
+      eventBus.off('elements.changed', updateActivities);
+    };
+  }, []);
+
+  const updateActivities = () => {
+    const elementRegistry = modelerRef.current.get('elementRegistry');
+    const elements = elementRegistry.filter(element => is(element, 'custom:hexagon'));
     const activities = elements.map(element => ({ id: element.id, name: element.businessObject.name }));
-    this.setState({ activities });
+    setActivities(activities);
   };
 
-  render() {
-    return (
-      <div>
-        <h3>Executors</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>ID</th>
+  return (
+    <div>
+      <h3>Executors</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activities.map(activity => (
+            <tr key={activity.id}>
+              <td>{activity.name}</td>
+              <td>{activity.id}</td>
             </tr>
-          </thead>
-          <tbody>
-            {this.state.activities.map(activity => (
-              <tr key={activity.id}>
-                <td>{activity.name}</td>
-                <td>{activity.id}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default ExecutorsList;

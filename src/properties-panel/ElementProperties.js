@@ -1,23 +1,22 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 
 function ElementProperties(props) {
     let { element, modeler } = props;
-    if (element.labelTarget) {
+
+    // Add a null check here
+    if (element && element.labelTarget) {
         element = element.labelTarget;
     }
 
-    function getElementType() {
-        if (element.type) {
+    const getElementType = useCallback(() => {
+        // Add a null check here
+        if (element && element.type) {
             return element.type.replace('bpmn:', '').replace('custom:', '');
         }
         return 'Process';
-    }
+    }, [element]);
 
-    function updateName(name) {
-        const modeling = modeler.get('modeling');
-        modeling.updateLabel(element, name);
-    }
 
     function updateTopic(topic) {
         const modeling = modeler.get('modeling');
@@ -73,44 +72,50 @@ function ElementProperties(props) {
     }
 
     return (
-        <div className="element-properties" key={element.id}>
-            <h3>{getElementType()}</h3>
-            <fieldset>
-                <label>id</label>
-                <span>{element.id}</span>
-            </fieldset>
+        <div className="element-properties" key={element ? element.id : ''}>
+            {element && (
+                <>
+                    <h3>{getElementType()}</h3>
+                    <fieldset>
+                        <label>id</label>
+                        <span>{element.id}</span>
+                    </fieldset>
 
-            <fieldset>
-                <label>name</label>
-                <input value={element.businessObject.name || ''} onChange={(event) => {
-                    updateName(event.target.value)
-                }} />
-            </fieldset>
+                    <fieldset>
+                        <label>name</label>
+                        <input
+                            value={element.businessObject.name || ''}
+                        />
+                    </fieldset>
+                    {is(element, 'custom:TopicHolder') &&
+                        <fieldset>
+                            <label>topic (custom)</label>
+                            <input
+                                value={element.businessObject.get('custom:topic') || ''}
+                                onChange={(event) => {
+                                    updateTopic(event.target.value)
+                                }}
+                            />
+                        </fieldset>
+                    }
 
-            {is(element, 'custom:TopicHolder') &&
-                <fieldset>
-                    <label>topic (custom)</label>
-                    <input value={element.businessObject.get('custom:topic')} onChange={(event) => {
-                        updateTopic(event.target.value)
-                    }} />
-                </fieldset>
-            }
+                    <fieldset>
+                        <label>actions</label>
 
-            <fieldset>
-                <label>actions</label>
+                        {is(element, 'bpmn:Task') && !is(element, 'bpmn:ServiceTask') &&
+                            <button onClick={makeServiceTask}>Make Service Task</button>
+                        }
 
-                {is(element, 'bpmn:Task') && !is(element, 'bpmn:ServiceTask') &&
-                    <button onClick={makeServiceTask}>Make Service Task</button>
-                }
+                        {is(element, 'bpmn:Event') && !hasDefinition(element, 'bpmn:MessageEventDefinition') &&
+                            <button onClick={makeMessageEvent}>Make Message Event</button>
+                        }
 
-                {is(element, 'bpmn:Event') && !hasDefinition(element, 'bpmn:MessageEventDefinition') &&
-                    <button onClick={makeMessageEvent}>Make Message Event</button>
-                }
-
-                {is(element, 'bpmn:Task') && !isTimeoutConfigured(element) &&
-                    <button onClick={attachTimeout}>Attach Timeout</button>
-                }
-            </fieldset>
+                        {is(element, 'bpmn:Task') && !isTimeoutConfigured(element) &&
+                            <button onClick={attachTimeout}>Attach Timeout</button>
+                        }
+                    </fieldset>
+                </>
+            )}
         </div>
     );
 }
