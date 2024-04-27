@@ -1,4 +1,5 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
+import './ExecutorsList.css';
 import React, { useEffect, useRef, useState } from 'react';
 
 function ExecutorsList({ modeler }) {

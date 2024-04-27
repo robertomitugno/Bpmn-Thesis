@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 
-import PropertiesView from './PropertiesView';
+import PropertiesView from './PropertiesView/PropertiesView';
 
 
 export default class PropertiesPanel {
