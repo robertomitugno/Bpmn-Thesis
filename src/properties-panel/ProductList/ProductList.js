@@ -1,6 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const ProductList = ({ products, productName, onProductNameChange, onAddProduct }) => {
+const ProductList = ({ products, onAddProduct }) => { // Add products as a prop
+  const [productName, setProductName] = useState('');
+
+  const handleProductNameChange = (event) => {
+    setProductName(event.target.value);
+  };
+
+  const handleAddProduct = () => {
+    if (productName.trim() !== '') {
+      const newProduct = { id: Date.now(), name: productName };
+      onAddProduct(newProduct);
+      setProductName('');
+    }
+  };
+
   return (
     <div>
       <h3>Products</h3>
@@ -12,7 +26,7 @@ const ProductList = ({ products, productName, onProductNameChange, onAddProduct 
           </tr>
         </thead>
         <tbody>
-          {products.map(product => (
+          {products.map((product) => ( // Now you can map over products
             <tr key={product.id}>
               <td>{product.name}</td>
               <td>{product.id}</td>
@@ -21,8 +35,8 @@ const ProductList = ({ products, productName, onProductNameChange, onAddProduct 
         </tbody>
       </table>
       <div>
-        <input type="text" value={productName} onChange={onProductNameChange} />
-        <button onClick={onAddProduct}>Add Product</button>
+        <input type="text" value={productName} onChange={handleProductNameChange} />
+        <button onClick={handleAddProduct}>Add Product</button>
       </div>
     </div>
   );

@@ -1,17 +1,22 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ElementProperties.css';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 
-// Questa funzione rappresenta le proprietà di un elemento del diagramma BPMN
-function ElementProperties(props) {
-    // Estrazione delle props
-    let { element, modeler } = props;
 
-    // Dichiarazione degli stati per la ricerca, gli elementi trovati, i task, i task selezionati e il nome dell'elemento
+function ElementProperties({ element, modeler, products }) {
+
+    const [showSearchBar, setShowSearchBar] = useState(false);
+    const searchBarRef = useRef(null);
     const [searchResults, setSearchResults] = useState([]);
+
     const [searchInput, setSearchInput] = useState('');
     const [tasks, setTasks] = useState([]);
     const [selectedTasks, setSelectedTasks] = useState([]);
+
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [productSearchResults, setProductSearchResults] = useState([]);
+    const [productSearchInput, setProductSearchInput] = useState('');
+
     const [name, setName] = useState(() => {
         if (element) {
             return element.businessObject.name || '';
@@ -19,25 +24,36 @@ function ElementProperties(props) {
         return '';
     });
 
-    // Controllo se l'elemento ha un labelTarget e in tal caso lo imposta come elemento
     if (element && element.labelTarget) {
         element = element.labelTarget;
     }
 
-    // Aggiornamento del nome dell'elemento quando cambia l'elemento
     useEffect(() => {
         if (element) {
             setName(element.businessObject.name || '');
         }
     }, [element]);
 
-    // Recupero di tutti i task dal modeler all'inizio del caricamento del componente
+
+    const handleOutsideClick = useCallback((event) => {
+        if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
+            setShowSearchBar(false);
+        }
+    }, []);
+
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, [handleOutsideClick]);
+
     useEffect(() => {
         const allTasks = modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Task'));
         setTasks(allTasks);
     }, []);
 
-    // Funzione per ottenere il tipo di elemento
     const getElementType = useCallback(() => {
         if (element && element.type) {
             return element.type.replace('bpmn:', '').replace('custom:', '');
@@ -45,7 +61,6 @@ function ElementProperties(props) {
         return 'Process';
     }, [element]);
 
-    // Funzione per gestire la ricerca dei task
     const handleSearch = useCallback(() => {
         if (!searchInput) {
             setSearchResults([]);
@@ -54,15 +69,40 @@ function ElementProperties(props) {
         }
     }, [searchInput, tasks]);
 
-    // Funzione per gestire la selezione di un task
     const handleSelectTask = useCallback((task) => {
         modeler.get('selection').select(task);
         setSelectedTasks(prevSelectedTasks => [...prevSelectedTasks, task]);
         setSearchInput('');
+        setTasks(prevTasks => prevTasks.filter(t => t !== task));
         setSearchResults([]);
     }, [modeler]);
 
-    // Funzione per gestire il cambiamento del nome dell'elemento
+
+    const handleSearchProducts = useCallback((event, task) => {
+        const input = event.target.value;
+        setProductSearchInput(input);
+        if (!input) {
+            setProductSearchResults([]);
+        } else {
+            setProductSearchResults(products.filter(product => product.name.toLowerCase().includes(input.toLowerCase())));
+        }
+    }, [products]);
+
+
+
+    const handleSelectProduct = useCallback((product, task) => {
+        setSelectedProducts(prevSelectedProducts => [...prevSelectedProducts, product]);
+        setProductSearchInput('');
+        setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
+    }, []);
+
+    const handleDeleteTask = useCallback((task) => {
+        const modeling = modeler.get('modeling');
+        modeling.removeElements([task]);
+        setSelectedTasks(prevSelectedTasks => prevSelectedTasks.filter(t => t !== task));
+        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => !task.businessObject.extensionElements.values.filter(ve => ve.name === 'productIds').find(pi => pi.value === p.id)));
+    }, []);
+
     const handleNameChange = useCallback((event) => {
         const newName = event.target.value;
         setName(newName);
@@ -72,12 +112,14 @@ function ElementProperties(props) {
         });
     }, [element, modeler]);
 
-    // Funzione per gestire la rimozione di un task selezionato
-    const handleRemoveTask = useCallback((task) => {
-        setSelectedTasks(prevSelectedTasks => prevSelectedTasks.filter(t => t !== task));
+    const handleTaskClick = useCallback((task) => {
+        setShowSearchBar(prevShowSearchBar => {
+            const newShowSearchBar = { ...prevShowSearchBar };
+            newShowSearchBar[task.id] = !newShowSearchBar[task.id];
+            return newShowSearchBar;
+        });
     }, []);
 
-    // Funzione per aggiornare il topic dell'elemento
     function updateTopic(topic) {
         const modeling = modeler.get('modeling');
         modeling.updateProperties(element, {
@@ -85,7 +127,6 @@ function ElementProperties(props) {
         });
     }
 
-    // Funzione per trasformare l'elemento in un MessageEvent
     function makeMessageEvent() {
         const bpmnReplace = modeler.get('bpmnReplace');
         bpmnReplace.replaceElement(element, {
@@ -94,7 +135,6 @@ function ElementProperties(props) {
         });
     }
 
-    // Funzione per trasformare l'elemento in un ServiceTask
     function makeServiceTask() {
         const bpmnReplace = modeler.get('bpmnReplace');
         bpmnReplace.replaceElement(element, {
@@ -102,7 +142,6 @@ function ElementProperties(props) {
         });
     }
 
-    // Funzione per aggiungere un timeout all'elemento
     function attachTimeout() {
         const modeling = modeler.get('modeling');
         const autoPlace = modeler.get('autoPlace');
@@ -122,13 +161,11 @@ function ElementProperties(props) {
         selection.select(taskShape);
     }
 
-    // Funzione per verificare se l'elemento ha già un timeout configurato
     function isTimeoutConfigured(element) {
         const attachers = element.attachers || [];
         return attachers.some(e => hasDefinition(e, 'bpmn:TimerEventDefinition'));
     }
 
-    // Funzione per aggiungere un elemento ad un altro
     function append(element, attrs) {
         const autoPlace = modeler.get('autoPlace');
         const elementFactory = modeler.get('elementFactory');
@@ -136,7 +173,6 @@ function ElementProperties(props) {
         return autoPlace.append(element, shape);
     }
 
-    // Rendering del componente
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -200,14 +236,37 @@ function ElementProperties(props) {
                             ))}
                             <br /><br />
                             <label>Selected Executors</label>
-                            <ul>
+                            <div>
                                 {selectedTasks.map((task, index) => (
-                                    <li key={index}>{task.businessObject.name}</li>
+                                    <React.Fragment key={index}>
+                                        <div>
+                                            <span onClick={() => handleTaskClick(task)}>{task.businessObject.name}</span>
+                                            {showSearchBar[task.id] && (
+                                                <div ref={searchBarRef}>
+                                                    <input
+                                                        value={productSearchInput}
+                                                        onChange={handleSearchProducts}
+                                                    />
+                                                    {productSearchResults.map((result, index) => (
+                                                        <div key={index}>
+                                                            <label>{result.name}</label>
+                                                            <button onClick={() => handleSelectProduct(result, task)}>Select</button>
+                                                        </div>
+                                                    ))}
+                                                    {selectedProducts.map((product, index) => (
+                                                        <div key={index}>
+                                                            <label>{product.name}</label>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <button onClick={() => handleDeleteTask(task)}>Remove</button>
+                                        </div>
+                                    </React.Fragment>
                                 ))}
-                            </ul>
+                            </div>
                         </fieldset>
                     }
-
 
                 </>
             )}
@@ -215,11 +274,9 @@ function ElementProperties(props) {
     );
 }
 
-// Funzione per verificare se un event ha una determinata definizione
 function hasDefinition(event, definitionType) {
     const definitions = event.businessObject.eventDefinitions || [];
     return definitions.some(d => is(d, definitionType));
 }
 
-// Esportazione del componente
 export default ElementProperties;
