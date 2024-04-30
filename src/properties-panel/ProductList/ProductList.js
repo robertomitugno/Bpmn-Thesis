@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ProductList = ({ products, onAddProduct }) => { // Add products as a prop
+const ProductList = ({ products, onAddProduct }) => {
   const [productName, setProductName] = useState('');
 
   const handleProductNameChange = (event) => {
@@ -26,7 +26,7 @@ const ProductList = ({ products, onAddProduct }) => { // Add products as a prop
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => ( // Now you can map over products
+          {products.map((product) => ( 
             <tr key={product.id}>
               <td>{product.name}</td>
               <td>{product.id}</td>

@@ -1,144 +1,153 @@
-import inherits from 'inherits-browser';
+import BaseRenderer from "diagram-js/lib/draw/BaseRenderer";
 
-import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
-
-import {
-  componentsToPath,
-  createLine
-} from 'diagram-js/lib/util/RenderUtil';
+import { assign } from "min-dash";
 
 import {
   append as svgAppend,
   attr as svgAttr,
-  create as svgCreate
-} from 'tiny-svg';
+  create as svgCreate,
+  classes as svgClasses
+} from "tiny-svg";
 
-var COLOR_GREEN = '#52B415',
-    COLOR_RED = '#cc0000'
+import {
+  getRoundRectPath,
+  getFillColor,
+  getStrokeColor,
+  getSemantic,
+  getLabelColor
+} from "bpmn-js/lib/draw/BpmnRenderUtil";
 
-/**
- * A renderer that knows how to render custom elements.
- */
-export default function CustomRenderer(eventBus, styles) {
+import { is } from "bpmn-js/lib/util/ModelUtil";
+import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
-  BaseRenderer.call(this, eventBus, 2000);
+const HIGH_PRIORITY = 1500,
+  TASK_BORDER_RADIUS = 10,
+  DEFAULT_FILL_OPACITY = 0.95;
 
-  var computeStyle = styles.computeStyle;
+export default class CustomRenderer extends BaseRenderer {
+  constructor(config, eventBus, bpmnRenderer, textRenderer, styles) {
+    super(eventBus, HIGH_PRIORITY);
 
-  this.drawHexagon = function(p, side) {
-    var halfSide = side / 2,
-        points,
-        attrs;
+    this.bpmnRenderer = bpmnRenderer;
 
-    points = [ halfSide, 0, side, side, 0, side ];
+    this.computeStyle = styles.computeStyle;
+    this.textRenderer = textRenderer;
 
-    attrs = computeStyle(attrs, {
-      stroke: COLOR_GREEN,
-      strokeWidth: 2,
-      fill: COLOR_GREEN
-    });
+    this.defaultFillColor = config && config.defaultFillColor;
+    this.defaultStrokeColor = config && config.defaultStrokeColor;
+    this.defaultLabelColor = config && config.defaultLabelColor;
+  }
 
-    var polygon = svgCreate('polygon');
+  canRender(element) {
+    // only render tasks and events (ignore labels)
+    return isAny(element, ["custom:Hexagon"]) && !element.labelTarget;
+  }
 
-    svgAttr(polygon, {
-      points: points
-    });
+  drawShape(parentNode, element) {
+    var rect;
 
-    svgAttr(polygon, attrs);
+    if (is(element, "custom:Hexagon")) {
+      var attrs = {
+        fill: getFillColor(element, this.defaultFillColor),
+        stroke: getStrokeColor(element, this.defaultStrokeColor),
+        fillOpacity: DEFAULT_FILL_OPACITY
+      };
 
-    svgAppend(p, polygon);
+      rect = drawHexagon(parentNode, 120, 60, TASK_BORDER_RADIUS, attrs);
 
-    return polygon;
-  };
+      this.renderEmbeddedLabel(
+        parentNode,
+        element,
+        "center-middle",
+        getLabelColor(element, this.defaultLabelColor, this.defaultStrokeColor)
+      );
 
-  this.getHexagonPath = function(element) {
-    var x = element.x,
-        y = element.y,
-        width = element.width,
-        height = element.height;
+      return rect;
+    } else {
+      return this.bpmnRenderer.drawShape(parentNode, element);
+    }
+  }
 
-    var hexagonPath = [
-      [ 'M', x + width / 2, y ],
-      [ 'l', width / 2, height ],
-      [ 'l', -width, 0 ],
-      [ 'z' ]
-    ];
+  getShapePath(shape) {
+    if (is(shape, "custom:Hexagon")) {
+      return getRoundRectPath(shape, TASK_BORDER_RADIUS);
+    }
 
-    return componentsToPath(hexagonPath);
-  };
+    return this.bpmnRenderer.getShapePath(shape);
+  }
 
+  renderEmbeddedLabel(parentGfx, element, align) {
+    var semantic = getSemantic(element);
 
-  this.drawCustomConnection = function(p, element) {
-    var attrs = computeStyle(attrs, {
-      stroke: COLOR_RED,
-      strokeWidth: 2
-    });
-
-    return svgAppend(p, createLine(element.waypoints, attrs));
-  };
-  
-
-  this.getCustomConnectionPath = function(connection) {
-    var waypoints = connection.waypoints.map(function(p) {
-      return p.original || p;
-    });
-
-    var connectionPath = [
-      [ 'M', waypoints[0].x, waypoints[0].y ]
-    ];
-
-    waypoints.forEach(function(waypoint, index) {
-      if (index !== 0) {
-        connectionPath.push([ 'L', waypoint.x, waypoint.y ]);
+    return this.renderLabel(parentGfx, semantic.name, {
+      box: element,
+      align: align,
+      padding: 5,
+      style: {
+        fill: getLabelColor(
+          element,
+          this.defaultLabelColor,
+          this.defaultStrokeColor
+        )
       }
     });
+  }
 
-    return componentsToPath(connectionPath);
-  };
+  renderLabel(parentGfx, label, options) {
+    options = assign(
+      {
+        size: {
+          width: 100
+        }
+      },
+      options
+    );
+
+    var text = this.textRenderer.createText(label || "", options);
+
+    svgClasses(text).add("djs-label");
+
+    svgAppend(parentGfx, text);
+
+    return text;
+  }
 }
 
-inherits(CustomRenderer, BaseRenderer);
+CustomRenderer.$inject = [
+  "config.bpmnRenderer",
+  "eventBus",
+  "bpmnRenderer",
+  "textRenderer",
+  "styles"
+];
 
-CustomRenderer.$inject = [ 'eventBus', 'styles' ];
+// helpers //////////
 
+function drawHexagon(parentNode, width, height, strokeColor) {
+  const polygon = svgCreate("polygon");
 
-CustomRenderer.prototype.canRender = function(element) {
-  return /^custom:/.test(element.type);
-};
+  const x = width / 2;
+  const y = height / 2;
+  const radiusX = width / 2; // Raggio sull'asse x
+  const radiusY = height / 2; // Raggio sull'asse y
 
-CustomRenderer.prototype.drawShape = function(p, element) {
-  var type = element.type;
+  const points = [
+    x, y - radiusY,
+    x + radiusX, y - radiusY / 2,
+    x + radiusX, y + radiusY / 2,
+    x, y + radiusY,
+    x - radiusX, y + radiusY / 2,
+    x - radiusX, y - radiusY / 2
+  ].join(" ");
 
-  if (type === 'custom:hexagon') {
-    return this.drawHexagon(p, element.width);
-  }
+  svgAttr(polygon, {
+    points: points,
+    stroke: "#000",
+    strokeWidth: 2,
+    fill: "none"
+  });
 
-};
+  svgAppend(parentNode, polygon);
 
-CustomRenderer.prototype.getShapePath = function(shape) {
-  var type = shape.type;
-
-  if (type === 'custom:hexagon') {
-    return this.getHexagonPath(shape);
-  }
-
-};
-
-CustomRenderer.prototype.drawConnection = function(p, element) {
-
-  var type = element.type;
-
-  if (type === 'custom:connection') {
-    return this.drawCustomConnection(p, element);
-  }
-};
-
-
-CustomRenderer.prototype.getConnectionPath = function(connection) {
-
-  var type = connection.type;
-
-  if (type === 'custom:connection') {
-    return this.getCustomConnectionPath(connection);
-  }
-};
+  return polygon;
+}

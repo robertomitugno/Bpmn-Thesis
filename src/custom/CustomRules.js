@@ -58,13 +58,13 @@ CustomRules.prototype.init = function() {
     // allow connection between custom shape and task
     if (isCustom(source)) {
       if (is(target, 'bpmn:Task')) {
-        return { type: 'custom:connection' };
+        return { type: 'bpmn:SequenceFlow' };
       } else {
         return false;
       }
     } else if (isCustom(target)) {
       if (is(source, 'bpmn:Task')) {
-        return { type: 'custom:connection' };
+        return { type: 'bpmn:SequenceFlow' };
       } else {
         return false;
       }

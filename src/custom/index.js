@@ -4,23 +4,23 @@ import CustomOrderingProvider from './CustomOrderingProvider';
 import CustomPalette from './CustomPalette';
 import CustomRenderer from './CustomRenderer';
 import CustomRules from './CustomRules';
-import CustomUpdater from './CustomUpdater';
+//import CustomUpdater from './CustomUpdater';
 
 export default {
   __init__: [
-    'contextPadProvider',
-    'customOrderingProvider',
     'customRenderer',
+    'customPalette',
+    'contextPadProvider',
+    //'customOrderingProvider',
     'customRules',
-    'customUpdater',
-    'paletteProvider',
+    //'customUpdater',
     'elementFactory'
   ],
-  contextPadProvider: [ 'type', CustomContextPadProvider ],
-  customOrderingProvider: [ 'type', CustomOrderingProvider ],
   customRenderer: [ 'type', CustomRenderer ],
+  contextPadProvider: [ 'type', CustomContextPadProvider ],
+  //customOrderingProvider: [ 'type', CustomOrderingProvider ],
   customRules: [ 'type', CustomRules ],
-  customUpdater: [ 'type', CustomUpdater ],
+  //customUpdater: [ 'type', CustomUpdater ],
   elementFactory: [ 'type', CustomElementFactory ],
-  paletteProvider: [ 'type', CustomPalette ]
+  customPalette: [ 'type', CustomPalette ]
 };

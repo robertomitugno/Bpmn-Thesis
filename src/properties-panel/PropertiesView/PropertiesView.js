@@ -22,9 +22,6 @@ export default function PropertiesView({ modeler }) {
     setElement(e.newSelection[0]);
   };
 
-  const handleProductNameChange = event => {
-    setProductName(event.target.value);
-  };
 
   const handleAddProduct = (newProduct) => {
     if (newProduct) {
