@@ -1,21 +1,25 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ElementProperties.css';
 import React, { useCallback, useState, useEffect, useRef } from 'react';
+import { CiCircleRemove } from "react-icons/ci";
 
 
 function ElementProperties({ element, modeler, products }) {
 
     const [showSearchBar, setShowSearchBar] = useState(false);
     const searchBarRef = useRef(null);
-    const [searchResults, setSearchResults] = useState([]);
 
-    const [searchInput, setSearchInput] = useState('');
-    const [tasks, setTasks] = useState([]);
-    const [selectedTasks, setSelectedTasks] = useState([]);
+    const [executorSearchResults, setExecutorSearchResults] = useState([]);
+    const [executorSearchInput, setExecutorSearchInput] = useState('');
+    const [selectedExecutors, setSelectedExecutors] = useState([]);
+    const [executors, setExecutors] = useState([]);
 
+    const [productSearchInput, setProductSearchInput] = useState('');
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productSearchResults, setProductSearchResults] = useState([]);
-    const [productSearchInput, setProductSearchInput] = useState('');
+
+    const [executorDropdownOpen, setExecutorDropdownOpen] = useState(false);
+    const [productDropdownOpen, setProductDropdownOpen] = useState(false);
 
     const [name, setName] = useState(() => {
         if (element) {
@@ -50,8 +54,8 @@ function ElementProperties({ element, modeler, products }) {
     }, [handleOutsideClick]);
 
     useEffect(() => {
-        const allTasks = modeler.get('elementRegistry').filter(element => is(element, 'bpmn:Task'));
-        setTasks(allTasks);
+        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Hexagon'));
+        setExecutors(allExecutors);
     }, []);
 
     const getElementType = useCallback(() => {
@@ -61,24 +65,28 @@ function ElementProperties({ element, modeler, products }) {
         return 'Process';
     }, [element]);
 
-    const handleSearch = useCallback(() => {
-        if (!searchInput) {
-            setSearchResults([]);
+    const handleSearchExecutor = useCallback((event) => {
+        const input = event.target.value;
+        setExecutorSearchInput(input);
+        if (!input) {
+            setExecutorSearchResults([]);
         } else {
-            setSearchResults(tasks.filter(task => task.businessObject.name.toLowerCase().includes(searchInput.toLowerCase())));
+            setExecutorSearchResults(executors.filter(executor => (executor.businessObject && executor.businessObject.name) ? executor.businessObject.name.toLowerCase().includes(input.toLowerCase()) : false));
         }
-    }, [searchInput, tasks]);
+        setExecutorDropdownOpen(true);
+    }, [executors]);
 
-    const handleSelectTask = useCallback((task) => {
-        modeler.get('selection').select(task);
-        setSelectedTasks(prevSelectedTasks => [...prevSelectedTasks, task]);
-        setSearchInput('');
-        setTasks(prevTasks => prevTasks.filter(t => t !== task));
-        setSearchResults([]);
+
+    const handleSelectExecutor = useCallback((executor) => {
+        setSelectedExecutors(prevSelectedExecutors => [...prevSelectedExecutors, executor]);
+        setExecutorSearchInput('');
+        setExecutors(prevExecutors => prevExecutors.filter(t => t !== executor));
+        setExecutorSearchResults([]);
+        setExecutorDropdownOpen(false);
     }, [modeler]);
 
 
-    const handleSearchProducts = useCallback((event, task) => {
+    const handleSearchProducts = useCallback((event) => {
         const input = event.target.value;
         setProductSearchInput(input);
         if (!input) {
@@ -86,21 +94,27 @@ function ElementProperties({ element, modeler, products }) {
         } else {
             setProductSearchResults(products.filter(product => product.name.toLowerCase().includes(input.toLowerCase())));
         }
+        setProductDropdownOpen(true);
     }, [products]);
 
 
 
-    const handleSelectProduct = useCallback((product, task) => {
+    const handleSelectProduct = useCallback((product) => {
         setSelectedProducts(prevSelectedProducts => [...prevSelectedProducts, product]);
         setProductSearchInput('');
         setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
+        setProductDropdownOpen(false);
     }, []);
 
-    const handleDeleteTask = useCallback((task) => {
-        const modeling = modeler.get('modeling');
-        modeling.removeElements([task]);
-        setSelectedTasks(prevSelectedTasks => prevSelectedTasks.filter(t => t !== task));
-        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => !task.businessObject.extensionElements.values.filter(ve => ve.name === 'productIds').find(pi => pi.value === p.id)));
+
+    const handleDeleteProduct = useCallback((product) => {
+        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => p !== product));
+    }, []);
+
+
+    const handleDeleteExecutor = useCallback((executor) => {
+        setSelectedExecutors(prevSelectedExecutors => prevSelectedExecutors.filter(t => t !== executor));
+        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => !executor.businessObject.extensionElements.values.filter(ve => ve.name === 'productIds').find(pi => pi.value === p.id)));
     }, []);
 
     const handleNameChange = useCallback((event) => {
@@ -112,66 +126,14 @@ function ElementProperties({ element, modeler, products }) {
         });
     }, [element, modeler]);
 
-    const handleTaskClick = useCallback((task) => {
+    const handleExecutorClick = useCallback((executor) => {
         setShowSearchBar(prevShowSearchBar => {
             const newShowSearchBar = { ...prevShowSearchBar };
-            newShowSearchBar[task.id] = !newShowSearchBar[task.id];
+            newShowSearchBar[executor.id] = !newShowSearchBar[executor.id];
             return newShowSearchBar;
         });
     }, []);
 
-    function updateTopic(topic) {
-        const modeling = modeler.get('modeling');
-        modeling.updateProperties(element, {
-            'custom:topic': topic
-        });
-    }
-
-    function makeMessageEvent() {
-        const bpmnReplace = modeler.get('bpmnReplace');
-        bpmnReplace.replaceElement(element, {
-            type: element.businessObject.$type,
-            eventDefinitionType: 'bpmn:MessageEventDefinition'
-        });
-    }
-
-    function makeServiceTask() {
-        const bpmnReplace = modeler.get('bpmnReplace');
-        bpmnReplace.replaceElement(element, {
-            type: 'bpmn:ServiceTask'
-        });
-    }
-
-    function attachTimeout() {
-        const modeling = modeler.get('modeling');
-        const autoPlace = modeler.get('autoPlace');
-        const selection = modeler.get('selection');
-        const attrs = {
-            type: 'bpmn:BoundaryEvent',
-            eventDefinitionType: 'bpmn:TimerEventDefinition'
-        };
-        const position = {
-            x: element.x + element.width,
-            y: element.y + element.height
-        };
-        const boundaryEvent = modeling.createShape(attrs, position, element, { attach: true });
-        const taskShape = append(boundaryEvent, {
-            type: 'bpmn:Task'
-        });
-        selection.select(taskShape);
-    }
-
-    function isTimeoutConfigured(element) {
-        const attachers = element.attachers || [];
-        return attachers.some(e => hasDefinition(e, 'bpmn:TimerEventDefinition'));
-    }
-
-    function append(element, attrs) {
-        const autoPlace = modeler.get('autoPlace');
-        const elementFactory = modeler.get('elementFactory');
-        var shape = elementFactory.createShape(attrs);
-        return autoPlace.append(element, shape);
-    }
 
     return (
         <div className="element-properties" key={element ? element.id : ''}>
@@ -179,88 +141,66 @@ function ElementProperties({ element, modeler, products }) {
                 <>
                     <h3>{getElementType()}</h3>
                     <fieldset>
-                        <label>id</label>
+
+                        <label>Id</label>
                         <span>{element.id}</span>
-                    </fieldset>
 
-                    <fieldset>
-                        <label>name</label>
-                        <input
-                            value={name}
-                            onChange={handleNameChange}
-                        />
-                    </fieldset>
-                    {is(element, 'custom:TopicHolder') &&
-                        <fieldset>
-                            <label>topic (custom)</label>
-                            <input
-                                value={element.businessObject.get('custom:topic') || ''}
-                                onChange={(event) => {
-                                    updateTopic(event.target.value)
-                                }}
-                            />
-                        </fieldset>
-                    }
+                        <label>Name</label>
+                        <input value={name} onChange={handleNameChange} />
 
-                    <fieldset>
-                        <label>actions</label>
-
-                        {is(element, 'bpmn:Task') && !is(element, 'bpmn:ServiceTask') &&
-                            <button onClick={makeServiceTask}>Make Service Task</button>
-                        }
-
-                        {is(element, 'bpmn:Event') && !hasDefinition(element, 'bpmn:MessageEventDefinition') &&
-                            <button onClick={makeMessageEvent}>Make Message Event</button>
-                        }
-
-                        {is(element, 'bpmn:Task') && !isTimeoutConfigured(element) &&
-                            <button onClick={attachTimeout}>Attach Timeout</button>
-                        }
                     </fieldset>
 
                     {is(element, 'bpmn:Task') &&
                         <fieldset>
                             <label>Search Executors</label>
                             <input
-                                value={searchInput}
-                                onChange={(event) => {
-                                    setSearchInput(event.target.value);
-                                    handleSearch();
-                                }}
+                                value={executorSearchInput}
+                                onChange={(event) => handleSearchExecutor(event)}
                             />
-                            {searchResults.map((result, index) => (
-                                <div key={index}>
-                                    <label>{result.businessObject.name}</label>
-                                    <button onClick={() => handleSelectTask(result)}>Select</button>
+                            {executorDropdownOpen && (
+                                <div className="dropdown-menu">
+                                    {executorSearchResults.map((result, index) => (
+                                        <div key={index} onClick={() => handleSelectExecutor(result)}>
+                                            <label>{result.businessObject.name}</label>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                             <br /><br />
                             <label>Selected Executors</label>
                             <div>
-                                {selectedTasks.map((task, index) => (
+                                {selectedExecutors.map((executor, index) => (
                                     <React.Fragment key={index}>
                                         <div>
-                                            <span onClick={() => handleTaskClick(task)}>{task.businessObject.name}</span>
-                                            {showSearchBar[task.id] && (
+                                            <div className="selection">
+                                                <CiCircleRemove onClick={() => handleDeleteExecutor(executor)}/>
+                                                <span onClick={() => handleExecutorClick(executor)}>{executor.businessObject.name}</span>
+                                            </div>
+                                            {showSearchBar[executor.id] && (
                                                 <div ref={searchBarRef}>
                                                     <input
                                                         value={productSearchInput}
                                                         onChange={handleSearchProducts}
                                                     />
-                                                    {productSearchResults.map((result, index) => (
-                                                        <div key={index}>
-                                                            <label>{result.name}</label>
-                                                            <button onClick={() => handleSelectProduct(result, task)}>Select</button>
+                                                    {productDropdownOpen && (
+                                                        <div className="dropdown-menu">
+                                                            {productSearchResults.map((result, index) => (
+                                                                <div key={index} onClick={() => handleSelectProduct(result)}>
+                                                                    <label>{result.name}</label>
+                                                                </div>
+                                                            ))}
                                                         </div>
-                                                    ))}
+                                                    )}
                                                     {selectedProducts.map((product, index) => (
                                                         <div key={index}>
-                                                            <label>{product.name}</label>
+                                                            <div className="selection">
+                                                                <CiCircleRemove onClick={() => handleDeleteProduct(product)}/>
+                                                                <label>{product.name}</label>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
                                             )}
-                                            <button onClick={() => handleDeleteTask(task)}>Remove</button>
                                         </div>
                                     </React.Fragment>
                                 ))}

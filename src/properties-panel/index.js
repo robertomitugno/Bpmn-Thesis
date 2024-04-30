@@ -3,7 +3,6 @@ import React from 'react';
 
 import PropertiesView from './PropertiesView/PropertiesView';
 
-
 export default class PropertiesPanel {
 
   constructor(options) {
@@ -13,11 +12,9 @@ export default class PropertiesPanel {
       container
     } = options;
 
-    ReactDOM.render(
-      <PropertiesView modeler={ modeler } />,
-      container
+    const root = ReactDOM.createRoot(container);
+    root.render(
+      <PropertiesView modeler={modeler} />
     );
   }
 }
-
-

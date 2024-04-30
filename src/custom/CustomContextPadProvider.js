@@ -27,7 +27,7 @@ export default function CustomContextPadProvider(injector, connect, translate) {
       connect.start(event, element, autoActivate);
     }
 
-    if (isAny(businessObject, [ 'custom:hexagon'])) {
+    if (isAny(businessObject, [ 'custom:Hexagon'])) {
       assign(actions, {
         'connect': {
           group: 'connect',

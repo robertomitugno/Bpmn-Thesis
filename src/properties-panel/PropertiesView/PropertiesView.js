@@ -35,19 +35,24 @@ export default function PropertiesView({ modeler }) {
   };
 
   return (
-    <div>
+    <div className="PropertiesView">
       {selectedElements.length === 1 && (
         <div>
           <ElementProperties modeler={modeler} element={element} products={products} onAddProduct={handleAddProduct} />
         </div>
       )}
       {selectedElements.length === 0 && (
-        <div>
-          <ExecutorsList modeler={modeler} />
-          <ProductList products={products} onAddProduct={handleAddProduct} /> {/* Pass products as a prop */}
-        </div>
+        <>
+          <div className="ExecutorsList">
+            <ExecutorsList modeler={modeler} />
+          </div>
+          <div className="ProductList">
+            <ProductList products={products} onAddProduct={handleAddProduct} />
+          </div>
+        </>
       )}
       {selectedElements.length > 1 && <span>Please select a single element.</span>}
     </div>
   );
+
 }

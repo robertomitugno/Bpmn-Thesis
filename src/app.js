@@ -3,6 +3,7 @@ import PropertiesPanel from './properties-panel';
 import customModdleExtension from './moddle/custom.json';
 import diagramXML from './diagram.bpmn';
 import customControlsModule from './custom';
+import './app.css';
 
 const $modelerContainer = document.querySelector('#modeler-container');
 const $propertiesContainer = document.querySelector('#properties-container');

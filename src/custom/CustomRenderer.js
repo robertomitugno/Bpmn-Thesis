@@ -39,7 +39,7 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-    // only render tasks and events (ignore labels)
+    // only render executors and events (ignore labels)
     return isAny(element, ["custom:Hexagon"]) && !element.labelTarget;
   }
 
