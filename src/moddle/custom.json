@@ -1,24 +1,77 @@
 {
-  "name": "custom",
-  "uri": "http://custom/ns",
-  "associations": [],
+  "name": "Custom-BPMNExtension",
+  "uri": "http://custom/bpi/bpmn",
+  "prefix": "custom",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
   "types": [
     {
-      "name": "TopicHolder",
-      "extends": [
-        "bpmn:ServiceTask"
-      ],
+      "name": "Hexagon",
+      "superClass": ["bpmn:Task"],
       "properties": [
         {
-          "name": "topic",
+          "name": "renderings",
+          "type": "Rendering",
+          "isMany": true
+        },
+        {
+          "name": "implementation",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "taskType",
+          "isMany": false,
+          "isReference": false,
+          "type": "String"
+        },
+        {
+          "name": "taskArguments",
+          "type": "taskArguments"
+        }
+      ]
+    },
+    {
+      "name": "Argument",
+      "isAbstract": true,
+      "properties": [
+        {
+          "name": "argName",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "argValue",
           "isAttr": true,
           "type": "String"
         }
       ]
+    },
+    {
+      "name": "inArgument",
+      "superClass": ["Argument"]
+    },
+    {
+      "name": "outArgument",
+      "superClass": ["Argument"]
+    },
+    {
+      "name": "taskArguments",
+      "properties": [
+        {
+          "name": "inArgument",
+          "type": "inArgument",
+          "isMany": true
+        },
+        {
+          "name": "outArgument",
+          "type": "outArgument",
+          "isMany": true
+        }
+      ]
     }
   ],
-  "prefix": "custom",
-  "xml": {
-    "tagAlias": "lowerCase"
-  }
+  "emumerations": [],
+  "associations": []
 }

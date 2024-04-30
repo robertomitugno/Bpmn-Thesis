@@ -1,0 +1,42 @@
+.PropertiesView {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-left: 5px;
+}
+
+.ExecutorsList {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.ProductList {
+    flex-grow: 0;
+    height: 55%;
+    overflow-y: auto;
+}
+
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    border: 1px solid black;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #aaa8a8;
+}
+
+
+h3 {
+    margin-top: 15px;
+    border-bottom: 1px solid #000000;
+    padding-bottom: 5px;
+}
