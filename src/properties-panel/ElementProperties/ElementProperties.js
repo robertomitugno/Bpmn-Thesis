@@ -32,11 +32,31 @@ function ElementProperties({ element, modeler, products }) {
         element = element.labelTarget;
     }
 
+
+    const getConnectedExecutors = useCallback(() => {
+        const connectedExecutors = [];
+        const elementRegistry = modeler.get('elementRegistry');
+
+        elementRegistry.filter(element => is(element, 'bpmn:SequenceFlow')).forEach(sequenceFlow => {
+            if (sequenceFlow.source === element || sequenceFlow.target === element) {
+                const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
+
+                if (is(connectedElement, 'custom:Hexagon')) {
+                    connectedExecutors.push(connectedElement);
+                }
+            }
+        });
+
+        return connectedExecutors;
+    }, [element]);
+
     useEffect(() => {
         if (element) {
             setName(element.businessObject.name || '');
+            setSelectedExecutors(getConnectedExecutors());
+            setSelectedProducts({});
         }
-    }, [element]);
+    }, [element, getConnectedExecutors]);
 
 
     const handleOutsideClick = useCallback((event) => {
@@ -65,16 +85,22 @@ function ElementProperties({ element, modeler, products }) {
         return 'Process';
     }, [element]);
 
+
     const handleSearchExecutor = useCallback((event) => {
         const input = event.target.value;
         setExecutorSearchInput(input);
         if (!input) {
             setExecutorSearchResults([]);
         } else {
-            setExecutorSearchResults(executors.filter(executor => (executor.businessObject && executor.businessObject.name) ? executor.businessObject.name.toLowerCase().includes(input.toLowerCase()) : false));
+            const filteredExecutors = executors.filter(executor =>
+                (executor.businessObject && executor.businessObject.name)
+                    ? executor.businessObject.name.toLowerCase().includes(input.toLowerCase())
+                    : false
+            );
+            setExecutorSearchResults(filteredExecutors.filter(executor => !selectedExecutors.includes(executor)));
         }
         setExecutorDropdownOpen(true);
-    }, [executors]);
+    }, [executors, selectedExecutors]);
 
 
     const handleSelectExecutor = useCallback((executor) => {
@@ -121,9 +147,13 @@ function ElementProperties({ element, modeler, products }) {
 
     const handleDeleteExecutor = useCallback((executor) => {
         setSelectedExecutors(prevSelectedExecutors => prevSelectedExecutors.filter(t => t !== executor));
-        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => !executor.businessObject.extensionElements.values.filter(ve => ve.name === 'productIds').find(pi => pi.value === p.id)));
+        setSelectedProducts(prevSelectedProducts => {
+            const newSelectedProducts = { ...prevSelectedProducts };
+            delete newSelectedProducts[executor.id];
+            return newSelectedProducts;
+        });
+        setExecutors(prevExecutors => [...prevExecutors, executor]);
     }, []);
-
 
     const handleNameChange = useCallback((event) => {
         const newName = event.target.value;
@@ -141,6 +171,35 @@ function ElementProperties({ element, modeler, products }) {
             return newShowSearchBar;
         });
     }, []);
+
+
+    const handleAttachExecutor = useCallback((executor) => {
+        const modeling = modeler.get('modeling');
+        const connection = {
+            type: 'bpmn:SequenceFlow',
+            waypoints: [
+                { x: element.x + element.width, y: element.y + element.height / 2 },
+                { x: executor.x, y: executor.y }
+            ]
+        };
+
+        modeling.connect(element, executor, connection);
+    }, [element, modeler]);
+
+
+    const handleDetachExecutor = useCallback((executor) => {
+        const elementRegistry = modeler.get('elementRegistry');
+        const connections = elementRegistry.filter(component => {
+            return (component.type === 'bpmn:SequenceFlow' &&
+                (component.source === element && component.target === executor) || (component.source === executor && component.target === element));
+        });
+        const modeling = modeler.get('modeling');
+        connections.forEach((connection) => {
+            modeling.removeElements([connection]);
+        });
+        handleDeleteExecutor(executor);
+    }, [modeler, handleDeleteExecutor]);
+
 
 
     return (
@@ -168,7 +227,10 @@ function ElementProperties({ element, modeler, products }) {
                             {executorDropdownOpen && (
                                 <div className="dropdown-menu">
                                     {executorSearchResults.map((result, index) => (
-                                        <div key={index} onClick={() => handleSelectExecutor(result)}>
+                                        <div key={index} onClick={() => {
+                                            handleSelectExecutor(result);
+                                            handleAttachExecutor(result);
+                                        }}>
                                             <label>{result.businessObject.name}</label>
                                         </div>
                                     ))}
@@ -181,7 +243,7 @@ function ElementProperties({ element, modeler, products }) {
                                     <React.Fragment key={index}>
                                         <div>
                                             <div className="selection">
-                                                <CiCircleRemove onClick={() => handleDeleteExecutor(executor)} />
+                                                <CiCircleRemove onClick={() => handleDetachExecutor(executor)} />
                                                 <span onClick={() => handleExecutorClick(executor)}>{executor.businessObject.name}</span>
                                             </div>
                                             {showSearchBar[executor.id] && (
