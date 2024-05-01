@@ -15,7 +15,7 @@ function ElementProperties({ element, modeler, products }) {
     const [executors, setExecutors] = useState([]);
 
     const [productSearchInput, setProductSearchInput] = useState('');
-    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState({});
     const [productSearchResults, setProductSearchResults] = useState([]);
 
     const [executorDropdownOpen, setExecutorDropdownOpen] = useState(false);
@@ -86,29 +86,36 @@ function ElementProperties({ element, modeler, products }) {
     }, [modeler]);
 
 
-    const handleSearchProducts = useCallback((event) => {
+    const handleSearchProducts = useCallback((event, executorId) => {
         const input = event.target.value;
         setProductSearchInput(input);
         if (!input) {
             setProductSearchResults([]);
         } else {
-            setProductSearchResults(products.filter(product => product.name.toLowerCase().includes(input.toLowerCase())));
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(input.toLowerCase()));
+            const selectedProductIds = selectedProducts[executorId]?.map(p => p.id) || [];
+            setProductSearchResults(filteredProducts.filter(product => !selectedProductIds.includes(product.id)));
         }
         setProductDropdownOpen(true);
-    }, [products]);
+    }, [products, selectedProducts]);
 
 
-
-    const handleSelectProduct = useCallback((product) => {
-        setSelectedProducts(prevSelectedProducts => [...prevSelectedProducts, product]);
+    const handleSelectProduct = useCallback((product, executorId) => {
+        setSelectedProducts(prevSelectedProducts => ({
+            ...prevSelectedProducts,
+            [executorId]: [...(prevSelectedProducts[executorId] || []), product]
+        }));
         setProductSearchInput('');
         setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
         setProductDropdownOpen(false);
     }, []);
 
 
-    const handleDeleteProduct = useCallback((product) => {
-        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => p !== product));
+    const handleDeleteProduct = useCallback((product, executorId) => {
+        setSelectedProducts(prevSelectedProducts => ({
+            ...prevSelectedProducts,
+            [executorId]: prevSelectedProducts[executorId].filter(p => p !== product)
+        }));
     }, []);
 
 
@@ -116,6 +123,7 @@ function ElementProperties({ element, modeler, products }) {
         setSelectedExecutors(prevSelectedExecutors => prevSelectedExecutors.filter(t => t !== executor));
         setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => !executor.businessObject.extensionElements.values.filter(ve => ve.name === 'productIds').find(pi => pi.value === p.id)));
     }, []);
+
 
     const handleNameChange = useCallback((event) => {
         const newName = event.target.value;
@@ -173,28 +181,28 @@ function ElementProperties({ element, modeler, products }) {
                                     <React.Fragment key={index}>
                                         <div>
                                             <div className="selection">
-                                                <CiCircleRemove onClick={() => handleDeleteExecutor(executor)}/>
+                                                <CiCircleRemove onClick={() => handleDeleteExecutor(executor)} />
                                                 <span onClick={() => handleExecutorClick(executor)}>{executor.businessObject.name}</span>
                                             </div>
                                             {showSearchBar[executor.id] && (
-                                                <div ref={searchBarRef}>
+                                                <div ref={searchBarRef} className="product-search">
                                                     <input
                                                         value={productSearchInput}
-                                                        onChange={handleSearchProducts}
+                                                        onChange={(event) => handleSearchProducts(event, executor.id)}
                                                     />
                                                     {productDropdownOpen && (
                                                         <div className="dropdown-menu">
                                                             {productSearchResults.map((result, index) => (
-                                                                <div key={index} onClick={() => handleSelectProduct(result)}>
+                                                                <div key={index} onClick={() => handleSelectProduct(result, executor.id)}>
                                                                     <label>{result.name}</label>
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     )}
-                                                    {selectedProducts.map((product, index) => (
+                                                    {(selectedProducts[executor.id] || []).map((product, index) => (
                                                         <div key={index}>
                                                             <div className="selection">
-                                                                <CiCircleRemove onClick={() => handleDeleteProduct(product)}/>
+                                                                <CiCircleRemove onClick={() => handleDeleteProduct(product, executor.id)} />
                                                                 <label>{product.name}</label>
                                                             </div>
                                                         </div>
