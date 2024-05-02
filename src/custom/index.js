@@ -10,14 +10,14 @@ export default {
   __init__: [
     'customRenderer',
     'customPalette',
-    'contextPadProvider',
+    //'contextPadProvider',
     //'customOrderingProvider',
     'customRules',
     //'customUpdater',
     'elementFactory'
   ],
   customRenderer: [ 'type', CustomRenderer ],
-  contextPadProvider: [ 'type', CustomContextPadProvider ],
+  //contextPadProvider: [ 'type', CustomContextPadProvider ],
   //customOrderingProvider: [ 'type', CustomOrderingProvider ],
   customRules: [ 'type', CustomRules ],
   //customUpdater: [ 'type', CustomUpdater ],

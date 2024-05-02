@@ -13,10 +13,10 @@ export default class CustomPalette {
 
     function createTask() {
       return function (event) {
-        const businessObject = bpmnFactory.create("custom:Hexagon");
+        const businessObject = bpmnFactory.create("custom:Executor");
 
         const shape = elementFactory.createShape({
-          type: "custom:Hexagon",
+          type: "custom:Executor",
           businessObject: businessObject
         });
 
@@ -25,9 +25,9 @@ export default class CustomPalette {
     }
 
     return {
-      "create.Hexagon": {
+      "create.Executor": {
         group: "custom",
-        className: "icon-custom-hexagon",
+        className: "icon-custom-executor",
         title: translate("Create Executor"),
         action: {
           dragstart: createTask(),

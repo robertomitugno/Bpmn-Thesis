@@ -7,7 +7,7 @@
   },
   "types": [
     {
-      "name": "Hexagon",
+      "name": "Executor",
       "superClass": [
         "bpmn:Task"
       ],

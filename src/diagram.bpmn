@@ -19,9 +19,9 @@
     <bpmn:sequenceFlow id="Flow_1ad8p0n" sourceRef="Event_0a568x5" targetRef="Activity_0atq3f2" />
     <bpmn:sequenceFlow id="Flow_1ph6z80" sourceRef="Activity_0atq3f2" targetRef="Activity_0xm6lr7" />
     <bpmn:sequenceFlow id="Flow_0qmklhe" sourceRef="Activity_0xm6lr7" targetRef="Event_1tmw86e" />
-    <custom:hexagon id="Activity_0h5ifkc" name="Esecutore 1">
+    <custom:executor id="Activity_0h5ifkc" name="Esecutore 1">
       <bpmn:outgoing>Flow_04cv9oe</bpmn:outgoing>
-    </custom:hexagon>
+    </custom:executor>
     <bpmn:sequenceFlow id="Flow_04cv9oe" sourceRef="Activity_0h5ifkc" targetRef="Activity_0atq3f2" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

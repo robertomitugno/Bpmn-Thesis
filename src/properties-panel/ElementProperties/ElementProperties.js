@@ -41,7 +41,7 @@ function ElementProperties({ element, modeler, products }) {
             if (sequenceFlow.source === element || sequenceFlow.target === element) {
                 const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
 
-                if (is(connectedElement, 'custom:Hexagon')) {
+                if (is(connectedElement, 'custom:Executor')) {
                     connectedExecutors.push(connectedElement);
                 }
             }
@@ -74,7 +74,7 @@ function ElementProperties({ element, modeler, products }) {
     }, [handleOutsideClick]);
 
     useEffect(() => {
-        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Hexagon'));
+        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor'));
         setExecutors(allExecutors);
     }, []);
 
@@ -135,7 +135,7 @@ function ElementProperties({ element, modeler, products }) {
         setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
         setProductDropdownOpen(false);
 
-        const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Hexagon')).find(executor => executor.id === executorId);
+        const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
         handleAddProductToExecutor(executor, product);
     }, []);
 
@@ -145,12 +145,12 @@ function ElementProperties({ element, modeler, products }) {
             const modeling = modeler.get('modeling');
             const moddle = modeler.get('moddle');
             const elementRegistry = modeler.get("elementRegistry");
-            const hexagon = elementRegistry.get(executor.id);
+            const executor = elementRegistry.get(executor.id);
 
-            let extensionElements = hexagon.businessObject.extensionElements;
+            let extensionElements = executor.businessObject.extensionElements;
             if (!extensionElements) {
                 extensionElements = moddle.create("bpmn:ExtensionElements");
-                modeling.updateProperties(hexagon, { extensionElements });
+                modeling.updateProperties(executor, { extensionElements });
             }
 
             let productsElement = extensionElements.get("values").filter(el => is(el, 'custom:Products'))[0];
@@ -171,7 +171,7 @@ function ElementProperties({ element, modeler, products }) {
                 productsElement.products = [newProduct];
             }
 
-            modeling.updateProperties(hexagon, { extensionElements });
+            modeling.updateProperties(executor, { extensionElements });
         }
     }, [modeler]);
 

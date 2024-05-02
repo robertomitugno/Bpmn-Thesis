@@ -108,7 +108,7 @@ CustomElementFactory.$inject = ["bpmnFactory", "moddle"];
 CustomElementFactory.prototype._getCustomElementSize = function (type) {
   var shapes = {
     __default: { width: 120, height: 60 },
-    "custom:Hexagon": { width: 120, height: 60 }
+    "custom:Executor": { width: 120, height: 60 }
   };
 
   return shapes[type] || shapes.__default;
