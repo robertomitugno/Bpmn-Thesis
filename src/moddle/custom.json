@@ -31,11 +31,6 @@
         {
           "name": "taskArguments",
           "type": "taskArguments"
-        },
-        {
-          "name": "product",
-          "type": "Product",
-          "isMany": true
         }
       ]
     },
@@ -99,6 +94,16 @@
           "name": "time",
           "isAttr": true,
           "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "properties": [
+        {
+          "name": "products",
+          "type": "Product",
+          "isMany": true
         }
       ]
     }

@@ -134,7 +134,47 @@ function ElementProperties({ element, modeler, products }) {
         setProductSearchInput('');
         setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
         setProductDropdownOpen(false);
+
+        const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Hexagon')).find(executor => executor.id === executorId);
+        handleAddProductToExecutor(executor, product);
     }, []);
+
+
+    const handleAddProductToExecutor = useCallback((executor, product) => {
+        if (executor) {
+            const modeling = modeler.get('modeling');
+            const moddle = modeler.get('moddle');
+            const elementRegistry = modeler.get("elementRegistry");
+            const hexagon = elementRegistry.get(executor.id);
+
+            let extensionElements = hexagon.businessObject.extensionElements;
+            if (!extensionElements) {
+                extensionElements = moddle.create("bpmn:ExtensionElements");
+                modeling.updateProperties(hexagon, { extensionElements });
+            }
+
+            let productsElement = extensionElements.get("values").filter(el => is(el, 'custom:Products'))[0];
+
+            if (!productsElement) {
+                productsElement = moddle.create('custom:Products', { products: [] });
+                extensionElements.get("values").push(productsElement);
+            }
+
+            const newProduct = moddle.create('custom:Product');
+            newProduct.id = product.id;
+            newProduct.name = product.name;
+            newProduct.time = "tempo";
+
+            if (productsElement.products) {
+                productsElement.products.push(newProduct);
+            } else {
+                productsElement.products = [newProduct];
+            }
+
+            modeling.updateProperties(hexagon, { extensionElements });
+        }
+    }, [modeler]);
+
 
 
     const handleDeleteProduct = useCallback((product, executorId) => {
