@@ -15,7 +15,7 @@ function ElementProperties({ element, modeler, products }) {
     const [executors, setExecutors] = useState([]);
 
     const [productSearchInput, setProductSearchInput] = useState('');
-    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState({});
     const [productSearchResults, setProductSearchResults] = useState([]);
 
     const [executorDropdownOpen, setExecutorDropdownOpen] = useState(false);
@@ -32,11 +32,31 @@ function ElementProperties({ element, modeler, products }) {
         element = element.labelTarget;
     }
 
+
+    const getConnectedExecutors = useCallback(() => {
+        const connectedExecutors = [];
+        const elementRegistry = modeler.get('elementRegistry');
+
+        elementRegistry.filter(element => is(element, 'bpmn:SequenceFlow')).forEach(sequenceFlow => {
+            if (sequenceFlow.source === element || sequenceFlow.target === element) {
+                const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
+
+                if (is(connectedElement, 'custom:Executor')) {
+                    connectedExecutors.push(connectedElement);
+                }
+            }
+        });
+
+        return connectedExecutors;
+    }, [element]);
+
     useEffect(() => {
         if (element) {
             setName(element.businessObject.name || '');
+            setSelectedExecutors(getConnectedExecutors());
+            setSelectedProducts({});
         }
-    }, [element]);
+    }, [element, getConnectedExecutors]);
 
 
     const handleOutsideClick = useCallback((event) => {
@@ -54,7 +74,7 @@ function ElementProperties({ element, modeler, products }) {
     }, [handleOutsideClick]);
 
     useEffect(() => {
-        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Hexagon'));
+        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor'));
         setExecutors(allExecutors);
     }, []);
 
@@ -65,16 +85,22 @@ function ElementProperties({ element, modeler, products }) {
         return 'Process';
     }, [element]);
 
+
     const handleSearchExecutor = useCallback((event) => {
         const input = event.target.value;
         setExecutorSearchInput(input);
         if (!input) {
             setExecutorSearchResults([]);
         } else {
-            setExecutorSearchResults(executors.filter(executor => (executor.businessObject && executor.businessObject.name) ? executor.businessObject.name.toLowerCase().includes(input.toLowerCase()) : false));
+            const filteredExecutors = executors.filter(executor =>
+                (executor.businessObject && executor.businessObject.name)
+                    ? executor.businessObject.name.toLowerCase().includes(input.toLowerCase())
+                    : false
+            );
+            setExecutorSearchResults(filteredExecutors.filter(executor => !selectedExecutors.includes(executor)));
         }
         setExecutorDropdownOpen(true);
-    }, [executors]);
+    }, [executors, selectedExecutors]);
 
 
     const handleSelectExecutor = useCallback((executor) => {
@@ -86,35 +112,87 @@ function ElementProperties({ element, modeler, products }) {
     }, [modeler]);
 
 
-    const handleSearchProducts = useCallback((event) => {
+    const handleSearchProducts = useCallback((event, executorId) => {
         const input = event.target.value;
         setProductSearchInput(input);
         if (!input) {
             setProductSearchResults([]);
         } else {
-            setProductSearchResults(products.filter(product => product.name.toLowerCase().includes(input.toLowerCase())));
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(input.toLowerCase()));
+            const selectedProductIds = selectedProducts[executorId]?.map(p => p.id) || [];
+            setProductSearchResults(filteredProducts.filter(product => !selectedProductIds.includes(product.id)));
         }
         setProductDropdownOpen(true);
-    }, [products]);
+    }, [products, selectedProducts]);
 
 
-
-    const handleSelectProduct = useCallback((product) => {
-        setSelectedProducts(prevSelectedProducts => [...prevSelectedProducts, product]);
+    const handleSelectProduct = useCallback((product, executorId) => {
+        setSelectedProducts(prevSelectedProducts => ({
+            ...prevSelectedProducts,
+            [executorId]: [...(prevSelectedProducts[executorId] || []), product]
+        }));
         setProductSearchInput('');
         setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
         setProductDropdownOpen(false);
+
+        const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
+        handleAddProductToExecutor(executor, product);
     }, []);
 
 
-    const handleDeleteProduct = useCallback((product) => {
-        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => p !== product));
+    const handleAddProductToExecutor = useCallback((executor, product) => {
+        if (executor) {
+            const modeling = modeler.get('modeling');
+            const moddle = modeler.get('moddle');
+            const elementRegistry = modeler.get("elementRegistry");
+            const executor = elementRegistry.get(executor.id);
+
+            let extensionElements = executor.businessObject.extensionElements;
+            if (!extensionElements) {
+                extensionElements = moddle.create("bpmn:ExtensionElements");
+                modeling.updateProperties(executor, { extensionElements });
+            }
+
+            let productsElement = extensionElements.get("values").filter(el => is(el, 'custom:Products'))[0];
+
+            if (!productsElement) {
+                productsElement = moddle.create('custom:Products', { products: [] });
+                extensionElements.get("values").push(productsElement);
+            }
+
+            const newProduct = moddle.create('custom:Product');
+            newProduct.id = product.id;
+            newProduct.name = product.name;
+            newProduct.time = "tempo";
+
+            if (productsElement.products) {
+                productsElement.products.push(newProduct);
+            } else {
+                productsElement.products = [newProduct];
+            }
+
+            modeling.updateProperties(executor, { extensionElements });
+        }
+    }, [modeler]);
+
+
+
+    const handleDeleteProduct = useCallback((product, executorId) => {
+        setSelectedProducts(prevSelectedProducts => ({
+            ...prevSelectedProducts,
+            [executorId]: prevSelectedProducts[executorId].filter(p => p !== product)
+        }));
     }, []);
 
 
     const handleDeleteExecutor = useCallback((executor) => {
         setSelectedExecutors(prevSelectedExecutors => prevSelectedExecutors.filter(t => t !== executor));
-        setSelectedProducts(prevSelectedProducts => prevSelectedProducts.filter(p => !executor.businessObject.extensionElements.values.filter(ve => ve.name === 'productIds').find(pi => pi.value === p.id)));
+        setSelectedProducts(prevSelectedProducts => {
+            const newSelectedProducts = { ...prevSelectedProducts };
+            delete newSelectedProducts[executor.id];
+            return newSelectedProducts;
+        });
+        setExecutors(prevExecutors => [...prevExecutors, executor]);
     }, []);
 
     const handleNameChange = useCallback((event) => {
@@ -133,6 +211,35 @@ function ElementProperties({ element, modeler, products }) {
             return newShowSearchBar;
         });
     }, []);
+
+
+    const handleAttachExecutor = useCallback((executor) => {
+        const modeling = modeler.get('modeling');
+        const connection = {
+            type: 'bpmn:SequenceFlow',
+            waypoints: [
+                { x: element.x + element.width, y: element.y + element.height / 2 },
+                { x: executor.x, y: executor.y }
+            ]
+        };
+
+        modeling.connect(element, executor, connection);
+    }, [element, modeler]);
+
+
+    const handleDetachExecutor = useCallback((executor) => {
+        const elementRegistry = modeler.get('elementRegistry');
+        const connections = elementRegistry.filter(component => {
+            return (component.type === 'bpmn:SequenceFlow' &&
+                (component.source === element && component.target === executor) || (component.source === executor && component.target === element));
+        });
+        const modeling = modeler.get('modeling');
+        connections.forEach((connection) => {
+            modeling.removeElements([connection]);
+        });
+        handleDeleteExecutor(executor);
+    }, [modeler, handleDeleteExecutor]);
+
 
 
     return (
@@ -160,7 +267,10 @@ function ElementProperties({ element, modeler, products }) {
                             {executorDropdownOpen && (
                                 <div className="dropdown-menu">
                                     {executorSearchResults.map((result, index) => (
-                                        <div key={index} onClick={() => handleSelectExecutor(result)}>
+                                        <div key={index} onClick={() => {
+                                            handleSelectExecutor(result);
+                                            handleAttachExecutor(result);
+                                        }}>
                                             <label>{result.businessObject.name}</label>
                                         </div>
                                     ))}
@@ -173,28 +283,28 @@ function ElementProperties({ element, modeler, products }) {
                                     <React.Fragment key={index}>
                                         <div>
                                             <div className="selection">
-                                                <CiCircleRemove onClick={() => handleDeleteExecutor(executor)}/>
+                                                <CiCircleRemove onClick={() => handleDetachExecutor(executor)} />
                                                 <span onClick={() => handleExecutorClick(executor)}>{executor.businessObject.name}</span>
                                             </div>
                                             {showSearchBar[executor.id] && (
-                                                <div ref={searchBarRef}>
+                                                <div ref={searchBarRef} className="product-search">
                                                     <input
                                                         value={productSearchInput}
-                                                        onChange={handleSearchProducts}
+                                                        onChange={(event) => handleSearchProducts(event, executor.id)}
                                                     />
                                                     {productDropdownOpen && (
                                                         <div className="dropdown-menu">
                                                             {productSearchResults.map((result, index) => (
-                                                                <div key={index} onClick={() => handleSelectProduct(result)}>
+                                                                <div key={index} onClick={() => handleSelectProduct(result, executor.id)}>
                                                                     <label>{result.name}</label>
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     )}
-                                                    {selectedProducts.map((product, index) => (
+                                                    {(selectedProducts[executor.id] || []).map((product, index) => (
                                                         <div key={index}>
                                                             <div className="selection">
-                                                                <CiCircleRemove onClick={() => handleDeleteProduct(product)}/>
+                                                                <CiCircleRemove onClick={() => handleDeleteProduct(product, executor.id)} />
                                                                 <label>{product.name}</label>
                                                             </div>
                                                         </div>

@@ -24,7 +24,7 @@ function ExecutorsList({ modeler }) {
 
   const updateActivities = () => {
     const elementRegistry = modelerRef.current.get('elementRegistry');
-    const elements = elementRegistry.filter(element => is(element, 'custom:Hexagon'));
+    const elements = elementRegistry.filter(element => is(element, 'custom:Executor'));
     const activities = elements.map(element => ({ id: element.id, name: element.businessObject.name }));
     setActivities(activities);
   };

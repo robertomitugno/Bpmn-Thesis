@@ -40,13 +40,13 @@ export default class CustomRenderer extends BaseRenderer {
 
   canRender(element) {
     // only render executors and events (ignore labels)
-    return isAny(element, ["custom:Hexagon"]) && !element.labelTarget;
+    return isAny(element, ["custom:Executor"]) && !element.labelTarget;
   }
 
   drawShape(parentNode, element) {
     var rect;
 
-    if (is(element, "custom:Hexagon")) {
+    if (is(element, "custom:Executor")) {
       var attrs = {
         fill: getFillColor(element, this.defaultFillColor),
         stroke: getStrokeColor(element, this.defaultStrokeColor),
@@ -69,7 +69,7 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   getShapePath(shape) {
-    if (is(shape, "custom:Hexagon")) {
+    if (is(shape, "custom:Executor")) {
       return getRoundRectPath(shape, TASK_BORDER_RADIUS);
     }
 

@@ -1,5 +1,5 @@
 {
-  "name": "Custom-BPMNExtension",
+  "name": "Executor",
   "uri": "http://custom/bpi/bpmn",
   "prefix": "custom",
   "xml": {
@@ -7,8 +7,10 @@
   },
   "types": [
     {
-      "name": "Hexagon",
-      "superClass": ["bpmn:Task"],
+      "name": "Executor",
+      "superClass": [
+        "bpmn:Task"
+      ],
       "properties": [
         {
           "name": "renderings",
@@ -50,11 +52,15 @@
     },
     {
       "name": "inArgument",
-      "superClass": ["Argument"]
+      "superClass": [
+        "Argument"
+      ]
     },
     {
       "name": "outArgument",
-      "superClass": ["Argument"]
+      "superClass": [
+        "Argument"
+      ]
     },
     {
       "name": "taskArguments",
@@ -67,6 +73,36 @@
         {
           "name": "outArgument",
           "type": "outArgument",
+          "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "properties": [
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "time",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "properties": [
+        {
+          "name": "products",
+          "type": "Product",
           "isMany": true
         }
       ]
