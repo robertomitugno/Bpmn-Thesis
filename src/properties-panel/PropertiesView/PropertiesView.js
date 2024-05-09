@@ -12,6 +12,22 @@ export default function PropertiesView({ modeler }) {
   useEffect(() => {
     modeler.on('selection.changed', handleSelectionChange);
 
+    const elementRegistry = modeler.get('elementRegistry');
+    const executorElement = elementRegistry.find(element => element.type === 'custom:Executor');
+    console.log(elementRegistry);
+    if (executorElement) {
+      const productElement = executorElement.businessObject.get('custom:product');
+      if (productElement) {
+        const uniqueProductsSet = new Set(productElement.map(product => product.id));
+
+        const uniqueProducts = Array.from(uniqueProductsSet).map(id => {
+          return productElement.find(product => product.id === id);
+        });
+
+        setProducts(uniqueProducts);
+      }
+    }
+
     return () => {
       modeler.off('selection.changed', handleSelectionChange);
     };

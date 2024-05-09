@@ -8,16 +8,16 @@ import CustomRules from './CustomRules';
 
 export default {
   __init__: [
+    'contextPadProvider',
     'customRenderer',
     'customPalette',
-    //'contextPadProvider',
     //'customOrderingProvider',
     'customRules',
     //'customUpdater',
     'elementFactory'
   ],
+  contextPadProvider: [ 'type', CustomContextPadProvider ],
   customRenderer: [ 'type', CustomRenderer ],
-  //contextPadProvider: [ 'type', CustomContextPadProvider ],
   //customOrderingProvider: [ 'type', CustomOrderingProvider ],
   customRules: [ 'type', CustomRules ],
   //customUpdater: [ 'type', CustomUpdater ],

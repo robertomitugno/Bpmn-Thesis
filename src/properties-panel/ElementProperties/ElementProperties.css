@@ -57,3 +57,17 @@
 .element-properties .product-search {
   margin-left: 15px;
 }
+
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+
+.search-icon {
+  margin-top: 8px;
+  font-size: 1.5em;
+}

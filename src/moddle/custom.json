@@ -13,66 +13,8 @@
       ],
       "properties": [
         {
-          "name": "renderings",
-          "type": "Rendering",
-          "isMany": true
-        },
-        {
-          "name": "implementation",
-          "isAttr": true,
-          "type": "String"
-        },
-        {
-          "name": "taskType",
-          "isMany": false,
-          "isReference": false,
-          "type": "String"
-        },
-        {
-          "name": "taskArguments",
-          "type": "taskArguments"
-        }
-      ]
-    },
-    {
-      "name": "Argument",
-      "isAbstract": true,
-      "properties": [
-        {
-          "name": "argName",
-          "isAttr": true,
-          "type": "String"
-        },
-        {
-          "name": "argValue",
-          "isAttr": true,
-          "type": "String"
-        }
-      ]
-    },
-    {
-      "name": "inArgument",
-      "superClass": [
-        "Argument"
-      ]
-    },
-    {
-      "name": "outArgument",
-      "superClass": [
-        "Argument"
-      ]
-    },
-    {
-      "name": "taskArguments",
-      "properties": [
-        {
-          "name": "inArgument",
-          "type": "inArgument",
-          "isMany": true
-        },
-        {
-          "name": "outArgument",
-          "type": "outArgument",
+          "name": "product",
+          "type": "Product",
           "isMany": true
         }
       ]
@@ -94,6 +36,11 @@
           "name": "time",
           "isAttr": true,
           "type": "String"
+        },
+        {
+          "name": "idActivity",
+          "isAttr": true,
+          "type": "String"
         }
       ]
     },
@@ -104,6 +51,26 @@
           "name": "products",
           "type": "Product",
           "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "Connection",
+      "properties": [
+        {
+          "name": "id",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "source",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "target",
+          "isAttr": true,
+          "type": "String"
         }
       ]
     }

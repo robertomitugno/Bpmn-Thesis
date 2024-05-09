@@ -2,7 +2,7 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ElementProperties.css';
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { CiCircleRemove } from "react-icons/ci";
-
+import { GrSearchAdvanced } from "react-icons/gr";
 
 function ElementProperties({ element, modeler, products }) {
 
@@ -13,6 +13,7 @@ function ElementProperties({ element, modeler, products }) {
     const [executorSearchInput, setExecutorSearchInput] = useState('');
     const [selectedExecutors, setSelectedExecutors] = useState([]);
     const [executors, setExecutors] = useState([]);
+    const [showInput, setShowInput] = useState(false);
 
     const [productSearchInput, setProductSearchInput] = useState('');
     const [selectedProducts, setSelectedProducts] = useState({});
@@ -55,6 +56,9 @@ function ElementProperties({ element, modeler, products }) {
             setName(element.businessObject.name || '');
             setSelectedExecutors(getConnectedExecutors());
             setSelectedProducts({});
+            setShowInput(false);
+            setProductDropdownOpen(false);
+            setExecutorDropdownOpen(false);
         }
     }, [element, getConnectedExecutors]);
 
@@ -62,6 +66,8 @@ function ElementProperties({ element, modeler, products }) {
     const handleOutsideClick = useCallback((event) => {
         if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
             setShowSearchBar(false);
+            setProductDropdownOpen(false);
+            setExecutorDropdownOpen(false);
         }
     }, []);
 
@@ -106,9 +112,11 @@ function ElementProperties({ element, modeler, products }) {
     const handleSelectExecutor = useCallback((executor) => {
         setSelectedExecutors(prevSelectedExecutors => [...prevSelectedExecutors, executor]);
         setExecutorSearchInput('');
+        setShowInput(false);
         setExecutors(prevExecutors => prevExecutors.filter(t => t !== executor));
         setExecutorSearchResults([]);
         setExecutorDropdownOpen(false);
+        setProductDropdownOpen(false);
     }, [modeler]);
 
 
@@ -134,46 +142,31 @@ function ElementProperties({ element, modeler, products }) {
         setProductSearchInput('');
         setProductSearchResults(prevResults => prevResults.filter(p => p !== product));
         setProductDropdownOpen(false);
+        setShowInput(false);
 
+        const modeling = modeler.get('modeling');
+        const moddle = modeler.get('moddle');
         const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
-        handleAddProductToExecutor(executor, product);
-    }, []);
 
-
-    const handleAddProductToExecutor = useCallback((executor, product) => {
         if (executor) {
-            const modeling = modeler.get('modeling');
-            const moddle = modeler.get('moddle');
-            const elementRegistry = modeler.get("elementRegistry");
-            const executor = elementRegistry.get(executor.id);
+            let extensionElements = executor.businessObject.product;
 
-            let extensionElements = executor.businessObject.extensionElements;
             if (!extensionElements) {
-                extensionElements = moddle.create("bpmn:ExtensionElements");
+                console.log("entro");
+                extensionElements = moddle.create("custom:Products", { values: [] });
                 modeling.updateProperties(executor, { extensionElements });
             }
 
-            let productsElement = extensionElements.get("values").filter(el => is(el, 'custom:Products'))[0];
-
-            if (!productsElement) {
-                productsElement = moddle.create('custom:Products', { products: [] });
-                extensionElements.get("values").push(productsElement);
-            }
-
-            const newProduct = moddle.create('custom:Product');
+            const newProduct = moddle.create("custom:Product");
             newProduct.id = product.id;
             newProduct.name = product.name;
             newProduct.time = "tempo";
+            newProduct.idActivity = element.id;
 
-            if (productsElement.products) {
-                productsElement.products.push(newProduct);
-            } else {
-                productsElement.products = [newProduct];
-            }
+            extensionElements.push(newProduct);
 
-            modeling.updateProperties(executor, { extensionElements });
         }
-    }, [modeler]);
+    }, []);
 
 
 
@@ -204,16 +197,72 @@ function ElementProperties({ element, modeler, products }) {
         });
     }, [element, modeler]);
 
+
+
     const handleExecutorClick = useCallback((executor) => {
+
         setShowSearchBar(prevShowSearchBar => {
             const newShowSearchBar = { ...prevShowSearchBar };
             newShowSearchBar[executor.id] = !newShowSearchBar[executor.id];
             return newShowSearchBar;
         });
-    }, []);
+
+        const productElement = executor.businessObject.get('custom:product');
+        //let extensionElements = executor.businessObject.product;
+        let selectedProductsUpdate = {};
+
+        console.log(executor);
+        console.log(executor.businessObject);
+        console.log(productElement);
+        //console.log(extensionElements);
+
+
+        if (productElement) {
+            console.log("entro product");
+            const filteredProducts = productElement.filter(product => element.id === product.idActivity);
+            selectedProductsUpdate = {
+                ...selectedProductsUpdate,
+                [executor.id]: [
+                    ...(selectedProductsUpdate[executor.id] || []),
+                    ...filteredProducts.map(product => ({
+                        id: product.id,
+                        name: product.name,
+                        time: product.time,
+                        idActivity: product.idActivity
+                    }))
+                ]
+            };
+        }
+
+        /*if (extensionElements) {
+            console.log("entro extension");
+            const filteredProducts = extensionElements.filter(product => element.id === product.idActivity);
+            selectedProductsUpdate = {
+                ...selectedProductsUpdate,
+                [executor.id]: [
+                    ...(selectedProductsUpdate[executor.id] || []),
+                    ...filteredProducts.map(product => ({
+                        id: product.id,
+                        name: product.name,
+                        time: product.time,
+                        idActivity: product.idActivity
+                    }))
+                ]
+            };
+        }*/
+
+        setSelectedProducts(prevSelectedProducts => ({
+            ...prevSelectedProducts,
+            ...selectedProductsUpdate
+        }));
+
+    }, [element]);
+
 
 
     const handleAttachExecutor = useCallback((executor) => {
+        const originalElement = element;
+
         const modeling = modeler.get('modeling');
         const connection = {
             type: 'bpmn:SequenceFlow',
@@ -224,6 +273,7 @@ function ElementProperties({ element, modeler, products }) {
         };
 
         modeling.connect(element, executor, connection);
+        element = originalElement;
     }, [element, modeler]);
 
 
@@ -256,14 +306,34 @@ function ElementProperties({ element, modeler, products }) {
                         <input value={name} onChange={handleNameChange} />
 
                     </fieldset>
-
-                    {is(element, 'bpmn:Task') &&
+                    {is(element, 'custom:Executor') &&
                         <fieldset>
-                            <label>Search Executors</label>
+                            <label>Search Product</label>
                             <input
                                 value={executorSearchInput}
                                 onChange={(event) => handleSearchExecutor(event)}
                             />
+                            <br /><br />
+                            <label>Selected Product</label>
+                            <div>
+                            </div>
+                        </fieldset>
+                    }
+                    {!is(element, 'custom:Executor') && is(element, 'bpmn:Task') &&
+                        <fieldset>
+                            <div className="search-container">
+                                <label>Connected Executors</label>
+                                <GrSearchAdvanced
+                                    className="search-icon"
+                                    onClick={() => setShowInput(!showInput)}
+                                />
+                            </div>
+                            {showInput && (
+                                <input
+                                    value={executorSearchInput}
+                                    onChange={(event) => handleSearchExecutor(event)}
+                                />
+                            )}
                             {executorDropdownOpen && (
                                 <div className="dropdown-menu">
                                     {executorSearchResults.map((result, index) => (
@@ -276,8 +346,6 @@ function ElementProperties({ element, modeler, products }) {
                                     ))}
                                 </div>
                             )}
-                            <br /><br />
-                            <label>Selected Executors</label>
                             <div>
                                 {selectedExecutors.map((executor, index) => (
                                     <React.Fragment key={index}>
