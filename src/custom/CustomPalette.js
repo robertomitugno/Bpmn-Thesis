@@ -14,6 +14,7 @@ export default class CustomPalette {
     function createTask() {
       return function (event) {
         const businessObject = bpmnFactory.create("custom:Executor");
+        businessObject.id = 'Executor' + businessObject.id;
 
         const shape = elementFactory.createShape({
           type: "custom:Executor",
