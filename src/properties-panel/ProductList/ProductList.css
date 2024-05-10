@@ -1,0 +1,32 @@
+.title {
+    background-color: white;
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px;
+    font-size: 125%;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+}
+
+.add-product-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.product-input {
+    padding: 3px;
+
+}
+
+.add-button {
+    background-color: lightgray;
+    color: black;
+    border: none;
+    padding: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+    background-color: gray;
+}

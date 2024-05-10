@@ -31,7 +31,7 @@ function ExecutorsList({ modeler }) {
 
   return (
     <div>
-      <h3>Executors</h3>
+      <h3 className="title">Executors</h3>
       <table>
         <thead>
           <tr>

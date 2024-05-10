@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    margin-left: 5px;
 }
 
 .ExecutorsList {
@@ -12,7 +11,7 @@
 
 .ProductList {
     flex-grow: 0;
-    height: 55%;
+    height: 53%;
     overflow-y: auto;
 }
 
@@ -36,7 +35,6 @@ th {
 
 
 h3 {
-    margin-top: 15px;
     border-bottom: 1px solid #000000;
     padding-bottom: 5px;
 }

@@ -14,7 +14,6 @@ export default function PropertiesView({ modeler }) {
 
     const elementRegistry = modeler.get('elementRegistry');
     const executorElement = elementRegistry.find(element => element.type === 'custom:Executor');
-    console.log(elementRegistry);
     if (executorElement) {
       const productElement = executorElement.businessObject.get('custom:product');
       if (productElement) {
