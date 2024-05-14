@@ -1,11 +1,38 @@
-.element-properties {
+.general {
+  background-color: white;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  padding: 15px;
+}
+
+.id,
+.name {
+  color: black;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.id label,
+.name label {
+  font-weight: bold;
+  width: 30%;
+  margin-right: 10px;
+}
+
+.id input,
+.name input {
+  font-size: 16px;
+  display: inline-block;
+  width: 65%;
+  background-color: rgb(231, 231, 231);
   padding: 5px;
+  border: 1px solid gray; 
 }
 
 .element-properties label {
   font-weight: bold;
   display: block;
-  margin-top: 10px;
 }
 
 .element-properties input,
@@ -35,7 +62,6 @@
 
 .element-properties div.selection svg {
   margin-right: 5px;
-  font-size: 1.5em;
 }
 
 
@@ -54,6 +80,129 @@
 }
 
 
-.element-properties .product-search {
+.element-properties .product-list {
+  margin-left: 22px;
+  margin-bottom: 12px;
+}
+
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.search-icon {
+  font-size: 1.5em;
+}
+
+.element-properties .properties {
+  background-color: white;
+  margin-top: 15px;
+  padding: 8px;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+
+  position: relative;
+  margin-bottom: 20px;
+}
+
+
+.element-properties .element-type {
+  background-color: white;
+  font-weight: bold;
+  margin-top: 15px;
+  padding: 15px;
+  font-size: 125%;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+
+
+.element-properties .properties-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 10px;
+}
+
+
+.element-properties .executor-container {
   margin-left: 15px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.element-properties .product-container {
+  margin-left: 15px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.element-properties .delete-icon {
+  color: grey;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.element-properties .delete-icon:hover {
+  color: red;
+}
+
+
+.element-properties .expand-icon {
+  margin-top: 5px;
+  font-size: 0.9em;
+}
+
+
+.element-properties .search-container {
+  bottom: 10px;
+  right: 10px;
+  overflow: hidden;
+}
+
+
+.element-properties .search-icon {
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+  font-size: 1.1em;
+  color: black;
+}
+
+.time-input {
+  display: flex;
+  align-items: center;
+}
+
+.time-input input,
+.time-input select {
+  margin-right: 15px;
+}
+
+.time-input input {
+  width: 60px;
+}
+
+.time-input select {
+  margin-top: 5px;
+  padding-bottom: 3px;
+}
+
+
+.executor-obj::after {
+  content: '';
+  display: block;
+  border-bottom: 1px solid black;
+  margin-top: 6px;
+  margin-bottom: 3px;
+}
+
+
+
+.search-icon-product {
+  margin-left: 250px;
+  margin-top: 5px;
 }

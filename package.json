@@ -30,6 +30,9 @@
     "webpack-dev-server": "^5.0.2"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "bpmn-js": "^17.0.1",
     "bpmn-js-properties-panel": "^5.14.0",
     "camunda-bpmn-moddle": "^7.0.1",

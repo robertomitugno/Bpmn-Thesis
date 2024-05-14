@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import './ProductList.css';
+
+const generateUniqueId = () => {
+  const randomString = Math.random().toString(36).substring(2, 9); 
+  return `Product_${randomString}`;
+};
 
 const ProductList = ({ products, onAddProduct }) => {
   const [productName, setProductName] = useState('');
@@ -9,15 +15,15 @@ const ProductList = ({ products, onAddProduct }) => {
 
   const handleAddProduct = () => {
     if (productName.trim() !== '') {
-      const newProduct = { id: Date.now(), name: productName };
+      const newProduct = { id: generateUniqueId(), name: productName };
       onAddProduct(newProduct);
       setProductName('');
     }
   };
 
   return (
-    <div>
-      <h3>Products</h3>
+    <div className="product-list">
+      <h3 className="title">Products</h3>
       <table>
         <thead>
           <tr>
@@ -26,7 +32,7 @@ const ProductList = ({ products, onAddProduct }) => {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => ( 
+          {products.map((product) => (
             <tr key={product.id}>
               <td>{product.name}</td>
               <td>{product.id}</td>
@@ -34,9 +40,16 @@ const ProductList = ({ products, onAddProduct }) => {
           ))}
         </tbody>
       </table>
-      <div>
-        <input type="text" value={productName} onChange={handleProductNameChange} />
-        <button onClick={handleAddProduct}>Add Product</button>
+      <div className="add-product-container">
+        <input
+          type="text"
+          value={productName}
+          onChange={handleProductNameChange}
+          className="product-input"
+        />
+        <button onClick={handleAddProduct} className="add-button">
+          Add Product
+        </button>
       </div>
     </div>
   );
