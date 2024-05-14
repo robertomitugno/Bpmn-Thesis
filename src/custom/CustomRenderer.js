@@ -1,14 +1,11 @@
 import BaseRenderer from "diagram-js/lib/draw/BaseRenderer";
-
 import { assign } from "min-dash";
-
 import {
   append as svgAppend,
   attr as svgAttr,
   create as svgCreate,
   classes as svgClasses
 } from "tiny-svg";
-
 import {
   getRoundRectPath,
   getFillColor,
@@ -16,7 +13,6 @@ import {
   getSemantic,
   getLabelColor
 } from "bpmn-js/lib/draw/BpmnRenderUtil";
-
 import { is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -39,8 +35,8 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-    // only render executors and events (ignore labels)
-    return isAny(element, ["custom:Executor"]) && !element.labelTarget;
+    // only render executors, events and connections (ignore labels)
+    return isAny(element, ["custom:Executor", "custom:Connection"]) && !element.labelTarget;
   }
 
   drawShape(parentNode, element) {
@@ -68,11 +64,30 @@ export default class CustomRenderer extends BaseRenderer {
     }
   }
 
+  drawConnection(parentNode, element) {
+    const waypoints = element.waypoints;
+    const pathData = createPath(waypoints);
+
+    const connectionElement = svgCreate('path');
+    svgAttr(connectionElement, {
+      d: pathData,
+      stroke: getStrokeColor(element, this.defaultStrokeColor),
+      fill: 'none',
+      'stroke-dasharray': '5, 5' // This will make the line dashed
+    });
+
+    console.log('Connection element', connectionElement);
+
+    svgAppend(parentNode, connectionElement);
+
+    return connectionElement;
+  }
+
+
   getShapePath(shape) {
     if (is(shape, "custom:Executor")) {
       return getRoundRectPath(shape, TASK_BORDER_RADIUS);
     }
-
     return this.bpmnRenderer.getShapePath(shape);
   }
 
@@ -110,6 +125,14 @@ export default class CustomRenderer extends BaseRenderer {
     svgAppend(parentGfx, text);
 
     return text;
+  }
+
+  _renderer(type) {
+    if (type === 'custom:Connection') {
+      return this.drawConnection;
+    }
+
+    return super._renderer(type);
   }
 }
 
@@ -150,4 +173,14 @@ function drawHexagon(parentNode, width, height, strokeColor) {
   svgAppend(parentNode, polygon);
 
   return polygon;
+}
+
+function createPath(waypoints) {
+
+  let pathData = 'M ' + waypoints[0].x + ' ' + waypoints[0].y;
+  for (let i = 1; i < waypoints.length; i++) {
+    pathData += ' L ' + waypoints[i].x + ' ' + waypoints[i].y;
+  }
+
+  return pathData;
 }

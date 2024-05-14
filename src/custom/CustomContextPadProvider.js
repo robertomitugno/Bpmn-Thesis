@@ -1,16 +1,7 @@
 import inherits from 'inherits-browser';
-
 import ContextPadProvider from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
-
-import {
-  isAny
-} from 'bpmn-js/lib/features/modeling/util/ModelingUtil';
-
-import {
-  assign,
-  bind
-} from 'min-dash';
-
+import { isAny } from 'bpmn-js/lib/features/modeling/util/ModelingUtil';
+import { assign, bind } from 'min-dash';
 
 export default function CustomContextPadProvider(injector, connect, translate) {
 
@@ -20,25 +11,27 @@ export default function CustomContextPadProvider(injector, connect, translate) {
 
   this.getContextPadEntries = function(element) {
     var actions = cached(element);
-
     var businessObject = element.businessObject;
 
     function startConnect(event, element, autoActivate) {
       connect.start(event, element, autoActivate);
     }
 
-    if (isAny(businessObject, [ 'custom:Executor'])) {
-      assign(actions, {
-        'connect': {
-          group: 'connect',
-          className: 'bpmn-icon-connection-multi',
-          title: translate('Connect using custom connection'),
-          action: {
-            click: startConnect,
-            dragstart: startConnect
+    if (isAny(businessObject, ['custom:Executor'])) {
+      // Verifica se il padProvider non dipende dalla bpmn:Task
+      if (businessObject.padProvider !== element) {
+        actions = {
+          'sequence-flow': {
+            group: 'connect',
+            className: 'bpmn-icon-connection-multi',
+            title: translate('Create Sequence Flow'),
+            action: {
+              click: startConnect,
+              dragstart: startConnect
+            }
           }
-        }
-      });
+        };
+      }
     }
 
     return actions;

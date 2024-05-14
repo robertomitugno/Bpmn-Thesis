@@ -20,6 +20,14 @@
       ]
     },
     {
+      "name": "Connection",
+      "superClass": [
+        "bpmn:SequenceFlow"
+      ],
+      "properties": [
+      ]
+    },
+    {
       "name": "Product",
       "properties": [
         {
@@ -53,28 +61,8 @@
           "isMany": true
         }
       ]
-    },
-    {
-      "name": "Connection",
-      "properties": [
-        {
-          "name": "id",
-          "isAttr": true,
-          "type": "String"
-        },
-        {
-          "name": "source",
-          "isAttr": true,
-          "type": "String"
-        },
-        {
-          "name": "target",
-          "isAttr": true,
-          "type": "String"
-        }
-      ]
     }
   ],
-  "emumerations": [],
+  "enumerations": [],
   "associations": []
 }

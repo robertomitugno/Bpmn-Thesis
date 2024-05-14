@@ -4,7 +4,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { GrSearchAdvanced } from "react-icons/gr";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleRight, faXmark, faPlus } from '@fortawesome/free-solid-svg-icons'
-
+import { getMid } from 'diagram-js/lib/layout/LayoutUtil.js';
 
 function ElementProperties({ element, modeler, products }) {
 
@@ -48,7 +48,7 @@ function ElementProperties({ element, modeler, products }) {
         const connectedExecutors = [];
         const elementRegistry = modeler.get('elementRegistry');
 
-        elementRegistry.filter(element => is(element, 'bpmn:SequenceFlow')).forEach(sequenceFlow => {
+        elementRegistry.filter(element => is(element, 'custom:Connection')).forEach(sequenceFlow => {
             if (sequenceFlow.source === element || sequenceFlow.target === element) {
                 const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
 
@@ -330,11 +330,16 @@ function ElementProperties({ element, modeler, products }) {
         const originalElement = element;
 
         const modeling = modeler.get('modeling');
+        const elementRegistry = modeler.get('elementRegistry');
+
+        const sourceMid = getMid(element);
+        const targetMid = getMid(executor);
+
         const connection = {
-            type: 'bpmn:SequenceFlow',
+            type: 'custom:Connection',
             waypoints: [
-                { x: element.x + element.width, y: element.y + element.height / 2 },
-                { x: executor.x, y: executor.y }
+                sourceMid,
+                targetMid
             ]
         };
 
@@ -343,10 +348,11 @@ function ElementProperties({ element, modeler, products }) {
     }, [element, modeler]);
 
 
+
     const handleDetachExecutor = useCallback((executor) => {
         const elementRegistry = modeler.get('elementRegistry');
         const connections = elementRegistry.filter(component => {
-            return (component.type === 'bpmn:SequenceFlow' &&
+            return (component.type === 'custom:Connection' &&
                 (component.source === element && component.target === executor) || (component.source === executor && component.target === element));
         });
         const modeling = modeler.get('modeling');
@@ -405,7 +411,7 @@ function ElementProperties({ element, modeler, products }) {
                                                             value={selectedProducts[index]?.time || ''}
                                                             onChange={(e) => handleTimeChange(e, index)} />
 
-                                                        <select value={selectedProducts[index]?.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index)}>
+                                                        <select value={selectedProducts[index]?.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/>
                                                             <option value="s">s</option>
                                                             <option value="m">m</option>
                                                             <option value="h">h</option>
@@ -475,9 +481,10 @@ function ElementProperties({ element, modeler, products }) {
                                                                                 <input
                                                                                     type="number"
                                                                                     value={product.time || ''}
-                                                                                    onChange={(e) => handleTimeChange(e, index)}
+                                                                                    //onChange={(e) => handleTimeChange(e, index)}
+                                                                                    onClick={(e) => e.stopPropagation()}
                                                                                 />
-                                                                                <select value={product.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index)}>
+                                                                                <select value={product.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/ onClick={(e) => e.stopPropagation()}>
                                                                                     <option value="s">s</option>
                                                                                     <option value="m">m</option>
                                                                                     <option value="h">h</option>
@@ -565,11 +572,6 @@ function ElementProperties({ element, modeler, products }) {
             )}
         </div>
     );
-}
-
-function hasDefinition(event, definitionType) {
-    const definitions = event.businessObject.eventDefinitions || [];
-    return definitions.some(d => is(d, definitionType));
 }
 
 export default ElementProperties;

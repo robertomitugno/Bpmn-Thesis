@@ -26,10 +26,10 @@ export default function CustomRules(eventBus) {
 
 inherits(CustomRules, RuleProvider);
 
-CustomRules.$inject = [ 'eventBus' ];
+CustomRules.$inject = ['eventBus'];
 
 
-CustomRules.prototype.init = function() {
+CustomRules.prototype.init = function () {
 
   /**
    * Can shape be created on target container?
@@ -58,29 +58,29 @@ CustomRules.prototype.init = function() {
     // allow connection between custom shape and task
     if (isCustom(source)) {
       if (is(target, 'bpmn:Task')) {
-        return { type: 'bpmn:SequenceFlow' };
+        return { type: 'custom:Connection' };
       } else {
         return false;
       }
     } else if (isCustom(target)) {
       if (is(source, 'bpmn:Task')) {
-        return { type: 'bpmn:SequenceFlow' };
+        return { type: 'custom:Connection' };
       } else {
         return false;
       }
     }
   }
 
-  this.addRule('elements.move', HIGH_PRIORITY, function(context) {
+  this.addRule('elements.move', HIGH_PRIORITY, function (context) {
 
     var target = context.target,
-        shapes = context.shapes;
+      shapes = context.shapes;
 
     var type;
 
     // do not allow mixed movements of custom / BPMN shapes
     // if any shape cannot be moved, the group cannot be moved, too
-    var allowed = reduce(shapes, function(result, s) {
+    var allowed = reduce(shapes, function (result, s) {
       if (type === undefined) {
         type = isCustom(s);
       }
@@ -97,14 +97,14 @@ CustomRules.prototype.init = function() {
     return allowed;
   });
 
-  this.addRule('shape.create', HIGH_PRIORITY, function(context) {
+  this.addRule('shape.create', HIGH_PRIORITY, function (context) {
     var target = context.target,
-        shape = context.shape;
+      shape = context.shape;
 
     return canCreate(shape, target);
   });
 
-  this.addRule('shape.resize', HIGH_PRIORITY, function(context) {
+  this.addRule('shape.resize', HIGH_PRIORITY, function (context) {
     var shape = context.shape;
 
     if (isCustom(shape)) {
@@ -114,25 +114,25 @@ CustomRules.prototype.init = function() {
     }
   });
 
-  this.addRule('connection.create', HIGH_PRIORITY, function(context) {
+  this.addRule('connection.create', HIGH_PRIORITY, function (context) {
     var source = context.source,
-        target = context.target;
+      target = context.target;
 
     return canConnect(source, target);
   });
 
-  this.addRule('connection.reconnectStart', HIGH_PRIORITY, function(context) {
+  this.addRule('connection.reconnectStart', HIGH_PRIORITY, function (context) {
     var connection = context.connection,
-        source = context.hover || context.source,
-        target = connection.target;
+      source = context.hover || context.source,
+      target = connection.target;
 
     return canConnect(source, target, connection);
   });
 
-  this.addRule('connection.reconnectEnd', HIGH_PRIORITY, function(context) {
+  this.addRule('connection.reconnectEnd', HIGH_PRIORITY, function (context) {
     var connection = context.connection,
-        source = connection.source,
-        target = context.hover || context.target;
+      source = connection.source,
+      target = context.hover || context.target;
 
     return canConnect(source, target, connection);
   });

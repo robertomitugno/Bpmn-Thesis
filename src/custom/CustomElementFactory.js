@@ -48,7 +48,11 @@ export default function CustomElementFactory(bpmnFactory, moddle) {
       if (!isModdleDi(di)) {
         var diAttrs = assign({}, di || {}, { id: businessObject.id + "_di" });
 
-        di = this._bpmnFactory.createDiShape(businessObject, diAttrs);
+        if (type === 'custom:Connection') {
+          di = this._bpmnFactory.createDiEdge(businessObject, diAttrs);
+        } else {
+          di = this._bpmnFactory.createDiShape(businessObject, diAttrs);
+        }
       }
 
       size = this._getCustomElementSize(businessObject, di);
@@ -108,7 +112,8 @@ CustomElementFactory.$inject = ["bpmnFactory", "moddle"];
 CustomElementFactory.prototype._getCustomElementSize = function (type) {
   var shapes = {
     __default: { width: 120, height: 60 },
-    "custom:Executor": { width: 120, height: 60 }
+    "custom:Executor": { width: 120, height: 60 },
+    "custom:Connection": { width: 0, height: 0 }
   };
 
   return shapes[type] || shapes.__default;
