@@ -77,21 +77,6 @@ function ElementProperties({ element, modeler, products }) {
     }, [element, getConnectedExecutors]);
 
 
-    const handleOutsideClick = useCallback((event) => {
-        if (searchBarRef.current && !searchBarRef.current.contains(event.target)) {
-            setProductDropdownOpen(false);
-            setExecutorDropdownOpen(false);
-        }
-    }, []);
-
-
-    useEffect(() => {
-        document.addEventListener('mousedown', handleOutsideClick);
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-        };
-    }, [handleOutsideClick]);
-
     useEffect(() => {
         const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor'));
         setExecutors(allExecutors);
@@ -122,8 +107,7 @@ function ElementProperties({ element, modeler, products }) {
     }, [executors, selectedExecutors]);
 
 
-    const handleSelectExecutor = useCallback((event, executor) => {
-        event.stopPropagation();
+    const handleSelectExecutor = useCallback((executor) => {
         setSelectedExecutors(prevSelectedExecutors => [...prevSelectedExecutors, executor]);
         setExecutorSearchInput('');
         setshowInputExecutor(false);
@@ -157,30 +141,13 @@ function ElementProperties({ element, modeler, products }) {
     }, [products, selectedProducts]);
 
 
-    const handleSelectProduct = useCallback((event, product, executorId) => {
-        event.stopPropagation();
-        setSelectedProducts(prevSelectedProducts => ({
-            ...prevSelectedProducts,
-            [executorId]: [...(prevSelectedProducts[executorId] || []), product]
-        }));
+    const handleSelectProduct = useCallback((product, executorId) => {
         setProductSearchInput('');
 
         setProductSearchResults(prevResults => ({
             ...prevResults,
             [executorId]: prevResults[executorId].filter(p => p !== product)
         }));
-
-        if (productSearchInput) {
-            setProductDropdownOpen(prevState => ({
-                ...prevState,
-                [executorId]: true
-            }));
-        } else {
-            setProductDropdownOpen(prevState => ({
-                ...prevState,
-                [executorId]: false
-            }));
-        }
 
         setshowInputExecutor(false);
 
@@ -194,14 +161,6 @@ function ElementProperties({ element, modeler, products }) {
                 extensionElements = moddle.create("custom:Products", { values: [] });
                 modeling.updateProperties(executor, { extensionElements });
             }
-            if (extensionElements === undefined) {
-                console.log("undefe");
-            }
-
-            if (extensionElements.length === 0) {
-                console.log("lenght");
-
-            }
 
             const newProduct = moddle.create("custom:Product");
             newProduct.id = product.id;
@@ -211,6 +170,10 @@ function ElementProperties({ element, modeler, products }) {
 
             extensionElements.push(newProduct);
 
+            setSelectedProducts(prevSelectedProducts => ({
+                ...prevSelectedProducts,
+                [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
+            }));
         }
     }, []);
 
@@ -259,8 +222,7 @@ function ElementProperties({ element, modeler, products }) {
     }, [element, modeler]);
 
 
-    const handleExecutorClick = useCallback((event, executor) => {
-        event.stopPropagation();
+    const handleExecutorClick = useCallback((executor) => {
         setExecutorExpanded((prevState) => ({
             ...prevState,
             [executor.id]: !prevState[executor.id],
@@ -293,7 +255,6 @@ function ElementProperties({ element, modeler, products }) {
 
 
 
-
     const handleProductExpansion = useCallback((id, idActivity) => {
         setProductExpanded(prevState => ({
             ...prevState,
@@ -302,11 +263,10 @@ function ElementProperties({ element, modeler, products }) {
     }, []);
 
 
-    const handleProductExpansionExec = useCallback((event, id, idActivity) => {
-        event.stopPropagation();
+    const handleProductExpansionExec = useCallback((id, idActivity, executorId) => {
         setProductExpandedExec(prevState => ({
             ...prevState,
-            [`${id}-${idActivity}`]: !prevState[`${id}-${idActivity}`]
+            [`${executorId}-${id}-${idActivity}`]: !prevState[`${executorId}-${id}-${idActivity}`]
         }));
     }, []);
 
@@ -323,6 +283,57 @@ function ElementProperties({ element, modeler, products }) {
             ...prevState,
             [executorId]: !prevState[executorId],
         }));
+    }, []);
+
+
+    function handleTimeChange(e, index) {
+        const newTime = e.target.value;
+        const newProducts = { ...selectedProducts };
+        newProducts[index].time = newTime;
+
+        const modeling = modeler.get('modeling');
+        const executorElement = modeler.get('elementRegistry').get(element.id);
+
+        const productArray = executorElement.businessObject.product;
+
+        // Aggiorna la proprietà time del prodotto
+        if (productArray) {
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+    }
+
+
+    const handleTimeChangeExe = useCallback((e, index, executorId, productId) => {
+        const newTime = e.target.value;
+        let newProducts = { ...selectedProducts };
+
+        setSelectedProducts(prevSelectedProducts => {
+            if (!prevSelectedProducts[executorId]) {
+                return prevSelectedProducts; // Or handle this case as needed
+            }
+            newProducts[executorId] = [...prevSelectedProducts[executorId]];
+            newProducts[executorId][index] = { ...newProducts[executorId][index], time: newTime };
+            return newProducts;
+        });
+
+        const modeling = modeler.get("modeling");
+        const executorElement = modeler.get("elementRegistry").get(executorId);
+        const productArray = executorElement.businessObject.product;
+
+        const productToUpdate = productArray.find(product => product.id === productId);
+        if (productToUpdate) {
+            productToUpdate.time = newTime;
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+
     }, []);
 
 
@@ -390,12 +401,6 @@ function ElementProperties({ element, modeler, products }) {
                                     <React.Fragment key={index}>
                                         <div>
                                             <div className="selection" onClick={() => handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity)}>
-                                                {/*
-                                                    <FontAwesomeIcon icon={faXmark}
-                                                        onClick={() => handleDeleteProduct(selectedProducts[index], element.id, selectedProducts[index].idActivity)}
-                                                        className="delete-icon"
-                                                    />
-                                               */}
                                                 <FontAwesomeIcon
                                                     icon={productExpanded[selectedProducts[index]?.id] ? faAngleDown : faAngleRight}
                                                     className="expand-icon"
@@ -408,7 +413,7 @@ function ElementProperties({ element, modeler, products }) {
                                                     <div className="time-input">
                                                         <span>Time : </span>
                                                         <input type="number"
-                                                            value={selectedProducts[index]?.time || ''}
+                                                            value={selectedProducts[index]?.time || 0}
                                                             onChange={(e) => handleTimeChange(e, index)} />
 
                                                         <select value={selectedProducts[index]?.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/>
@@ -424,16 +429,6 @@ function ElementProperties({ element, modeler, products }) {
                                         </div>
                                     </React.Fragment>
                                 ))}
-
-                                {/*
-                                <FontAwesomeIcon
-                                    icon={faPlus}
-                                    className="search-icon"
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        setshowInputProduct(!showInputProduct);
-                                    }} />
-                                */}
                             </div>
                         </div>
                     }
@@ -450,19 +445,26 @@ function ElementProperties({ element, modeler, products }) {
                                         {selectedExecutors.map((executor, index) => (
                                             <React.Fragment key={index}>
                                                 <div className="executor-obj">
-                                                    <div className="selection" onClick={(event) => handleExecutorClick(event, executor)}>
+                                                    <div className="selection" onClick={(event) => {
+                                                        handleExecutorClick(executor);
+                                                        event.stopPropagation();
+                                                    }}>
                                                         <FontAwesomeIcon
                                                             icon={executorExpanded[executor.id] ? faAngleDown : faAngleRight}
                                                             className="expand-icon"
                                                         />
-                                                        <span>{executor.businessObject.name}</span>
+                                                        <span>{executor.businessObject?.name}</span>
                                                         <FontAwesomeIcon icon={faXmark} className="delete-icon" onClick={() => handleDetachExecutor(executor)} />
                                                     </div>
                                                     {executorExpanded[executor.id] && (
                                                         <div ref={searchBarRef} className="product-list">
                                                             {(selectedProducts[executor.id] || []).map((product, index) => (
                                                                 <div key={index}>
-                                                                    <div className="selection" onClick={(event) => handleProductExpansionExec(event, product.id, element.id)}>
+                                                                    <div className="selection" onClick={(event) => {
+                                                                        handleProductExpansionExec(product.id, element.id, executor.id);
+                                                                        event.stopPropagation();
+                                                                    }
+                                                                    }>
                                                                         <FontAwesomeIcon
                                                                             icon={productExpandedExec[product.id] ? faAngleDown : faAngleRight}
                                                                             className="expand-icon"
@@ -474,14 +476,14 @@ function ElementProperties({ element, modeler, products }) {
                                                                             onClick={() => handleDeleteProduct(product, executor.id, element.id)}
                                                                         />
                                                                     </div>
-                                                                    {productExpandedExec[`${product.id}-${element.id}`] && (
+                                                                    {productExpandedExec[`${executor.id}-${product.id}-${element.id}`] && (
                                                                         <div key={index} className="product-list">
                                                                             <div className="time-input">
                                                                                 <span>Time : </span>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={product.time || ''}
-                                                                                    //onChange={(e) => handleTimeChange(e, index)}
+                                                                                    value={product.time || 0}
+                                                                                    onChange={(e) => handleTimeChangeExe(e, index, executor.id, product.id)}
                                                                                     onClick={(e) => e.stopPropagation()}
                                                                                 />
                                                                                 <select value={product.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/ onClick={(e) => e.stopPropagation()}>
@@ -507,7 +509,11 @@ function ElementProperties({ element, modeler, products }) {
                                                                 {productDropdownOpen[executor.id] && (
                                                                     <div className="dropdown-menu">
                                                                         {productSearchResults[executor.id]?.map((result, index) => (
-                                                                            <div key={index} onClick={(event) => handleSelectProduct(event, result, executor.id)}>
+                                                                            <div key={index} onClick={(event) => {
+                                                                                handleSelectProduct(result, executor.id);
+                                                                                event.stopPropagation();
+                                                                            }
+                                                                            }>
                                                                                 <label>{result.name}</label>
                                                                             </div>
                                                                         ))}
@@ -518,8 +524,8 @@ function ElementProperties({ element, modeler, products }) {
                                                                         icon={faPlus}
                                                                         className="search-icon-product"
                                                                         onClick={(event) => {
+                                                                            handleToggleSearchInput(executor.id);
                                                                             event.stopPropagation();
-                                                                            handleToggleSearchInput(executor.id)
                                                                         }}
                                                                     />
                                                                 </div>
@@ -547,8 +553,9 @@ function ElementProperties({ element, modeler, products }) {
                                             <div className="dropdown-menu">
                                                 {executorSearchResults.map((result, index) => (
                                                     <div key={index} onClick={(event) => {
-                                                        handleSelectExecutor(event, result);
+                                                        handleSelectExecutor(result);
                                                         handleAttachExecutor(result);
+                                                        event.stopPropagation();
                                                     }}>
                                                         <label>{result.businessObject.name}</label>
                                                     </div>
@@ -559,8 +566,8 @@ function ElementProperties({ element, modeler, products }) {
                                             icon={faPlus}
                                             className="search-icon"
                                             onClick={(event) => {
-                                                event.stopPropagation();
                                                 setshowInputExecutor(!showInputExecutor);
+                                                event.stopPropagation();
                                             }} />
                                     </div>
                                 </div>

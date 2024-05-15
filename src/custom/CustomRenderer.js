@@ -76,8 +76,6 @@ export default class CustomRenderer extends BaseRenderer {
       'stroke-dasharray': '5, 5' // This will make the line dashed
     });
 
-    console.log('Connection element', connectionElement);
-
     svgAppend(parentNode, connectionElement);
 
     return connectionElement;
