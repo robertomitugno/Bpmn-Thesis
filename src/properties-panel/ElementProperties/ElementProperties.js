@@ -194,14 +194,6 @@ function ElementProperties({ element, modeler, products }) {
                 extensionElements = moddle.create("custom:Products", { values: [] });
                 modeling.updateProperties(executor, { extensionElements });
             }
-            if (extensionElements === undefined) {
-                console.log("undefe");
-            }
-
-            if (extensionElements.length === 0) {
-                console.log("lenght");
-
-            }
 
             const newProduct = moddle.create("custom:Product");
             newProduct.id = product.id;
@@ -261,10 +253,18 @@ function ElementProperties({ element, modeler, products }) {
 
     const handleExecutorClick = useCallback((event, executor) => {
         event.stopPropagation();
-        setExecutorExpanded((prevState) => ({
-            ...prevState,
-            [executor.id]: !prevState[executor.id],
-        }));
+        setExecutorExpanded(prevState => {
+            // Close all other executors
+            const newState = {};
+            for (let key in prevState) {
+                if (key !== executor.id) {
+                    newState[key] = false;
+                }
+            }
+            // Toggle the current executor
+            newState[executor.id] = !prevState[executor.id];
+            return newState;
+        });
 
         const productElement = executor.businessObject.get('custom:product');
         let selectedProductsUpdate = {};
@@ -302,11 +302,11 @@ function ElementProperties({ element, modeler, products }) {
     }, []);
 
 
-    const handleProductExpansionExec = useCallback((event, id, idActivity) => {
+    const handleProductExpansionExec = useCallback((event, id, idActivity, executorId) => {
         event.stopPropagation();
         setProductExpandedExec(prevState => ({
             ...prevState,
-            [`${id}-${idActivity}`]: !prevState[`${id}-${idActivity}`]
+            [`${executorId}-${id}-${idActivity}`]: !prevState[`${executorId}-${id}-${idActivity}`]
         }));
     }, []);
 
@@ -323,6 +323,59 @@ function ElementProperties({ element, modeler, products }) {
             ...prevState,
             [executorId]: !prevState[executorId],
         }));
+    }, []);
+
+
+    function handleTimeChange(e, index) {
+        const newTime = e.target.value;
+        const newProducts = { ...selectedProducts };
+        newProducts[index].time = newTime;
+
+        const modeling = modeler.get('modeling');
+        const executorElement = modeler.get('elementRegistry').get(element.id);
+
+        const productArray = executorElement.businessObject.product;
+
+        // Aggiorna la proprietà time del prodotto
+        if (productArray) {
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+    }
+
+
+    const handleTimeChangeExe = useCallback((e, index, executorId, productId) => {
+        const newTime = e.target.value;
+        let newProducts = { ...selectedProducts };
+
+        setSelectedProducts(prevSelectedProducts => {
+            if (!prevSelectedProducts[executorId]) {
+                return prevSelectedProducts; // Or handle this case as needed
+            }
+            newProducts[executorId] = [...prevSelectedProducts[executorId]];
+            newProducts[executorId][index] = { ...newProducts[executorId][index], time: newTime };
+            return newProducts;
+        });
+
+        // Update the time of the selected product in the corresponding executor's product property in the modeler
+        const modeling = modeler.get("modeling");
+        const executorElement = modeler.get("elementRegistry").get(executorId);
+        const productArray = executorElement.businessObject.product;
+
+        // Find the product in the productArray using the productId and update its time
+        const productToUpdate = productArray.find(product => product.id === productId);
+        if (productToUpdate) {
+            productToUpdate.time = newTime;
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+
     }, []);
 
 
@@ -408,7 +461,7 @@ function ElementProperties({ element, modeler, products }) {
                                                     <div className="time-input">
                                                         <span>Time : </span>
                                                         <input type="number"
-                                                            value={selectedProducts[index]?.time || ''}
+                                                            value={selectedProducts[index]?.time || 0}
                                                             onChange={(e) => handleTimeChange(e, index)} />
 
                                                         <select value={selectedProducts[index]?.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/>
@@ -462,7 +515,7 @@ function ElementProperties({ element, modeler, products }) {
                                                         <div ref={searchBarRef} className="product-list">
                                                             {(selectedProducts[executor.id] || []).map((product, index) => (
                                                                 <div key={index}>
-                                                                    <div className="selection" onClick={(event) => handleProductExpansionExec(event, product.id, element.id)}>
+                                                                    <div className="selection" onClick={(event) => handleProductExpansionExec(event, product.id, element.id, executor.id)}>
                                                                         <FontAwesomeIcon
                                                                             icon={productExpandedExec[product.id] ? faAngleDown : faAngleRight}
                                                                             className="expand-icon"
@@ -474,14 +527,14 @@ function ElementProperties({ element, modeler, products }) {
                                                                             onClick={() => handleDeleteProduct(product, executor.id, element.id)}
                                                                         />
                                                                     </div>
-                                                                    {productExpandedExec[`${product.id}-${element.id}`] && (
+                                                                    {productExpandedExec[`${executor.id}-${product.id}-${element.id}`] && (
                                                                         <div key={index} className="product-list">
                                                                             <div className="time-input">
                                                                                 <span>Time : </span>
                                                                                 <input
                                                                                     type="number"
-                                                                                    value={product.time || ''}
-                                                                                    //onChange={(e) => handleTimeChange(e, index)}
+                                                                                    value={product.time || 0}
+                                                                                    onChange={(e) => handleTimeChangeExe(e, index, executor.id, product.id)}
                                                                                     onClick={(e) => e.stopPropagation()}
                                                                                 />
                                                                                 <select value={product.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/ onClick={(e) => e.stopPropagation()}>

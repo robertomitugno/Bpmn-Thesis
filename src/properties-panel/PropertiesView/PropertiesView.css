@@ -11,8 +11,9 @@
 
 .ProductList {
     flex-grow: 0;
-    height: 53%;
+    height: 60%;
     overflow-y: auto;
+    margin-top: 10px;
 }
 
 

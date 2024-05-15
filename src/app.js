@@ -100,5 +100,7 @@ $hideExecutorButton.addEventListener('change', function () {
     if (savedXML) {
       modeler.importXML(savedXML);
     }
+    elementsToHide = [];
+    savedXML = null;
   }
 });
