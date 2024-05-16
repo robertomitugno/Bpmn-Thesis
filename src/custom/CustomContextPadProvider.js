@@ -9,12 +9,16 @@ export default function CustomContextPadProvider(injector, connect, translate) {
 
   var cached = bind(this.getContextPadEntries, this);
 
-  this.getContextPadEntries = function(element) {
+  this.getContextPadEntries = function (element) {
     var actions = cached(element);
     var businessObject = element.businessObject;
 
     function startConnect(event, element, autoActivate) {
       connect.start(event, element, autoActivate);
+    }
+
+    function removeElement(e, element) {
+      injector.get('modeling').removeElements([element]);
     }
 
     if (isAny(businessObject, ['custom:Executor'])) {
@@ -28,6 +32,14 @@ export default function CustomContextPadProvider(injector, connect, translate) {
             action: {
               click: startConnect,
               dragstart: startConnect
+            }
+          },
+          'delete': {
+            group: 'edit',
+            className: 'bpmn-icon-trash',
+            title: translate('Delete'),
+            action: {
+              click: removeElement
             }
           }
         };
