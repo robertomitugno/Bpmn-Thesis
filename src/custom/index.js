@@ -5,22 +5,26 @@ import CustomPalette from './CustomPalette';
 import CustomRenderer from './CustomRenderer';
 import CustomRules from './CustomRules';
 import CustomUpdater from './CustomUpdater';
+import ReplaceMenuProvider from "./ReplaceMenuProvider";
+
 
 export default {
   __init__: [
     'contextPadProvider',
     'customRenderer',
     'customPalette',
-    //'customOrderingProvider',
+    'customOrderingProvider',
     'customRules',
     'customUpdater',
-    'elementFactory'
+    'elementFactory',
+    'replaceMenuProvider'
   ],
   contextPadProvider: [ 'type', CustomContextPadProvider ],
   customRenderer: [ 'type', CustomRenderer ],
-  //customOrderingProvider: [ 'type', CustomOrderingProvider ],
+  customOrderingProvider: [ 'type', CustomOrderingProvider ],
   customRules: [ 'type', CustomRules ],
   customUpdater: [ 'type', CustomUpdater ],
   elementFactory: [ 'type', CustomElementFactory ],
-  customPalette: [ 'type', CustomPalette ]
+  customPalette: [ 'type', CustomPalette ],
+  replaceMenuProvider: [ 'type', ReplaceMenuProvider ]
 };
