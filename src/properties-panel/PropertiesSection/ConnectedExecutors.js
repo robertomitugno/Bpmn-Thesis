@@ -145,6 +145,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             newProduct.id = product.id;
             newProduct.name = product.name;
             newProduct.time = 0;
+            newProduct.timeUnit = 's';
             newProduct.idActivity = element.id;
 
             extensionElements.push(newProduct);
@@ -210,6 +211,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                         id: product.id,
                         name: product.name,
                         time: product.time,
+                        timeUnit: product.timeUnit,
                         idActivity: product.idActivity
                     }))
                 ]
@@ -239,13 +241,47 @@ function ConnectedExecutors({ element, modeler, products }) {
     }, []);
 
 
-    const handleTimeChangeExe = useCallback((e, index, executorId, productId) => {
-        const newTime = e.target.value;
+    const handleTimeUnitChange = useCallback((e, index, executorId, productId) => {
+        const newTimeUnit = e.target.value;
         let newProducts = { ...selectedProducts };
 
         setSelectedProducts(prevSelectedProducts => {
             if (!prevSelectedProducts[executorId]) {
-                return prevSelectedProducts; 
+                return prevSelectedProducts;
+            }
+            newProducts[executorId] = [...prevSelectedProducts[executorId]];
+            newProducts[executorId][index] = { ...newProducts[executorId][index], timeUnit: newTimeUnit };
+            return newProducts;
+        });
+
+        const modeling = modeler.get("modeling");
+        const executorElement = modeler.get("elementRegistry").get(executorId);
+        const productArray = executorElement.businessObject.product;
+
+        const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
+        if (productToUpdate) {
+            productToUpdate.timeUnit = newTimeUnit;
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+
+    }, []);
+
+    const handleTimeChangeExe = useCallback((e, index, executorId, productId) => {
+
+        let newTime = e.target.value;
+        let newProducts = { ...selectedProducts };
+
+        if (newTime.startsWith('0')) {
+            newTime = newTime.substring(1);
+        }
+
+        setSelectedProducts(prevSelectedProducts => {
+            if (!prevSelectedProducts[executorId]) {
+                return prevSelectedProducts;
             }
             newProducts[executorId] = [...prevSelectedProducts[executorId]];
             newProducts[executorId][index] = { ...newProducts[executorId][index], time: newTime };
@@ -256,7 +292,8 @@ function ConnectedExecutors({ element, modeler, products }) {
         const executorElement = modeler.get("elementRegistry").get(executorId);
         const productArray = executorElement.businessObject.product;
 
-        const productToUpdate = productArray.find(product => product.id === productId);
+
+        const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
         if (productToUpdate) {
             productToUpdate.time = newTime;
             modeling.updateProperties(executorElement, {
@@ -273,7 +310,6 @@ function ConnectedExecutors({ element, modeler, products }) {
         const originalElement = element;
 
         const modeling = modeler.get('modeling');
-        const elementRegistry = modeler.get('elementRegistry');
 
         const sourceMid = getMid(element);
         const targetMid = getMid(executor);
@@ -364,7 +400,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                                 onChange={(e) => handleTimeChangeExe(e, index, executor.id, product.id)}
                                                                                 onClick={(e) => e.stopPropagation()}
                                                                             />
-                                                                            <select value={product.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/ onClick={(e) => e.stopPropagation()}>
+                                                                            <select value={product.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index, executor.id, product.id)} onClick={(e) => e.stopPropagation()}>
                                                                                 <option value="s">s</option>
                                                                                 <option value="m">m</option>
                                                                                 <option value="h">h</option>

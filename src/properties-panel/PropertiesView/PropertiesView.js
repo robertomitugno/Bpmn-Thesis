@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PropertiesView.css';
-import ExecutorsList from '../ExecutorsList/ExecutorsList';
-import ProductList from '../ProductList/ProductList';
+import ExecutorsList from './ExecutorsList/ExecutorsList';
+import ProductList from './ProductList/ProductList';
 import ElementProperties from '../PropertiesSection/ElementProperties';
 
 export default function PropertiesView({ modeler }) {

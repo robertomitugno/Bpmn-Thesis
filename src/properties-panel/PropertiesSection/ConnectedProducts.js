@@ -76,6 +76,29 @@ function ConnectedProducts({ element, modeler }) {
         setSelectedProducts(newProducts);
     }
 
+
+
+    function handleTimeUnitChange(e, index) {
+        const newTimeUnit = e.target.value;
+        const newProducts = { ...selectedProducts };
+        newProducts[index].timeUnit = newTimeUnit;
+
+        const modeling = modeler.get('modeling');
+        const executorElement = modeler.get('elementRegistry').get(element.id);
+
+        const productArray = executorElement.businessObject.product;
+
+        // Aggiorna la proprietà timeUnit del prodotto
+        if (productArray) {
+            productArray[index].timeUnit = newTimeUnit;
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+    }
+
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -104,7 +127,7 @@ function ConnectedProducts({ element, modeler }) {
                                                         value={selectedProducts[index]?.time || 0}
                                                         onChange={(e) => handleTimeChange(e, index)} />
 
-                                                    <select value={selectedProducts[index]?.timeUnit || 's'} /*onChange={(e) => handleTimeUnitChange(e, index)}*/>
+                                                    <select value={selectedProducts[index]?.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index)}>
                                                         <option value="s">s</option>
                                                         <option value="m">m</option>
                                                         <option value="h">h</option>
