@@ -1612,6 +1612,28 @@ var superfluousGateway = function() {
 
 };
 
+var noProductsDefined = function() {
+
+  function check(node, reporter) {
+    if (!is$7(node, 'custom:Executor')) {
+      return;
+    }
+
+    // Ensure node.product is an array
+    const products = Array.isArray(node.product) ? node.product : [];
+
+    // Check if there is at least one 'custom:Product' in node.product
+    if (!products.some(product => is$7(product, 'custom:Product'))) {
+      reporter.report(node.id, 'No products defined');
+    }
+  }
+
+  return {
+    check
+  };
+
+};
+
 const cache = {};
 
 /**
@@ -1646,7 +1668,7 @@ const rules = {
   "end-event-required": "error",
   "event-sub-process-typed-start-event": "error",
   //"fake-join": "warn",
-  "label-required": "error",
+  "label-required": "warn",
   //"no-bpmndi": "error",
   "no-complex-gateway": "error",
   "no-disconnected": "error",
@@ -1658,7 +1680,8 @@ const rules = {
   "single-event-definition": "error",
   "start-event-required": "error",
   "sub-process-blank-start-event": "error",
-  "superfluous-gateway": "warn"
+  "superfluous-gateway": "warn",
+  "no-products-defined": "warn"
 };
 
 const config = {
@@ -1686,6 +1709,7 @@ cache['bpmnlint/single-event-definition'] = singleEventDefinition;
 cache['bpmnlint/start-event-required'] = startEventRequired;
 cache['bpmnlint/sub-process-blank-start-event'] = subProcessBlankStartEvent;
 cache['bpmnlint/superfluous-gateway'] = superfluousGateway;
+cache['bpmnlint/no-products-defined'] = noProductsDefined;
 
 exports.config = config;
 exports["default"] = bundle;
