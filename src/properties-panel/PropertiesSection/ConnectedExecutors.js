@@ -122,41 +122,44 @@ function ConnectedExecutors({ element, modeler, products }) {
 
     const handleSelectProduct = useCallback((product, executorId) => {
         setProductSearchInput('');
-
+      
         setProductSearchResults(prevResults => ({
-            ...prevResults,
-            [executorId]: prevResults[executorId].filter(p => p !== product)
+          ...prevResults,
+          [executorId]: prevResults[executorId].filter(p => p !== product)
         }));
-
+      
         setshowInputExecutor(false);
-
+      
         const modeling = modeler.get('modeling');
         const moddle = modeler.get('moddle');
         const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
-
+      
         if (executor) {
-            let extensionElements = executor.businessObject.product;
-            if (!extensionElements) {
-                extensionElements = moddle.create("custom:Products", { values: [] });
-                modeling.updateProperties(executor, { extensionElements });
-            }
-
-            const newProduct = moddle.create("custom:Product");
-            newProduct.id = product.id;
-            newProduct.name = product.name;
-            newProduct.time = 0;
-            newProduct.timeUnit = 's';
-            newProduct.idActivity = element.id;
-
-            extensionElements.push(newProduct);
-
-            setSelectedProducts(prevSelectedProducts => ({
-                ...prevSelectedProducts,
-                [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
-            }));
+          let extensionElements = executor.businessObject.product;
+      
+          if (!Array.isArray(extensionElements)) {
+            extensionElements = [];
+          }
+      
+          const newProduct = moddle.create("custom:Product");
+          newProduct.id = product.id;
+          newProduct.name = product.name;
+          newProduct.time = 0;
+          newProduct.timeUnit = 's';
+          newProduct.idActivity = element.id;
+      
+          extensionElements.push(newProduct);
+      
+          modeling.updateProperties(executor, {
+            product: extensionElements
+          });
+      
+          setSelectedProducts(prevSelectedProducts => ({
+            ...prevSelectedProducts,
+            [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
+          }));
         }
-    }, []);
-
+      }, []);
 
 
     const handleDeleteProduct = useCallback((product, executorId, idActivity) => {

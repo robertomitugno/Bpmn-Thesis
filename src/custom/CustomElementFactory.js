@@ -64,8 +64,6 @@ export default function CustomElementFactory(bpmnFactory, moddle) {
         "isForCompensation"
       ]);
 
-      //console.log(attrs);
-
       attrs = assign(
         {
           id: businessObject.id
@@ -80,16 +78,9 @@ export default function CustomElementFactory(bpmnFactory, moddle) {
 
       // END minic ModdleElement API
 
-      //console.log(attrs);
-      //console.log(elementType)
-
       return this._baseCreate(elementType, attrs);
     }
 
-
-
-    //console.log(attrs);
-    //console.log(elementType)
     return this.createElement(elementType, attrs);
   };
 }

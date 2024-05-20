@@ -1615,7 +1615,7 @@ var superfluousGateway = function() {
 var noProductsDefined = function() {
 
   function check(node, reporter) {
-    if (!is$7(node, 'custom:Executor')) {
+    if (!is(node, 'custom:Executor')) {
       return;
     }
 
@@ -1623,7 +1623,7 @@ var noProductsDefined = function() {
     const products = Array.isArray(node.product) ? node.product : [];
 
     // Check if there is at least one 'custom:Product' in node.product
-    if (!products.some(product => is$7(product, 'custom:Product'))) {
+    if (!products.some(product => is(product, 'custom:Product'))) {
       reporter.report(node.id, 'No products defined');
     }
   }

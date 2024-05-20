@@ -97,7 +97,6 @@ let elementsToHide = [];
 let savedXML;
 
 $hideExecutorButton.addEventListener('change', function () {
-  console.log(modeler.get('eventBus'));
   if ($hideExecutorButton.checked) {
     // Salva il file XML corrente
     modeler.saveXML({ format: true }).then(function (result) {
