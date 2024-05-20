@@ -402,7 +402,7 @@ function ElementProperties({ element, modeler, products }) {
                                         <div>
                                             <div className="selection" onClick={() => handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity)}>
                                                 <FontAwesomeIcon
-                                                    icon={productExpanded[selectedProducts[index]?.id] ? faAngleDown : faAngleRight}
+                                                    icon={productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] ? faAngleDown : faAngleRight}
                                                     className="expand-icon"
                                                 />
                                                 <span>{selectedProducts[index]?.name} - {getActivityName(selectedProducts[index]?.idActivity)}</span>

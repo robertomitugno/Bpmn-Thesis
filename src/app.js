@@ -6,6 +6,14 @@ import diagramXML from './diagram.bpmn';
 import customControlsModule from './custom';
 import './app.css';
 
+import lintModule from "bpmn-js-bpmnlint";
+import "./linting/bpmn-js-bpmnlint.css";
+
+import { createLintConfig } from "./linting/create-lint-config";
+import { noProductsDefined } from "./linting/no-products-defined";
+
+import bpmnlintConfig from "./linting/.bpmnlintrc";
+
 const $modelerContainer = document.querySelector('#modeler-container');
 const $propertiesContainer = document.querySelector('#properties-container');
 const $downloadButton = document.querySelector('#download-button');
@@ -17,11 +25,29 @@ const modeler = new Modeler({
   moddleExtensions: {
     custom: customModdleExtension
   },
+  linting: {
+    bpmnlint: bpmnlintConfig,
+    /*bpmnlint: createLintConfig({
+      rules: {
+        "test/no-products-defined": "warn"
+      },
+      plugins: [
+        {
+          name: "test",
+          rules: {
+            "no-products-defined": noProductsDefined
+          }
+        }
+      ]
+    }),*/
+    active: true
+  },
   keyboard: {
     bindTo: document.body
   },
   additionalModules: [
-    customControlsModule
+    customControlsModule,
+    lintModule
   ]
 });
 
@@ -103,4 +129,9 @@ $hideExecutorButton.addEventListener('change', function () {
     elementsToHide = [];
     savedXML = null;
   }
+});
+
+
+modeler.on('connection.changed', function (event) {
+  console.log("changed");
 });
