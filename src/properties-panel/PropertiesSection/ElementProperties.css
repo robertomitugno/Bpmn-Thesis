@@ -43,10 +43,6 @@
 }
 
 
-.element-properties fieldset {
-  margin-top: 20px;
-}
-
 .element-properties div.selected-executors div {
   display: flex;
   align-items: center;
@@ -99,13 +95,14 @@
 
 .element-properties .properties {
   background-color: white;
-  margin-top: 15px;
   padding: 8px;
   border-top: 1px solid gray;
   border-bottom: 1px solid gray;
-
   position: relative;
-  margin-bottom: 20px;
+}
+
+.element-properties .properties-list{
+  margin-top: 15px;
 }
 
 

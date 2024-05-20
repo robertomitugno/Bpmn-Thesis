@@ -1,8 +1,10 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ElementProperties.css';
 import React, { useCallback, useState, useEffect, useRef } from 'react';
+
 import ConnectedExecutors from './ConnectedExecutors';
 import ConnectedProducts from './ConnectedProducts';
+import Priority from './Priority';
 
 function ElementProperties({ element, modeler, products }) {
 
@@ -56,11 +58,15 @@ function ElementProperties({ element, modeler, products }) {
                         </div>
                     </div>
                     {is(element, 'custom:Executor') &&  // Se l'elemento è un Executor
-                        <ConnectedProducts element={element} modeler={modeler} products={products} />
-
+                        <div className="properties-list">
+                            <ConnectedProducts element={element} modeler={modeler} products={products} />
+                        </div>
                     }
                     {!is(element, 'custom:Executor') && is(element, 'bpmn:Task') &&  // Se l'elemento è un Task
-                        <ConnectedExecutors element={element} modeler={modeler} products={products} />
+                        <div className="properties-list">
+                            <ConnectedExecutors element={element} modeler={modeler} products={products} />
+                            <Priority element={element} modeler={modeler} />
+                        </div>
                     }
 
                 </>

@@ -4,7 +4,7 @@
     <bpmn:startEvent id="Event_1w8pvk8">
       <bpmn:outgoing>Flow_1g9eme9</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:task id="Activity_0q7j2li" name="Print Frontal Frame">
+    <bpmn:task id="Activity_0q7j2li" name="Print Frontal Frame" priority="1">
       <bpmn:incoming>Flow_0n2asfg</bpmn:incoming>
       <bpmn:incoming>Flow_1ht147p</bpmn:incoming>
       <bpmn:incoming>Flow_1rmftgf</bpmn:incoming>
@@ -20,7 +20,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1g9eme9" sourceRef="Event_1w8pvk8" targetRef="Gateway_1a4577m" />
     <bpmn:sequenceFlow id="Flow_0n2asfg" sourceRef="Gateway_1a4577m" targetRef="Activity_0q7j2li" />
-    <bpmn:task id="Activity_1gsma1o" name="Print Left Stem">
+    <bpmn:task id="Activity_1gsma1o" name="Print Left Stem" priority="10">
       <bpmn:incoming>Flow_1s6b0gu</bpmn:incoming>
       <bpmn:incoming>Flow_0bobgbs</bpmn:incoming>
       <bpmn:incoming>Flow_0v42uua</bpmn:incoming>
