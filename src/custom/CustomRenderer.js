@@ -35,6 +35,16 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   canRender(element) {
+
+    /*if ((element?.businessObject?.sourceRef?.$type === 'custom:Executor' || element?.businessObject?.targetRef?.$type === 'custom:Executor') && element.businessObject.$type === 'bpmn:SequenceFlow') {
+      const newBusinessObject = {
+        $type: 'custom:Connection',
+        // Aggiungi la proprietà di stile qui se necessario
+      };
+
+      element.businessObject = newBusinessObject;
+      element.type = 'custom:Connection';
+    }*/
     // only render executors, events and connections (ignore labels)
     return isAny(element, ["custom:Executor", "custom:Connection"]) && !element.labelTarget;
   }
