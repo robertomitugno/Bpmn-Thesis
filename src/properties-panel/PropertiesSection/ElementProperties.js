@@ -62,7 +62,7 @@ function ElementProperties({ element, modeler, products }) {
                             <ConnectedProducts element={element} modeler={modeler} products={products} />
                         </div>
                     }
-                    {!is(element, 'custom:Executor') && is(element, 'bpmn:Task') &&  // Se l'elemento è un Task
+                    {is(element, 'bpmn:Task') && element.type === 'bpmn:Task' &&  // Se l'elemento è un Task
                         <div className="properties-list">
                             <ConnectedExecutors element={element} modeler={modeler} products={products} />
                             <Priority element={element} modeler={modeler} />
