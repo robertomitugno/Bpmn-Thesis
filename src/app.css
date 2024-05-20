@@ -116,3 +116,10 @@ input:checked+.slider:before {
 .hide-executor-label {
   margin-right: 10px;
 }
+
+
+.custom-executor-symbol {
+  width: 20px;
+  height: 20px;
+  /* Aggiungi altre proprietà di stile desiderate */
+}
