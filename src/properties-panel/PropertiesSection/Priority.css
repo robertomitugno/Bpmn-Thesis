@@ -1,0 +1,22 @@
+.priority {
+    background-color: white;
+    padding: 8px;
+    border-bottom: 1px solid gray;
+    position: relative;
+}
+
+.priority-input {
+    display: flex;
+    align-items: center;
+}
+
+.priority-input input {
+    margin-right: 15px;
+    width: 60px;
+}
+
+.priority-container {
+    margin-left: 15px;
+    margin-bottom: 5px;
+    position: relative;
+  }
