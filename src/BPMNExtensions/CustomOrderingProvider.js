@@ -15,8 +15,6 @@ export default function CustomOrderingProvider(eventBus, canvas) {
 
     if (element.type === 'custom:Connection') {
 
-      // always move to end of root element
-      // to display always on top
       return {
         parent: canvas.getRootElement(),
         index: -1

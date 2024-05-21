@@ -35,17 +35,6 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-
-    /*if ((element?.businessObject?.sourceRef?.$type === 'custom:Executor' || element?.businessObject?.targetRef?.$type === 'custom:Executor') && element.businessObject.$type === 'bpmn:SequenceFlow') {
-      const newBusinessObject = {
-        $type: 'custom:Connection',
-        // Aggiungi la proprietà di stile qui se necessario
-      };
-
-      element.businessObject = newBusinessObject;
-      element.type = 'custom:Connection';
-    }*/
-    // only render executors, events and connections (ignore labels)
     return isAny(element, ["custom:Executor", "custom:Connection"]) && !element.labelTarget;
   }
 
@@ -83,7 +72,7 @@ export default class CustomRenderer extends BaseRenderer {
       d: pathData,
       stroke: getStrokeColor(element, this.defaultStrokeColor),
       fill: 'none',
-      'stroke-dasharray': '5, 5' // This will make the line dashed
+      'stroke-dasharray': '5, 5'
     });
 
     svgAppend(parentNode, connectionElement);
@@ -159,8 +148,8 @@ function drawHexagon(parentNode, width, height, strokeColor) {
 
   const x = width / 2;
   const y = height / 2;
-  const radiusX = width / 2; // Raggio sull'asse x
-  const radiusY = height / 2; // Raggio sull'asse y
+  const radiusX = width / 2;
+  const radiusY = height / 2;
 
   const points = [
     x, y - radiusY,

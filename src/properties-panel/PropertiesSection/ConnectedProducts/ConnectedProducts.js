@@ -1,5 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import './ElementProperties.css';
+import '../ElementProperties.css';
+import './ConnectedProducts.css';
 import React, { useCallback, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons'
@@ -66,7 +67,6 @@ function ConnectedProducts({ element, modeler }) {
 
         const productArray = executorElement.businessObject.product;
 
-        // Aggiorna la proprietà time del prodotto
         if (productArray) {
             modeling.updateProperties(executorElement, {
                 product: productArray
@@ -88,7 +88,6 @@ function ConnectedProducts({ element, modeler }) {
 
         const productArray = executorElement.businessObject.product;
 
-        // Aggiorna la proprietà timeUnit del prodotto
         if (productArray) {
             productArray[index].timeUnit = newTimeUnit;
             modeling.updateProperties(executorElement, {
@@ -120,7 +119,7 @@ function ConnectedProducts({ element, modeler }) {
                                         </div>
 
                                         {productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] && (
-                                            <div key={index} className="product-list">
+                                            <div key={index} className="products">
                                                 <div className="time-input">
                                                     <span>Time : </span>
                                                     <input type="number"

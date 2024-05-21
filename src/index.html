@@ -6,6 +6,8 @@
 
   <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css" />
   <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
   <style>
     .icon-custom-executor {
@@ -20,14 +22,43 @@
     <div id="modeler-container"></div>
     <div class="hide-executor-container">
       <label class="hide-executor-label">Hide executors</label>
-      <label class="switch" >
+      <label class="switch">
         <input type="checkbox" id="hide-executor-button">
         <span class="slider round"></span>
       </label>
     </div>
   </div>
+  <div id="custom-controls">
+    <ul>
+      <li id="js-upload-bpmn">
+        <label class="fileContainer">
+          <i class="fas fa-upload"></i>
+          <input type="file" title="upload BPMN diagram" />
+        </label>
+      </li>
+      <li id="js-download-bpmn">
+        <a href title="download BPMN diagram" onclick='return false;'>
+          <i class="fas fa-download"></i>
+        </a>
+      </li>
+      <li id="js-center">
+        <a href title="center" onclick='return false;'>
+          <i class="fas fa-arrows-alt"></i>
+        </a>
+      </li>
+      <li id="js-zoom-in">
+        <a href title="zoom in" onclick='return false;'>
+          <i class="fas fa-search-plus"></i>
+        </a>
+      </li>
+      <li id="js-zoom-out">
+        <a href title="zoom out" onclick='return false;'>
+          <i class="fas fa-search-minus"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
   <div id="properties-container"></div>
-  <button id="download-button">Download BPMN</button>
   <script type="text/javascript" src="app.js"></script>
 </body>
 

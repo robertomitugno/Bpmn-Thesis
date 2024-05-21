@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './PropertiesView.css';
+import './PropertiesMain.css';
 import ExecutorsList from './ExecutorsList/ExecutorsList';
 import ProductList from './ProductList/ProductList';
 import ElementProperties from '../PropertiesSection/ElementProperties';
 
-export default function PropertiesView({ modeler }) {
+export default function PropertiesMain({ modeler }) {
   const [selectedElements, setSelectedElements] = useState([]);
   const [element, setElement] = useState(null);
   const [products, setProducts] = useState([]);
@@ -50,7 +50,7 @@ export default function PropertiesView({ modeler }) {
   };
 
   return (
-    <div className="PropertiesView">
+    <div className="PropertiesMain">
       {selectedElements.length === 1 && (
         <div>
           <ElementProperties modeler={modeler} element={element} products={products} onAddProduct={handleAddProduct} />

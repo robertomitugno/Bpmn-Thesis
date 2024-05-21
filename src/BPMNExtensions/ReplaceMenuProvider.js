@@ -70,7 +70,7 @@ CustomMenuProvider.prototype.getEntries = function(element) {
     entries = filter(replaceOptions.TASK, differentType);
   }
 
-  return this._createEntries(element, entries.filter(Boolean)); // Filtra gli undefined
+  return this._createEntries(element, entries.filter(Boolean));
 };
 
 

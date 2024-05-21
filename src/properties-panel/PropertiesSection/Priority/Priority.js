@@ -1,5 +1,5 @@
 import './Priority.css';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
@@ -7,7 +7,6 @@ function Priority({ element, modeler }) {
 
     const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(false);
 
-    // Initialize the priority state with the task's priority or 0 if it's not set
     const [priority, setPriority] = useState();
 
     function handlePriorityChange(e) {

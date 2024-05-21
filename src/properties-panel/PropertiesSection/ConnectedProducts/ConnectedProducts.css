@@ -1,0 +1,66 @@
+div.selection {
+    display: flex;
+    align-items: center;
+}
+
+
+div.selection svg {
+    margin-right: 5px;
+}
+
+
+.products {
+    margin-left: 22px;
+    margin-bottom: 12px;
+}
+
+
+
+.properties {
+    background-color: white;
+    padding: 8px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    position: relative;
+}
+
+
+.properties-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+}
+
+
+.product-container {
+    margin-left: 15px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+
+.expand-icon {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+
+.time-input {
+    display: flex;
+    align-items: center;
+}
+
+.time-input input,
+.time-input select {
+    margin-right: 15px;
+}
+
+.time-input input {
+    width: 60px;
+}
+
+.time-input select {
+    margin-top: 5px;
+    padding-bottom: 3px;
+}

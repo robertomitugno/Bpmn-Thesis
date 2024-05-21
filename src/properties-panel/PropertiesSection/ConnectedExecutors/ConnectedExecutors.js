@@ -1,5 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
-import './ElementProperties.css';
+import '../ElementProperties.css';
+import './ConnectedExecutors.css';
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleRight, faXmark, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -374,7 +375,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                     <FontAwesomeIcon icon={faXmark} className="delete-icon" onClick={() => handleDetachExecutor(executor)} />
                                                 </div>
                                                 {executorExpanded[executor.id] && (
-                                                    <div ref={searchBarRef} className="product-list">
+                                                    <div ref={searchBarRef} className="products">
                                                         {(selectedProducts[executor.id] || []).map((product, index) => (
                                                             <div key={index}>
                                                                 <div className="selection" onClick={(event) => {
@@ -394,7 +395,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                     />
                                                                 </div>
                                                                 {productExpandedExec[`${executor.id}-${product.id}-${element.id}`] && (
-                                                                    <div key={index} className="product-list">
+                                                                    <div key={index} className="products">
                                                                         <div className="time-input">
                                                                             <span>Time : </span>
                                                                             <input

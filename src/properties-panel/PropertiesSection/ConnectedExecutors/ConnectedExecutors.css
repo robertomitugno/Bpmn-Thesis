@@ -1,0 +1,140 @@
+div.selected-executors div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+div.selection {
+    display: flex;
+    align-items: center;
+}
+
+
+div.selection svg {
+    margin-right: 5px;
+}
+
+
+
+.dropdown-menu {
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-menu div:hover {
+    background-color: #f0f0f0;
+}
+
+
+.products {
+    margin-left: 22px;
+    margin-bottom: 12px;
+}
+
+
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.search-icon {
+    font-size: 1.5em;
+}
+
+
+.properties {
+    background-color: white;
+    padding: 8px;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    position: relative;
+}
+
+
+.properties-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+}
+
+
+.executor-container {
+    margin-left: 15px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+
+.delete-icon {
+    color: grey;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.delete-icon:hover {
+    color: red;
+}
+
+
+.expand-icon {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+
+.search-container {
+    bottom: 10px;
+    right: 10px;
+    overflow: hidden;
+}
+
+
+.search-icon {
+    position: absolute;
+    bottom: -30px;
+    right: 10px;
+    font-size: 1.1em;
+    color: black;
+}
+
+
+.time-input {
+    display: flex;
+    align-items: center;
+}
+
+.time-input input,
+.time-input select {
+    margin-right: 15px;
+}
+
+.time-input input {
+    width: 60px;
+}
+
+.time-input select {
+    margin-top: 5px;
+    padding-bottom: 3px;
+}
+
+
+.executor-obj::after {
+    content: '';
+    display: block;
+    border-bottom: 1px solid black;
+    margin-top: 6px;
+    margin-bottom: 3px;
+}
+
+
+.search-icon-product {
+    margin-left: 250px;
+    margin-top: 5px;
+}

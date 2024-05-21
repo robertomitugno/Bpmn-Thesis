@@ -28,12 +28,6 @@ html {
   width: 350px;
 }
 
-#download-button {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  margin: 10px;
-}
 
 .hide-executor-button {
   margin-left: 200px;
@@ -60,20 +54,15 @@ html {
   -webkit-transition: .4s;
   transition: .4s;
   border-radius: 17px;
-  /* metà di 34px per mantenere la forma arrotondata */
 }
 
 .slider:before {
   position: absolute;
   content: "";
   height: 13px;
-  /* metà di 26px */
   width: 13px;
-  /* metà di 26px */
   left: 2px;
-  /* regolato per centrare il pulsante all'interno dello switch */
   bottom: 2px;
-  /* regolato per centrare il pulsante all'interno dello switch */
   background-color: white;
   -webkit-transition: .4s;
   transition: .4s;
@@ -94,7 +83,6 @@ input:checked+.slider:before {
   transform: translateX(13px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
@@ -121,5 +109,84 @@ input:checked+.slider:before {
 .custom-executor-symbol {
   width: 20px;
   height: 20px;
-  /* Aggiungi altre proprietà di stile desiderate */
+}
+
+
+
+
+#custom-controls {
+  position: absolute;
+  bottom: 5px;
+  right: 360px;
+  width: 235px;
+  height: 42px;
+  z-index: 10;
+}
+
+#custom-controls > ul {
+  background: #FAFAFA;
+  height: 30px;
+  border: solid 1px #CCC;
+  border-radius: 2px;
+
+  padding-top: 5px!important;
+  padding-bottom: 5px!important;
+  padding-left:10px!important;
+  margin: 0;
+  list-style: none;
+}
+
+#custom-controls > ul {
+  padding: 0px;
+  margin: 0px;
+  display: flex;
+}
+
+#custom-controls > ul > li {
+  display: inline-block;
+  margin: 0px;
+  padding: 7.25px;
+  line-height: 20px;
+}
+
+#custom-controls > ul > li > a {
+  color: black;
+  display: inline-block;
+  padding: 0px;
+  background: none!important;
+  border: none!important;
+  opacity: 1;
+}
+
+#custom-controls > ul > li > label {
+  padding: 0px;
+}
+
+#custom-controls > ul > li:hover {
+  background-color: lightgray;
+}
+
+#custom-controls > ul > li > label > input {
+  width:24px;
+  height:24px;
+}
+
+
+.fileContainer {
+  overflow: hidden;
+  position: relative;
+}
+
+.fileContainer [type=file] {
+  cursor: inherit;
+  display: block;
+  font-size: 999px;
+  filter: alpha(opacity=0);
+  min-height: 100%;
+  min-width: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
 }

@@ -2,14 +2,14 @@
   background-color: white;
   border-top: 1px solid gray;
   border-bottom: 1px solid gray;
-  padding: 15px;
+  padding: 12px;
 }
 
 .id,
 .name {
   color: black;
   font-family: Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 10px;
 }
 
@@ -22,12 +22,17 @@
 
 .id input,
 .name input {
-  font-size: 16px;
+  font-size: 14px;
   display: inline-block;
   width: 65%;
   background-color: rgb(231, 231, 231);
   padding: 5px;
   border: 1px solid gray; 
+}
+
+.id input{
+  color:gray;
+  margin-bottom: 17px;
 }
 
 .element-properties label {
@@ -40,65 +45,6 @@
   display: block;
   width: 80%;
   margin-top: 5px;
-}
-
-
-.element-properties div.selected-executors div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 5px;
-}
-
-
-.element-properties div.selection {
-  display: flex;
-  align-items: center;
-}
-
-.element-properties div.selection svg {
-  margin-right: 5px;
-}
-
-
-
-.dropdown-menu {
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-
-
-.dropdown-menu div:hover {
-  background-color: #f0f0f0;
-}
-
-
-.element-properties .product-list {
-  margin-left: 22px;
-  margin-bottom: 12px;
-}
-
-
-.search-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-.search-icon {
-  font-size: 1.5em;
-}
-
-.element-properties .properties {
-  background-color: white;
-  padding: 8px;
-  border-top: 1px solid gray;
-  border-bottom: 1px solid gray;
-  position: relative;
 }
 
 .element-properties .properties-list{
@@ -114,92 +60,4 @@
   font-size: 125%;
   border-top: 1px solid gray;
   border-bottom: 1px solid gray;
-}
-
-
-.element-properties .properties-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 10px;
-}
-
-
-.element-properties .executor-container {
-  margin-left: 15px;
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.element-properties .product-container {
-  margin-left: 15px;
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.element-properties .delete-icon {
-  color: grey;
-  cursor: pointer;
-  margin-top: 5px;
-}
-
-.element-properties .delete-icon:hover {
-  color: red;
-}
-
-
-.element-properties .expand-icon {
-  margin-top: 5px;
-  font-size: 0.9em;
-}
-
-
-.element-properties .search-container {
-  bottom: 10px;
-  right: 10px;
-  overflow: hidden;
-}
-
-
-.element-properties .search-icon {
-  position: absolute;
-  bottom: -30px;
-  right: 10px;
-  font-size: 1.1em;
-  color: black;
-}
-
-.time-input {
-  display: flex;
-  align-items: center;
-}
-
-.time-input input,
-.time-input select {
-  margin-right: 15px;
-}
-
-.time-input input {
-  width: 60px;
-}
-
-.time-input select {
-  margin-top: 5px;
-  padding-bottom: 3px;
-}
-
-
-.executor-obj::after {
-  content: '';
-  display: block;
-  border-bottom: 1px solid black;
-  margin-top: 6px;
-  margin-bottom: 3px;
-}
-
-
-
-.search-icon-product {
-  margin-left: 250px;
-  margin-top: 5px;
 }

@@ -22,7 +22,7 @@ export default function CustomContextPadProvider(injector, connect, translate) {
     }
 
     if (isAny(businessObject, ['custom:Executor'])) {
-      // Verifica se il padProvider non dipende dalla bpmn:Task
+      
       if (businessObject.padProvider !== element) {
         actions = {
           'sequence-flow': {

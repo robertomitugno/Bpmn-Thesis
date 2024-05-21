@@ -1,10 +1,10 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ElementProperties.css';
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
-import ConnectedExecutors from './ConnectedExecutors';
-import ConnectedProducts from './ConnectedProducts';
-import Priority from './Priority';
+import ConnectedExecutors from './ConnectedExecutors/ConnectedExecutors';
+import ConnectedProducts from './ConnectedProducts/ConnectedProducts';
+import Priority from './Priority/Priority';
 
 function ElementProperties({ element, modeler, products }) {
 

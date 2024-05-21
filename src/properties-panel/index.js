@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 
-import PropertiesView from './PropertiesView/PropertiesView';
+import PropertiesMain from './PropertiesMain/PropertiesMain';
 
 export default class PropertiesPanel {
 
@@ -14,7 +14,7 @@ export default class PropertiesPanel {
 
     const root = ReactDOM.createRoot(container);
     root.render(
-      <PropertiesView modeler={modeler} />
+      <PropertiesMain modeler={modeler} />
     );
   }
 }
