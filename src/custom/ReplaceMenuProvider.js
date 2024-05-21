@@ -51,10 +51,10 @@ CustomMenuProvider.prototype.register = function () {
  *
  * @return {Array<Object>} a list of menu entry items
  */
-CustomMenuProvider.prototype.getEntries = function (element) {
+CustomMenuProvider.prototype.getEntries = function(element) {
   var businessObject = element.businessObject;
   var rules = this._rules;
-  var entries;
+  var entries = [];
 
   if (!rules.allowed("shape.replace", { element: element })) {
     return [];
@@ -62,18 +62,17 @@ CustomMenuProvider.prototype.getEntries = function (element) {
 
   var differentType = isDifferentType(element);
 
-  // flow nodes
   if (is(businessObject, "bpmn:Task") &&
     (element.businessObject.incoming && element.businessObject.incoming.some(el => el.$type === 'custom:Connection') ||
       element.businessObject.outgoing && element.businessObject.outgoing.some(el => el.$type === 'custom:Connection'))) {
-    // Create a new array with only the Service Task option
     entries = [filter(replaceOptions.TASK, differentType).find(option => option.actionName === 'replace-with-service-task')];
   } else if (is(businessObject, "bpmn:Task")) {
     entries = filter(replaceOptions.TASK, differentType);
   }
 
-  return this._createEntries(element, entries);
+  return this._createEntries(element, entries.filter(Boolean)); // Filtra gli undefined
 };
+
 
 
 /**
@@ -85,48 +84,42 @@ CustomMenuProvider.prototype.getEntries = function (element) {
  *
  * @return {Array<Object>} a list of menu items
  */
-CustomMenuProvider.prototype._createEntries = function (
-  element,
-  replaceOptions
-) {
+CustomMenuProvider.prototype._createEntries = function(element, replaceOptions) {
   var menuEntries = [];
-
   var self = this;
 
-  forEach(replaceOptions, function (definition) {
-    var entry = self._createMenuEntry(definition, element);
-
-    menuEntries.push(entry);
+  forEach(replaceOptions, function(definition) {
+    if (!definition) {
+      console.warn("Found undefined definition in replaceOptions");
+    } else {
+      var entry = self._createMenuEntry(definition, element);
+      if (entry) {
+        menuEntries.push(entry);
+      }
+    }
   });
 
   return menuEntries;
 };
 
-/**
- * Creates and returns a single menu entry item.
- *
- * @param  {Object} definition a single replace options definition object
- * @param  {djs.model.Base} element
- * @param  {Function} [action] an action callback function which gets called when
- *                             the menu entry is being triggered.
- *
- * @return {Object} menu entry item
- */
-CustomMenuProvider.prototype._createMenuEntry = function (
-  definition,
-  element,
-  action
-) {
+CustomMenuProvider.prototype._createMenuEntry = function(definition, element, action) {
   var translate = this._translate;
   var replaceElement = this._bpmnReplace.replaceElement;
 
-  var replaceAction = function () {
+  if (!definition) {
+    console.warn("definition is undefined or null");
+    return null;
+  }
+
+  var replaceAction = function() {
     return replaceElement(element, definition.target);
   };
 
-  var label = definition.label;
-  if (label && typeof label === "function") {
-    label = label(element);
+  var label = '';
+  if (definition.label) {
+    label = typeof definition.label === "function" ? definition.label(element) : definition.label;
+  } else {
+    console.warn("definition.label is undefined");
   }
 
   action = action || replaceAction;

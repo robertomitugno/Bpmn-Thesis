@@ -6,7 +6,7 @@ import CustomRenderer from './CustomRenderer';
 import CustomRules from './CustomRules';
 import CustomUpdater from './CustomUpdater';
 import ReplaceMenuProvider from "./ReplaceMenuProvider";
-
+import ReplaceConnectionBehavior from './ReplaceConnectionBehavior';
 
 export default {
   __init__: [
@@ -17,7 +17,8 @@ export default {
     'customRules',
     'customUpdater',
     'elementFactory',
-    'replaceMenuProvider'
+    'replaceMenuProvider',
+    'replaceConnectionBehavior'
   ],
   contextPadProvider: [ 'type', CustomContextPadProvider ],
   customRenderer: [ 'type', CustomRenderer ],
@@ -26,5 +27,6 @@ export default {
   customUpdater: [ 'type', CustomUpdater ],
   elementFactory: [ 'type', CustomElementFactory ],
   customPalette: [ 'type', CustomPalette ],
-  replaceMenuProvider: [ 'type', ReplaceMenuProvider ]
+  replaceMenuProvider: [ 'type', ReplaceMenuProvider ],
+  replaceConnectionBehavior: [ 'type', ReplaceConnectionBehavior ]
 };

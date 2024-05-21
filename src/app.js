@@ -130,8 +130,3 @@ $hideExecutorButton.addEventListener('change', function () {
     savedXML = null;
   }
 });
-
-
-modeler.on('connection.changed', function (event) {
-  console.log("changed");
-});
