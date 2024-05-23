@@ -79,8 +79,6 @@ function downloadXML(filename, text) {
 }
 
 
-
-
 if (zoomIn) {
   zoomIn.addEventListener('click', function () {
     modeler.get('zoomScroll').stepZoom(1);
@@ -149,13 +147,32 @@ if (uploadBPMN) {
 if (downloadBPMN) {
   downloadBPMN.addEventListener('click', function () {
 
-    modeler.saveXML().then(function (model) {
-      downloadXML(modelName + '.bpmn', model.xml);
+    modeler.saveXML({ format: true }).then(function (result) {
+      download(result.xml, 'testing.bpmn', 'application/xml');
+    }).catch(function (err) {
+      console.error('Failed to save BPMN XML', err);
     });
-    return false;
   });
 }
 
+modeler.saveXML({ format: true }).then(function (result) {
+  download(result.xml, 'testing.bpmn', 'application/xml');
+}).catch(function (err) {
+  console.error('Failed to save BPMN XML', err);
+});
+
+
+function download(content, fileName, contentType) {
+  const a = document.createElement('a');
+  const file = new Blob([content], { type: contentType });
+
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+
+  URL.revokeObjectURL(a.href);
+
+}
 
 
 /*
