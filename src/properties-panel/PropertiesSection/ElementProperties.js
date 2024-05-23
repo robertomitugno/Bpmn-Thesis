@@ -5,6 +5,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import ConnectedExecutors from './ConnectedExecutors/ConnectedExecutors';
 import ConnectedProducts from './ConnectedProducts/ConnectedProducts';
 import Priority from './Priority/Priority';
+import Batch from './Batch/Batch';
 
 function ElementProperties({ element, modeler, products }) {
 
@@ -66,6 +67,13 @@ function ElementProperties({ element, modeler, products }) {
                         <div className="properties-list">
                             <ConnectedExecutors element={element} modeler={modeler} products={products} />
                             <Priority element={element} modeler={modeler} />
+                        </div>
+                    }
+                    {is(element, 'custom:Batch') &&  // Se l'elemento è un Executor
+                        <div className="properties-list">
+                            <ConnectedExecutors element={element} modeler={modeler} products={products} />
+                            <Priority element={element} modeler={modeler} />
+                            <Batch element={element} modeler={modeler} />
                         </div>
                     }
 

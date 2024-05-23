@@ -17,7 +17,7 @@ import { is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
 const HIGH_PRIORITY = 1500,
-  TASK_BORDER_RADIUS = 10,
+  TASK_BORDER_RADIUS = 6,
   DEFAULT_FILL_OPACITY = 0.95;
 
 export default class CustomRenderer extends BaseRenderer {
@@ -35,10 +35,10 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-    return isAny(element, ["custom:Executor", "custom:Connection"]) && !element.labelTarget;
+    return isAny(element, ["custom:Executor", "custom:Connection", "custom:Batch"]) && !element.labelTarget;
   }
 
-  drawShape(parentNode, element) {
+  drawShape(parentNode, element, handler) {
     var rect;
 
     if (is(element, "custom:Executor")) {
@@ -58,10 +58,19 @@ export default class CustomRenderer extends BaseRenderer {
       );
 
       return rect;
-    } else {
-      return this.bpmnRenderer.drawShape(parentNode, element);
+    } else if (is(element, "custom:Batch")) {
+      element.type = "bpmn:ServiceTask";
+      element.width = 100;
+      element.height = 80;
+      let shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
+      element.type = "custom:Batch";
+      return shape;
+    }
+    else {
+      return this.bpmnRenderer.drawShape(parentNode, element, handler);
     }
   }
+
 
   drawConnection(parentNode, element) {
     const waypoints = element.waypoints;
@@ -128,7 +137,6 @@ export default class CustomRenderer extends BaseRenderer {
     if (type === 'custom:Connection') {
       return this.drawConnection;
     }
-
     return super._renderer(type);
   }
 }
@@ -143,7 +151,7 @@ CustomRenderer.$inject = [
 
 // helpers //////////
 
-function drawHexagon(parentNode, width, height, strokeColor) {
+function drawHexagon(parentNode, width, height) {
   const polygon = svgCreate("polygon");
 
   const x = width / 2;

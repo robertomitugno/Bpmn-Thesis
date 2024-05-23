@@ -47,14 +47,14 @@ export var TASK = [
       type: "bpmn:BusinessRuleTask"
     }
   },
-  {
+  /*{
     label: "Service Task",
     actionName: "replace-with-service-task",
     className: "bpmn-icon-service",
     target: {
       type: "bpmn:ServiceTask"
     }
-  },
+  },*/
   {
     label: "Script Task",
     actionName: "replace-with-script-task",
@@ -87,6 +87,17 @@ export var TASK = [
     target: {
       type: "bpmn:SubProcess",
       isExpanded: true
+    }
+  },
+];
+
+export var BATCH = [
+  {
+    label: "Batch Activity",
+    actionName: "replace-with-batch",
+    className: "bpmn-icon-service",
+    target: {
+      type: "custom:Batch"
     }
   }
 ];

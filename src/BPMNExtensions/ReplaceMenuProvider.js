@@ -1,14 +1,8 @@
 import { is } from "bpmn-js/lib/util/ModelUtil";
-
 import { isDifferentType } from "./TypeUtil";
-
 import { forEach, filter } from "min-dash";
-
 import * as replaceOptions from "./ReplaceOptions";
 
-/**
- * This module is an element agnostic replace menu provider for the popup menu.
- */
 export default function CustomMenuProvider(
   popupMenu,
   modeling,
@@ -36,22 +30,11 @@ CustomMenuProvider.$inject = [
   "translate"
 ];
 
-/**
- * Register replace menu provider in the popup menu
- */
 CustomMenuProvider.prototype.register = function () {
   this._popupMenu.registerProvider("bpmn-replace", this);
 };
 
-/**
- * Get all entries from replaceOptions for the given element and apply filters
- * on them. Get for example only elements, which are different from the current one.
- *
- * @param {djs.model.Base} element
- *
- * @return {Array<Object>} a list of menu entry items
- */
-CustomMenuProvider.prototype.getEntries = function(element) {
+CustomMenuProvider.prototype.getEntries = function (element) {
   var businessObject = element.businessObject;
   var rules = this._rules;
   var entries = [];
@@ -65,7 +48,7 @@ CustomMenuProvider.prototype.getEntries = function(element) {
   if (is(businessObject, "bpmn:Task") &&
     (element.businessObject.incoming && element.businessObject.incoming.some(el => el.$type === 'custom:Connection') ||
       element.businessObject.outgoing && element.businessObject.outgoing.some(el => el.$type === 'custom:Connection'))) {
-    entries = [filter(replaceOptions.TASK, differentType).find(option => option.actionName === 'replace-with-service-task')];
+    entries = filter(replaceOptions.BATCH, differentType);
   } else if (is(businessObject, "bpmn:Task")) {
     entries = filter(replaceOptions.TASK, differentType);
   }
@@ -73,22 +56,11 @@ CustomMenuProvider.prototype.getEntries = function(element) {
   return this._createEntries(element, entries.filter(Boolean));
 };
 
-
-
-/**
- * Creates an array of menu entry objects for a given element and filters the replaceOptions
- * according to a filter function.
- *
- * @param  {djs.model.Base} element
- * @param  {Object} replaceOptions
- *
- * @return {Array<Object>} a list of menu items
- */
-CustomMenuProvider.prototype._createEntries = function(element, replaceOptions) {
+CustomMenuProvider.prototype._createEntries = function (element, replaceOptions) {
   var menuEntries = [];
   var self = this;
 
-  forEach(replaceOptions, function(definition) {
+  forEach(replaceOptions, function (definition) {
     if (!definition) {
       console.warn("Found undefined definition in replaceOptions");
     } else {
@@ -102,7 +74,7 @@ CustomMenuProvider.prototype._createEntries = function(element, replaceOptions) 
   return menuEntries;
 };
 
-CustomMenuProvider.prototype._createMenuEntry = function(definition, element, action) {
+CustomMenuProvider.prototype._createMenuEntry = function (definition, element, action) {
   var translate = this._translate;
   var replaceElement = this._bpmnReplace.replaceElement;
 
@@ -111,7 +83,7 @@ CustomMenuProvider.prototype._createMenuEntry = function(definition, element, ac
     return null;
   }
 
-  var replaceAction = function() {
+  var replaceAction = function () {
     return replaceElement(element, definition.target);
   };
 
