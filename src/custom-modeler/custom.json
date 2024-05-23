@@ -24,8 +24,7 @@
       "superClass": [
         "bpmn:SequenceFlow"
       ],
-      "properties": [
-      ]
+      "properties": []
     },
     {
       "name": "Product",
@@ -66,6 +65,13 @@
           "isMany": true
         }
       ]
+    },
+    {
+      "name": "Batch",
+      "superClass": [
+        "bpmn:Task"
+      ],
+      "properties": []
     }
   ],
   "enumerations": [],
