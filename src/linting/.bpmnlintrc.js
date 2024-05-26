@@ -1624,7 +1624,7 @@ var noProductsDefined = function() {
 
     // Check if there is at least one 'custom:Product' in node.product
     if (!products.some(product => is(product, 'custom:Product'))) {
-      reporter.report(node.id, 'No products defined');
+      reporter.report(node.id, 'Element is missing product');
     }
   }
 

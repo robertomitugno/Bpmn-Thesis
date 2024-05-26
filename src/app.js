@@ -155,13 +155,6 @@ if (downloadBPMN) {
   });
 }
 
-modeler.saveXML({ format: true }).then(function (result) {
-  download(result.xml, 'testing.bpmn', 'application/xml');
-}).catch(function (err) {
-  console.error('Failed to save BPMN XML', err);
-});
-
-
 function download(content, fileName, contentType) {
   const a = document.createElement('a');
   const file = new Blob([content], { type: contentType });

@@ -69,7 +69,7 @@ function ElementProperties({ element, modeler, products }) {
                             <Priority element={element} modeler={modeler} />
                         </div>
                     }
-                    {is(element, 'custom:Batch') &&  // Se l'elemento è un Executor
+                    {is(element, 'custom:Batch') &&  // Se l'elemento è un Acitivty di tipo Batch
                         <div className="properties-list">
                             <ConnectedExecutors element={element} modeler={modeler} products={products} />
                             <Priority element={element} modeler={modeler} />
