@@ -55,21 +55,22 @@ CustomRules.prototype.init = function () {
       return;
     }
 
-    // allow connection between custom shape and task
-    if (isCustom(source)) {
-      if (is(target, 'bpmn:Task')) {
+    // allow connection between custom:Executor and custom:Batch or custom:Task
+    if (is(source, 'custom:Executor')) {
+      if (is(target, 'custom:Batch') || is(target, 'bpmn:Task')) {
         return { type: 'custom:Connection' };
       } else {
         return false;
       }
-    } else if (isCustom(target)) {
-      if (is(source, 'bpmn:Task')) {
+    } else if (is(target, 'custom:Executor')) {
+      if (is(source, 'custom:Batch') || is(source, 'bpmn:Task')) {
         return { type: 'custom:Connection' };
       } else {
         return false;
       }
     }
   }
+
 
   this.addRule('elements.move', HIGH_PRIORITY, function (context) {
 
