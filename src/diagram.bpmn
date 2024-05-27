@@ -98,7 +98,7 @@
       <custom:product id="Product_tyt5k55" name="Frame B" time="40" timeUnit="s" idActivity="Activity_1gsma1o" />
       <custom:product id="Product_tyt5k55" name="Frame B" time="3" timeUnit="m" idActivity="Activity_11ux7hy" />
     </custom:executor>
-    <custom:executor id="ExecutorActivity_07l799e" name="PP3">
+    <custom:executor id="ExecutorActivity_07l799e" name="PP3" batch="100">
       <bpmn:outgoing>Flow_1b2f6hg</bpmn:outgoing>
       <custom:product id="Product_lb3ac6j" name="Frame A" time="50" timeUnit="s" idActivity="Activity_0q7j2li" />
       <custom:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="m" idActivity="Activity_0q7j2li" />
@@ -155,7 +155,7 @@
     <custom:connection id="Flow_0i0gwu7" sourceRef="Activity_00s27tv" targetRef="ExecutorActivity_17hwc9a" />
     <custom:connection id="Flow_1vgkofe" sourceRef="Activity_02scnhl" targetRef="ExecutorActivity_00r8fwg" />
     <custom:connection id="Flow_0zmf1cz" sourceRef="Activity_0afgnxj" targetRef="ExecutorActivity_17hwc9a" />
-    <custom:batch id="Activity_0q7j2li" name="Print Frontal Frame" priority="4" batch="23">
+    <custom:batch id="Activity_0q7j2li" name="Print Frontal Frame" priority="4">
       <bpmn:incoming>Flow_0n2asfg</bpmn:incoming>
       <bpmn:incoming>Flow_1rmftgf</bpmn:incoming>
       <bpmn:incoming>Flow_1b2f6hg</bpmn:incoming>
