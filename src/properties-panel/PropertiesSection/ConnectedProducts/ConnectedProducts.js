@@ -11,6 +11,7 @@ function ConnectedProducts({ element, modeler }) {
 
     const [productExpanded, setProductExpanded] = useState({});
 
+    const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(false);
 
 
     const getConnectedExecutors = useCallback(() => {
@@ -102,44 +103,47 @@ function ConnectedProducts({ element, modeler }) {
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
                 <>
-                    <div className="properties">
+                    <div className="properties" onClick={() => setIsPropertiesExpanded(!isPropertiesExpanded)}>
                         <div className="properties-title">
                             <label>Connected Products</label>
+                            <FontAwesomeIcon icon={isPropertiesExpanded ? faAngleDown : faAngleRight} />
                         </div>
-                        <div className="product-container">
-                            {Object.values(selectedProducts).map((obj, index) => (
-                                <React.Fragment key={index}>
-                                    <div>
-                                        <div className="selection" onClick={() => handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity)}>
-                                            <FontAwesomeIcon
-                                                icon={productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] ? faAngleDown : faAngleRight}
-                                                className="expand-icon"
-                                            />
-                                            <span>{selectedProducts[index]?.name} - {getActivityName(selectedProducts[index]?.idActivity)}</span>
-                                        </div>
-
-                                        {productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] && (
-                                            <div key={index} className="products">
-                                                <div className="time-input">
-                                                    <span>Time : </span>
-                                                    <input type="number"
-                                                        value={selectedProducts[index]?.time || 0}
-                                                        onChange={(e) => handleTimeChange(e, index)} />
-
-                                                    <select value={selectedProducts[index]?.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index)}>
-                                                        <option value="s">s</option>
-                                                        <option value="m">m</option>
-                                                        <option value="h">h</option>
-                                                        <option value="d">d</option>
-                                                    </select>
-
-                                                </div>
+                        {isPropertiesExpanded && (
+                            <div className="product-container">
+                                {Object.values(selectedProducts).map((obj, index) => (
+                                    <React.Fragment key={index}>
+                                        <div>
+                                            <div className="selection" onClick={() => handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity)}>
+                                                <FontAwesomeIcon
+                                                    icon={productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] ? faAngleDown : faAngleRight}
+                                                    className="expand-icon"
+                                                />
+                                                <span>{selectedProducts[index]?.name} - {getActivityName(selectedProducts[index]?.idActivity)}</span>
                                             </div>
-                                        )}
-                                    </div>
-                                </React.Fragment>
-                            ))}
-                        </div>
+
+                                            {productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] && (
+                                                <div key={index} className="products">
+                                                    <div className="time-input">
+                                                        <span>Time : </span>
+                                                        <input type="number"
+                                                            value={selectedProducts[index]?.time || 0}
+                                                            onChange={(e) => handleTimeChange(e, index)} />
+
+                                                        <select value={selectedProducts[index]?.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index)}>
+                                                            <option value="s">s</option>
+                                                            <option value="m">m</option>
+                                                            <option value="h">h</option>
+                                                            <option value="d">d</option>
+                                                        </select>
+
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                 </>

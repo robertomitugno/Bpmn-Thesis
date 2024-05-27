@@ -29,6 +29,9 @@ function ConnectedExecutors({ element, modeler, products }) {
     const [executorExpanded, setExecutorExpanded] = useState({});
     const [productExpandedExec, setProductExpandedExec] = useState({});
 
+    const [batch, setBatch] = useState();
+    const [isExecutorConnectedToBatch, setIsExecutorConnectedToBatch] = useState(false);
+
 
 
     const getConnectedExecutors = useCallback(() => {
@@ -226,6 +229,10 @@ function ConnectedExecutors({ element, modeler, products }) {
             ...prevSelectedProducts,
             ...selectedProductsUpdate
         }));
+
+
+        setIsExecutorConnectedToBatch(isExecutorConnected(executor));
+
     }, [element]);
 
 
@@ -347,6 +354,56 @@ function ConnectedExecutors({ element, modeler, products }) {
 
 
 
+    function handleBatchChange(e, executorId) {
+        let newBatch = e.target.value;
+        newBatch = newBatch.replace(/^0+/, '');
+
+
+        const modeling = modeler.get('modeling');
+        const activity = modeler.get('elementRegistry').get(executorId);
+
+        const batch = {
+            batch: newBatch
+        };
+
+        modeling.updateProperties(activity, batch);
+
+        setBatch(newBatch);
+    }
+
+
+    const isExecutorConnected = useCallback((element) => {
+        console.log(element);
+        if (is(element, 'custom:Executor')) {
+            const executor = element.id;
+            const batches = modeler.get('elementRegistry').filter((el) => is(el, 'custom:Batch'));
+
+            for (const batch of batches) {
+                const incomingConnections = batch.incoming;
+                const outgoingConnections = batch.outgoing;
+
+                if (incomingConnections) {
+                    for (const connection of incomingConnections) {
+                        if (is(connection, 'custom:Connection') && (connection.source.id === executor || connection.target.id === executor)) {
+                            return true;
+                        }
+                    }
+                }
+
+                if (outgoingConnections) {
+                    for (const connection of outgoingConnections) {
+                        if (is(connection, 'custom:Connection') && (connection.source.id === executor || connection.target.id === executor)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }, [element, modeler]);
+
+
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -376,6 +433,17 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                 </div>
                                                 {executorExpanded[executor.id] && (
                                                     <div ref={searchBarRef} className="products">
+
+                                                        {isExecutorConnectedToBatch &&
+                                                            <div className="batch-input">
+                                                                <span>Number of element for batch: </span>
+                                                                <input type="number"
+                                                                    value={executor.businessObject.$attrs.batch || 0}
+                                                                    onChange={(e) => handleBatchChange(e, executor.id)}
+                                                                    onClick={(event) => event.stopPropagation()} />
+                                                            </div>
+                                                        }
+
                                                         {(selectedProducts[executor.id] || []).map((product, index) => (
                                                             <div key={index}>
                                                                 <div className="selection" onClick={(event) => {
