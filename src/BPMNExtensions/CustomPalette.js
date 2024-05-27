@@ -8,7 +8,7 @@ export default class CustomPalette {
     palette.registerProvider(this);
   }
 
-  getPaletteEntries(element) {
+  getPaletteEntries() {
     const { bpmnFactory, create, elementFactory, translate } = this;
 
     function createTask() {
@@ -25,7 +25,7 @@ export default class CustomPalette {
       };
     }
 
-    return {
+    const newEntry = {
       "create.Executor": {
         group: "custom",
         className: "icon-custom-executor",
@@ -35,6 +35,16 @@ export default class CustomPalette {
           click: createTask()
         }
       }
+    };
+
+    return function (entries) {
+      delete entries["create.subprocess-expanded"];
+      delete entries["create.data-object"];
+      delete entries["create.group"];
+      delete entries["create.data-store"];
+      delete entries["create.participant-expanded"];
+
+      return {...entries, ...newEntry};
     };
   }
 }
