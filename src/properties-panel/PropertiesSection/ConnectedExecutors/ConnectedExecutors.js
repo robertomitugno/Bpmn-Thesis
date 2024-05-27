@@ -64,6 +64,9 @@ function ConnectedExecutors({ element, modeler, products }) {
             const productElement = element.businessObject.get('custom:product');
             setSelectedProducts(productElement);
         }
+        if (element.type === 'custom:Batch') {
+            setIsExecutorConnectedToBatch(true);
+        }
     }, [element, getConnectedExecutors]);
 
 
@@ -230,9 +233,6 @@ function ConnectedExecutors({ element, modeler, products }) {
             ...selectedProductsUpdate
         }));
 
-
-        setIsExecutorConnectedToBatch(isExecutorConnected(executor));
-
     }, [element]);
 
 
@@ -370,38 +370,6 @@ function ConnectedExecutors({ element, modeler, products }) {
 
         setBatch(newBatch);
     }
-
-
-    const isExecutorConnected = useCallback((element) => {
-        console.log(element);
-        if (is(element, 'custom:Executor')) {
-            const executor = element.id;
-            const batches = modeler.get('elementRegistry').filter((el) => is(el, 'custom:Batch'));
-
-            for (const batch of batches) {
-                const incomingConnections = batch.incoming;
-                const outgoingConnections = batch.outgoing;
-
-                if (incomingConnections) {
-                    for (const connection of incomingConnections) {
-                        if (is(connection, 'custom:Connection') && (connection.source.id === executor || connection.target.id === executor)) {
-                            return true;
-                        }
-                    }
-                }
-
-                if (outgoingConnections) {
-                    for (const connection of outgoingConnections) {
-                        if (is(connection, 'custom:Connection') && (connection.source.id === executor || connection.target.id === executor)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }, [element, modeler]);
 
 
     return (
