@@ -9,9 +9,6 @@ import './app.css';
 import lintModule from "bpmn-js-bpmnlint";
 import "./linting/bpmn-js-bpmnlint.css";
 
-import { createLintConfig } from "./linting/create-lint-config";
-import { noProductsDefined } from "./linting/no-products-defined";
-
 import bpmnlintConfig from "./linting/.bpmnlintrc";
 
 const $modelerContainer = document.querySelector('#modeler-container');
@@ -33,19 +30,6 @@ const modeler = new Modeler({
   },
   linting: {
     bpmnlint: bpmnlintConfig,
-    /*bpmnlint: createLintConfig({
-      rules: {
-        "test/no-products-defined": "warn"
-      },
-      plugins: [
-        {
-          name: "test",
-          rules: {
-            "no-products-defined": noProductsDefined
-          }
-        }
-      ]
-    }),*/
     active: true
   },
   keyboard: {
