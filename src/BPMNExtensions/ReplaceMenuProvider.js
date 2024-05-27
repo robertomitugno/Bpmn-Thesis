@@ -45,15 +45,10 @@ CustomMenuProvider.prototype.getEntries = function (element) {
 
   var differentType = isDifferentType(element);
   if (element.type === 'custom:Batch') {
-    entries = filter(replaceOptions.BATCH_INTO_TASK, differentType);
-  }
-  else if (is(businessObject, "bpmn:Task") &&
-    (element.businessObject.incoming && element.businessObject.incoming.some(el => el.$type === 'custom:Connection') ||
-      element.businessObject.outgoing && element.businessObject.outgoing.some(el => el.$type === 'custom:Connection'))) {
-    entries = filter(replaceOptions.ACTIVITY_INTO_BATCH, differentType);
+    entries = filter(replaceOptions.BATCH_INTO_ACTIVITY, differentType);
   }
   else if (is(businessObject, "bpmn:Task")) {
-    entries = filter(replaceOptions.TASK, differentType);
+    entries = filter(replaceOptions.ACTIVITY_INTO_BATCH, differentType);
   }
 
   return this._createEntries(element, entries.filter(Boolean));
