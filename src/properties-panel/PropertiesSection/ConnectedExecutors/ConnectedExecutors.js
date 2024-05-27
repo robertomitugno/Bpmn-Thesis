@@ -123,44 +123,44 @@ function ConnectedExecutors({ element, modeler, products }) {
 
     const handleSelectProduct = useCallback((product, executorId) => {
         setProductSearchInput('');
-      
+
         setProductSearchResults(prevResults => ({
-          ...prevResults,
-          [executorId]: prevResults[executorId].filter(p => p !== product)
+            ...prevResults,
+            [executorId]: prevResults[executorId].filter(p => p !== product)
         }));
-      
+
         setshowInputExecutor(false);
-      
+
         const modeling = modeler.get('modeling');
         const moddle = modeler.get('moddle');
         const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
-      
+
         if (executor) {
-          let extensionElements = executor.businessObject.product;
-      
-          if (!Array.isArray(extensionElements)) {
-            extensionElements = [];
-          }
-      
-          const newProduct = moddle.create("custom:Product");
-          newProduct.id = product.id;
-          newProduct.name = product.name;
-          newProduct.time = 0;
-          newProduct.timeUnit = 's';
-          newProduct.idActivity = element.id;
-      
-          extensionElements.push(newProduct);
-      
-          modeling.updateProperties(executor, {
-            product: extensionElements
-          });
-      
-          setSelectedProducts(prevSelectedProducts => ({
-            ...prevSelectedProducts,
-            [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
-          }));
+            let extensionElements = executor.businessObject.product;
+
+            if (!Array.isArray(extensionElements)) {
+                extensionElements = [];
+            }
+
+            const newProduct = moddle.create("custom:Product");
+            newProduct.id = product.id;
+            newProduct.name = product.name;
+            newProduct.time = 0;
+            newProduct.timeUnit = 's';
+            newProduct.idActivity = element.id;
+
+            extensionElements.push(newProduct);
+
+            modeling.updateProperties(executor, {
+                product: extensionElements
+            });
+
+            setSelectedProducts(prevSelectedProducts => ({
+                ...prevSelectedProducts,
+                [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
+            }));
         }
-      }, []);
+    }, []);
 
 
     const handleDeleteProduct = useCallback((product, executorId, idActivity) => {
@@ -437,15 +437,16 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                     ))}
                                                                 </div>
                                                             )}
-                                                            <div>
+                                                            <div className="search-icon-container-product" onClick={(event) => {
+                                                                handleToggleSearchInput(executor.id);
+                                                                event.stopPropagation();
+                                                            }}>
                                                                 <FontAwesomeIcon
                                                                     icon={faPlus}
                                                                     className="search-icon-product"
-                                                                    onClick={(event) => {
-                                                                        handleToggleSearchInput(executor.id);
-                                                                        event.stopPropagation();
-                                                                    }}
                                                                 />
+                                                                <span className="add-product-text">add product</span>
+
                                                             </div>
                                                         </div>
 
@@ -480,13 +481,16 @@ function ConnectedExecutors({ element, modeler, products }) {
                                             ))}
                                         </div>
                                     )}
-                                    <FontAwesomeIcon
-                                        icon={faPlus}
-                                        className="search-icon"
-                                        onClick={(event) => {
-                                            setshowInputExecutor(!showInputExecutor);
-                                            event.stopPropagation();
-                                        }} />
+                                    <div className="search-icon-container" onClick={(event) => {
+                                        setshowInputExecutor(!showInputExecutor);
+                                        event.stopPropagation();
+                                    }}>
+                                        <FontAwesomeIcon
+                                            icon={faPlus}
+                                            className="search-icon"
+                                        />
+                                        <span className="add-executor-text">add executor</span>
+                                    </div>
                                 </div>
                             </div>
                         )}

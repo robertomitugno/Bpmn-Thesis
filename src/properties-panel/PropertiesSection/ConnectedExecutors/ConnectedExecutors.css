@@ -95,16 +95,6 @@ div.selection svg {
     overflow: hidden;
 }
 
-
-.search-icon {
-    position: absolute;
-    bottom: -30px;
-    right: 10px;
-    font-size: 1.1em;
-    color: black;
-}
-
-
 .time-input {
     display: flex;
     align-items: center;
@@ -135,6 +125,49 @@ div.selection svg {
 
 
 .search-icon-product {
-    margin-left: 250px;
+    margin-left: 175px;
     margin-top: 5px;
+}
+
+
+.search-icon-container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    left: 200px;
+    bottom: -30px;
+    width: 200px;
+}
+
+.search-icon-container span {
+    margin-left: 5px;
+}
+
+.search-icon-container:hover .add-executor-text {
+    color: #2a10d5;
+}
+
+.add-executor-text {
+    margin-left: 5px;
+    font-size: 1em;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.search-icon {
+    margin-top: 2px;
+    font-size: 1.0em;
+    color: black;
+}
+
+.search-icon-container-product {
+    display: flex;
+}
+
+.add-product-text {
+    margin-left: 5px;
+}
+
+.search-icon-container-product:hover .add-product-text {
+    color: #2a10d5;
 }
