@@ -14,14 +14,14 @@ import bpmnlintConfig from "./linting/.bpmnlintrc";
 const $modelerContainer = document.querySelector('#modeler-container');
 const $propertiesContainer = document.querySelector('#properties-container');
 const $hideExecutorButton = document.querySelector('#hide-executor-button');
+const $hideWarningButton = document.querySelector('#hide-warning-button');
+
 
 var uploadBPMN = document.getElementById('js-upload-bpmn');
 var downloadBPMN = document.getElementById('js-download-bpmn');
 var zoomIn = document.getElementById('js-zoom-in');
 var zoomOut = document.getElementById('js-zoom-out');
 var center = document.getElementById('js-center');
-
-var modelName = 'diagram';
 
 const modeler = new Modeler({
   container: $modelerContainer,
@@ -132,7 +132,7 @@ if (downloadBPMN) {
   downloadBPMN.addEventListener('click', function () {
 
     modeler.saveXML({ format: true }).then(function (result) {
-      download(result.xml, 'testing.bpmn', 'application/xml');
+      download(result.xml, 'diagram.bpmn', 'application/xml');
     }).catch(function (err) {
       console.error('Failed to save BPMN XML', err);
     });
@@ -156,40 +156,33 @@ function download(content, fileName, contentType) {
 * HIDE EXECUTORS
 */
 
-let elementsToHide = [];
-let savedXML;
+function toggleExecutorsVisibility(visible) {
+  const elementRegistry = modeler.get('elementRegistry');
+  elementRegistry.filter(function (element) {
+    return element.type === 'custom:Executor' || element.type === 'custom:Connection';
+  }).forEach(function (element) {
+    const gfx = elementRegistry.getGraphics(element);
+    gfx.style.display = visible ? 'block' : 'none';
+  });
+}
 
 $hideExecutorButton.addEventListener('change', function () {
   if ($hideExecutorButton.checked) {
-    // Salva il file XML corrente
-    modeler.saveXML({ format: true }).then(function (result) {
-      savedXML = result.xml;
-    }).catch(function (err) {
-      console.error('Failed to save BPMN XML', err);
-    });
-
-    var allElements = modeler.get('elementRegistry');
-    allElements.forEach(function (element) {
-      if (
-        element.type === 'custom:Executor' ||
-        (element.type === 'custom:Connection' &&
-          (element.businessObject.sourceRef.$type === 'custom:Executor' ||
-            element.businessObject.targetRef.$type === 'custom:Executor'))
-      ) {
-        elementsToHide.push(element);
-      }
-    });
-
-    var graphicsFactory = modeler.get('graphicsFactory');
-    elementsToHide.forEach(function (element) {
-      graphicsFactory.remove(element);
-    });
+    toggleExecutorsVisibility(false);
   } else {
-    // Ripristina il file XML salvato
-    if (savedXML) {
-      modeler.importXML(savedXML);
-    }
-    elementsToHide = [];
-    savedXML = null;
+    toggleExecutorsVisibility(true);
+  }
+});
+
+
+
+/*
+* HIDE WARNING
+*/
+$hideWarningButton.addEventListener('change', function () {
+  if ($hideWarningButton.checked) {
+    modeler.get('linting').toggle(false);
+  } else {
+    modeler.get('linting').toggle(true);
   }
 });
