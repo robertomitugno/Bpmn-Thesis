@@ -1643,7 +1643,6 @@ var noExecutorDefined = function () {
       return;
     }
 
-    console.log(node);
     // Ensure node.product is an array
     const incoming = Array.isArray(node.incoming) ? node.incoming : [];
     const outgoing = Array.isArray(node.outgoing) ? node.outgoing : [];
