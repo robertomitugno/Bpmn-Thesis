@@ -19,7 +19,7 @@
       <bpmn:outgoing>Flow_0gxem0l</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="Flow_1s6b0gu" sourceRef="Gateway_1a4577m" targetRef="Activity_1gsma1o" />
-    <bpmn:task id="Activity_11ux7hy" name="Print RIght Stem">
+    <bpmn:task id="Activity_11ux7hy" name="Print Right Stem">
       <bpmn:incoming>Flow_05d8wim</bpmn:incoming>
       <bpmn:incoming>Flow_0yeycfg</bpmn:incoming>
       <bpmn:incoming>Flow_1ditf2d</bpmn:incoming>

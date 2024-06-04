@@ -113,7 +113,11 @@ function ConnectedProducts({ element, modeler }) {
                                 {Object.values(selectedProducts).map((obj, index) => (
                                     <React.Fragment key={index}>
                                         <div>
-                                            <div className="selection" onClick={() => handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity)}>
+                                            <div className="selection" onClick={(event) => {
+                                                handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity); 
+                                                event.stopPropagation();
+                                            }}>
+
                                                 <FontAwesomeIcon
                                                     icon={productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] ? faAngleDown : faAngleRight}
                                                     className="expand-icon"
