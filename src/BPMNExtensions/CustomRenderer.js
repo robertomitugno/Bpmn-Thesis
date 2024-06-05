@@ -21,7 +21,7 @@ const HIGH_PRIORITY = 1500,
   DEFAULT_FILL_OPACITY = 0.95;
 
 export default class CustomRenderer extends BaseRenderer {
-  constructor(config, eventBus, bpmnRenderer, textRenderer, styles) {
+  constructor(config, eventBus, bpmnRenderer, textRenderer, styles, pathMap) {
     super(eventBus, HIGH_PRIORITY);
 
     this.bpmnRenderer = bpmnRenderer;
@@ -32,6 +32,7 @@ export default class CustomRenderer extends BaseRenderer {
     this.defaultFillColor = config && config.defaultFillColor;
     this.defaultStrokeColor = config && config.defaultStrokeColor;
     this.defaultLabelColor = config && config.defaultLabelColor;
+    this.pathMap = pathMap;
   }
 
   canRender(element) {
@@ -59,11 +60,40 @@ export default class CustomRenderer extends BaseRenderer {
 
       return rect;
     } else if (is(element, "custom:Batch")) {
-      element.type = "bpmn:ServiceTask";
+      element.type = "bpmn:Task";
       element.width = 100;
       element.height = 80;
-      let shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
+      const shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
       element.type = "custom:Batch";
+
+      let color;
+      if(element.businessObject.incoming?.length > 0 || element.businessObject.outgoing?.length > 0) {
+        color = "blue";
+      } else {
+        color = "green";
+      }
+
+      /*var attrs = {
+        fill: getFillColor(element, this.defaultFillColor),
+        stroke: getStrokeColor(element, this.defaultStrokeColor),
+        fillOpacity: DEFAULT_FILL_OPACITY
+      };*/
+
+      var pathGear = this.pathMap.getScaledPath('TASK_TYPE_SERVICE', {
+        abspos: {
+          x: 12,
+          y: 18
+        }
+      });
+
+      this.drawPath(parentNode, pathGear, {
+        fill: 'none',
+        stroke: color,
+        //fill: getFillColor(element, this.defaultFillColor, attrs.fill),
+        //stroke: getStrokeColor(element, this.defaultStrokeColor, attrs.stroke),
+        strokeWidth: 1
+      });
+
       return shape;
     }
     else {
@@ -89,6 +119,28 @@ export default class CustomRenderer extends BaseRenderer {
     return connectionElement;
   }
 
+
+  drawPath(parentGfx, d, attrs) {
+    attrs = this.lineStyle(attrs);
+
+    var path = svgCreate('path', {
+      ...attrs,
+      d
+    });
+
+    svgAppend(parentGfx, path);
+
+    return path;
+  }
+
+  lineStyle(attrs) {
+    return this.computeStyle(attrs, [ 'no-fill' ], {
+      strokeLinecap: 'round',
+      strokeLinejoin: 'round',
+      stroke: 'red',
+      strokeWidth: 2
+    });
+  }
 
   getShapePath(shape) {
     if (is(shape, "custom:Executor")) {
@@ -146,7 +198,8 @@ CustomRenderer.$inject = [
   "eventBus",
   "bpmnRenderer",
   "textRenderer",
-  "styles"
+  "styles",
+  "pathMap"
 ];
 
 // helpers //////////

@@ -359,34 +359,36 @@ function ConnectedExecutors({ element, modeler, products }) {
     const handleBatchChange = useCallback((e, executorId, productId) => {
         let newBatch = e.target.value;
 
-        if (newBatch === '') {
-            newBatch = 1; // Imposta il valore minimo a 1 se il campo è vuoto
-        } 
-      
+        if (newBatch.startsWith('1') && e.nativeEvent.data !== '0') {
+            newBatch = newBatch.substring(1);
+        } else if (newBatch < '1') {
+            newBatch = 1;
+        }
+
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
-      
+
         const productArray = executorElement.businessObject.product;
-      
+
         const productToUpdate = productArray.find(
-          (product) => product.id === productId && product.idActivity === element.id
+            (product) => product.id === productId && product.idActivity === element.id
         );
         if (productToUpdate) {
-          productToUpdate.batch = newBatch;
-          modeling.updateProperties(executorElement, {
-            product: productArray,
-          });
+            productToUpdate.batch = newBatch;
+            modeling.updateProperties(executorElement, {
+                product: productArray,
+            });
         }
-      
+
         setSelectedProducts((prevSelectedProducts) => ({
-          ...prevSelectedProducts,
-          [executorId]: prevSelectedProducts[executorId].map((product) =>
-            product.id === productId && product.idActivity === element.id
-              ? { ...product, batch: newBatch }
-              : product
-          ),
+            ...prevSelectedProducts,
+            [executorId]: prevSelectedProducts[executorId].map((product) =>
+                product.id === productId && product.idActivity === element.id
+                    ? { ...product, batch: newBatch }
+                    : product
+            ),
         }));
-      }, []);
+    }, []);
 
 
     return (
