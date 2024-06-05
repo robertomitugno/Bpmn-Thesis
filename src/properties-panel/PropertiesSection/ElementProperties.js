@@ -5,7 +5,6 @@ import React, { useCallback, useState, useEffect } from 'react';
 import ConnectedExecutors from './ConnectedExecutors/ConnectedExecutors';
 import ConnectedProducts from './ConnectedProducts/ConnectedProducts';
 import Priority from './Priority/Priority';
-import Batch from './Batch/Batch';
 
 function ElementProperties({ element, modeler, products }) {
     const [name, setName] = useState(() => {
@@ -14,8 +13,6 @@ function ElementProperties({ element, modeler, products }) {
         }
         return '';
     });
-
-    const [isExecutorConnectedToBatch, setIsExecutorConnectedToBatch] = useState(false);
 
     if (element && element.labelTarget) {
         element = element.labelTarget;
@@ -57,7 +54,6 @@ function ElementProperties({ element, modeler, products }) {
     useEffect(() => {
         if (element) {
             setName(element.businessObject.name || '');
-            setIsExecutorConnectedToBatch(isExecutorConnected());
         }
     }, [element, isExecutorConnected]);
 
@@ -95,7 +91,6 @@ function ElementProperties({ element, modeler, products }) {
                     {is(element, 'custom:Executor') && (
                         <div className="properties-list">
                             <ConnectedProducts element={element} modeler={modeler} products={products} />
-                            {isExecutorConnectedToBatch && <Batch element={element} modeler={modeler} />}
                         </div>
                     )}
                     {is(element, 'bpmn:Task') && element.type === 'bpmn:Task' && (

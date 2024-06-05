@@ -50,6 +50,11 @@
           "type": "String"
         },
         {
+          "name": "batch",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
           "name": "idActivity",
           "isAttr": true,
           "type": "String"
