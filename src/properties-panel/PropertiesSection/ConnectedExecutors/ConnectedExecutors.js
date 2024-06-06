@@ -388,6 +388,16 @@ function ConnectedExecutors({ element, modeler, products }) {
                     : product
             ),
         }));
+
+        var elementToChange = modeler.get('elementRegistry').get(element.id);
+        var newType =  {
+            type: 'custom:Batch'
+        };
+        
+        var replace = modeler.get('replace');
+        var newElement = replace.replaceElement(elementToChange, newType);
+
+
     }, []);
 
 
