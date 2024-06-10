@@ -1,6 +1,7 @@
 import Modeler from 'bpmn-js/lib/Modeler';
 import PropertiesPanel from './properties-panel';
 import customModdleExtension from './custom-modeler/custom.json';
+import { is } from "bpmn-js/lib/util/ModelUtil";
 
 import diagramXML from './diagram.bpmn';
 import customControlsModule from './BPMNExtensions';
@@ -48,19 +49,6 @@ const propertiesPanel = new PropertiesPanel({
 });
 
 modeler.importXML(diagramXML);
-
-function downloadXML(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
-}
 
 
 if (zoomIn) {
@@ -186,3 +174,11 @@ $hideWarningButton.addEventListener('change', function () {
     modeler.get('linting').toggle(true);
   }
 });
+
+
+if(modeler.on('moddleCopy.canCopyProperty', function(context) {
+  var property = context.property;
+  if (is(property, 'myCustomProperty')) {
+    return copyMyCustomProperty(property);
+  }
+}));

@@ -66,11 +66,41 @@ export default class CustomRenderer extends BaseRenderer {
       const shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
       element.type = "custom:Batch";
 
+      if (element.name) {
+        element.businessObject.name = element.name;
+      }
+
       let color;
-      if(element.businessObject.incoming?.length > 0 || element.businessObject.outgoing?.length > 0) {
-        color = "blue";
+
+      let hasBatchIncoming = true;
+      let hasBatchOutgoing = true;
+
+      for (let i = 0; i < element.businessObject.incoming?.length; i++) {
+        if (element.businessObject.incoming[i]?.sourceRef?.product) {
+          for (let j = 0; j < element.businessObject.incoming[i]?.sourceRef?.product.length; j++) {
+            if (element.businessObject.incoming[i]?.sourceRef?.product[j]?.batch <= 1) {
+              hasBatchIncoming = false;
+              break;
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < element.businessObject.outgoing?.length; i++) {
+        if (element.businessObject.outgoing[i]?.targetRef?.product) {
+          for (let j = 0; j < element.businessObject.outgoing[i]?.targetRef?.product.length; j++) {
+            if (element.businessObject.outgoing[i]?.targetRef?.product[j]?.batch <= 1) {
+              hasBatchOutgoing = false;
+              break;
+            }
+          }
+        }
+      }
+
+      if (hasBatchIncoming && hasBatchOutgoing) {
+        color = "none";
       } else {
-        color = "green";
+        color = "grey";
       }
 
       /*var attrs = {
@@ -82,16 +112,21 @@ export default class CustomRenderer extends BaseRenderer {
       var pathGear = this.pathMap.getScaledPath('TASK_TYPE_SERVICE', {
         abspos: {
           x: 12,
-          y: 18
+          y: 18,
+          scale: 2
         }
       });
 
-      this.drawPath(parentNode, pathGear, {
-        fill: 'none',
-        stroke: color,
+      const gear = this.drawPath(parentNode, pathGear, {
+        fill: color,
+        stroke: "black",
         //fill: getFillColor(element, this.defaultFillColor, attrs.fill),
         //stroke: getStrokeColor(element, this.defaultStrokeColor, attrs.stroke),
         strokeWidth: 1
+      });
+
+      svgAttr(gear, {
+        transform: "scale(1.2)"
       });
 
       return shape;
@@ -134,7 +169,7 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   lineStyle(attrs) {
-    return this.computeStyle(attrs, [ 'no-fill' ], {
+    return this.computeStyle(attrs, ['no-fill'], {
       strokeLinecap: 'round',
       strokeLinejoin: 'round',
       stroke: 'red',

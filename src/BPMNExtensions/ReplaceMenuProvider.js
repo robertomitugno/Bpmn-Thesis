@@ -51,6 +51,11 @@ CustomMenuProvider.prototype.getEntries = function (element) {
     entries = filter(replaceOptions.ACTIVITY_INTO_BATCH, differentType);
   }
 
+  /*if (element.type === 'bpmn:Task') {
+    element.x = element.x + 5;
+    element.y = element.y - 5;
+  }*/
+
   return this._createEntries(element, entries.filter(Boolean));
 };
 

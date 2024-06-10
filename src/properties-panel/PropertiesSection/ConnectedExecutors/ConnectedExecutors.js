@@ -394,7 +394,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             type: 'custom:Batch'
         };
         
-        var replace = modeler.get('replace');
+        var replace = modeler.get('bpmnReplace');
         var newElement = replace.replaceElement(elementToChange, newType);
 
 
