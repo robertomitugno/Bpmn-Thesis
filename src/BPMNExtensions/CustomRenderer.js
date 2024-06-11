@@ -75,6 +75,7 @@ export default class CustomRenderer extends BaseRenderer {
       let hasBatchIncoming = true;
       let hasBatchOutgoing = true;
 
+      //check if all incoming executor have products that have batch > 1
       for (let i = 0; i < element.businessObject.incoming?.length; i++) {
         if (element.businessObject.incoming[i]?.sourceRef?.product) {
           for (let j = 0; j < element.businessObject.incoming[i]?.sourceRef?.product.length; j++) {
@@ -86,6 +87,7 @@ export default class CustomRenderer extends BaseRenderer {
         }
       }
 
+      //check if all outgoing executor have products that have batch > 1
       for (let i = 0; i < element.businessObject.outgoing?.length; i++) {
         if (element.businessObject.outgoing[i]?.targetRef?.product) {
           for (let j = 0; j < element.businessObject.outgoing[i]?.targetRef?.product.length; j++) {

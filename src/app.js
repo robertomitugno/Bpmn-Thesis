@@ -175,10 +175,3 @@ $hideWarningButton.addEventListener('change', function () {
   }
 });
 
-
-if(modeler.on('moddleCopy.canCopyProperty', function(context) {
-  var property = context.property;
-  if (is(property, 'myCustomProperty')) {
-    return copyMyCustomProperty(property);
-  }
-}));
