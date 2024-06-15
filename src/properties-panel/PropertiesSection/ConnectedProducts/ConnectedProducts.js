@@ -60,10 +60,8 @@ function ConnectedProducts({ element, modeler }) {
 
     function handleTimeChange(e, index) {
         const newTime = e.target.value;
-        console.log(selectedProducts);
 
         const newProducts = { ...selectedProducts };
-        console.log(newProducts);
 
         newProducts[index].time = newTime;
 
@@ -115,9 +113,7 @@ function ConnectedProducts({ element, modeler }) {
             newBatch = 1;
         }
 
-        console.log(selectedProducts);
         const newProducts = { ...selectedProducts };
-        console.log(newProducts);
         newProducts[index].batch = newBatch;
 
         const modeling = modeler.get('modeling');
