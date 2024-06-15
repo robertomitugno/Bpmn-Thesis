@@ -99,10 +99,11 @@ export default class CustomRenderer extends BaseRenderer {
         }
       }
 
+    
       if (hasBatchIncoming && hasBatchOutgoing) {
         color = "none";
       } else {
-        color = "grey";
+        color = "orange";
       }
 
       /*var attrs = {
@@ -111,6 +112,7 @@ export default class CustomRenderer extends BaseRenderer {
         fillOpacity: DEFAULT_FILL_OPACITY
       };*/
 
+      //create gear icon
       var pathGear = this.pathMap.getScaledPath('TASK_TYPE_SERVICE', {
         abspos: {
           x: 12,
@@ -119,14 +121,16 @@ export default class CustomRenderer extends BaseRenderer {
         }
       });
 
+      //draw gear icon
       const gear = this.drawPath(parentNode, pathGear, {
         fill: color,
         stroke: "black",
+        strokeWidth: 1
         //fill: getFillColor(element, this.defaultFillColor, attrs.fill),
         //stroke: getStrokeColor(element, this.defaultStrokeColor, attrs.stroke),
-        strokeWidth: 1
       });
 
+      //scale gear icon
       svgAttr(gear, {
         transform: "scale(1.2)"
       });

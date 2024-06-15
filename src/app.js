@@ -1,7 +1,6 @@
 import Modeler from 'bpmn-js/lib/Modeler';
 import PropertiesPanel from './properties-panel';
 import customModdleExtension from './custom-modeler/custom.json';
-import { is } from "bpmn-js/lib/util/ModelUtil";
 
 import diagramXML from './diagram.bpmn';
 import customControlsModule from './BPMNExtensions';
@@ -57,6 +56,7 @@ if (zoomIn) {
     return false;
   });
 }
+
 if (zoomOut) {
   zoomOut.addEventListener('click', function () {
     modeler.get('zoomScroll').stepZoom(-1);
@@ -77,27 +77,6 @@ function show(content) {
 }
 
 
-var href = new URL(window.location.href);
-var src = href.searchParams.get('src');
-if (src) {
-  loadBPMN(src);
-}
-
-function loadBPMN(URL) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      show(xhttp.responseText);
-    }
-    else {
-      console.warn('Failed to get file. ReadyState: ' + xhttp.readyState + ', Status: ' + xhttp.status);
-    }
-  };
-  xhttp.open('GET', URL, true);
-  xhttp.send();
-}
-
-
 
 if (uploadBPMN) {
   uploadBPMN.value = '';
@@ -112,13 +91,11 @@ if (uploadBPMN) {
     };
 
     reader.readAsText(event.target.files[0]);
-    modelName = event.target.files[0].name.split('.')[0];
   });
 }
 
 if (downloadBPMN) {
   downloadBPMN.addEventListener('click', function () {
-
     modeler.saveXML({ format: true }).then(function (result) {
       download(result.xml, 'diagram.bpmn', 'application/xml');
     }).catch(function (err) {

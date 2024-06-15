@@ -376,13 +376,8 @@ function ConnectedExecutors({ element, modeler, products }) {
         if (productToUpdate) {
           const prevBatch = productToUpdate.batch;
           productToUpdate.batch = newBatch;
-
-          console.log(prevBatch, newBatch);
-
-          console.log(prevBatch > 1 && newBatch === 1);
       
           if ((prevBatch > 1 && newBatch == 1) || (prevBatch == '1' && newBatch > '1')) {
-            console.log("entro");
             const newType = {
               type: 'custom:Batch'
             };
