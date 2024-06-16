@@ -21,7 +21,7 @@ const HIGH_PRIORITY = 1500,
   DEFAULT_FILL_OPACITY = 0.95;
 
 export default class CustomRenderer extends BaseRenderer {
-  constructor(config, eventBus, bpmnRenderer, textRenderer, styles) {
+  constructor(config, eventBus, bpmnRenderer, textRenderer, styles, pathMap) {
     super(eventBus, HIGH_PRIORITY);
 
     this.bpmnRenderer = bpmnRenderer;
@@ -32,6 +32,7 @@ export default class CustomRenderer extends BaseRenderer {
     this.defaultFillColor = config && config.defaultFillColor;
     this.defaultStrokeColor = config && config.defaultStrokeColor;
     this.defaultLabelColor = config && config.defaultLabelColor;
+    this.pathMap = pathMap;
   }
 
   canRender(element) {
@@ -59,11 +60,81 @@ export default class CustomRenderer extends BaseRenderer {
 
       return rect;
     } else if (is(element, "custom:Batch")) {
-      element.type = "bpmn:ServiceTask";
+      element.type = "bpmn:Task";
       element.width = 100;
       element.height = 80;
-      let shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
+      const shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
       element.type = "custom:Batch";
+
+      if (element.name) {
+        element.businessObject.name = element.name;
+      }
+
+      let color;
+
+      let hasBatchIncoming = true;
+      let hasBatchOutgoing = true;
+
+      //check if all incoming executor have products that have batch > 1
+      for (let i = 0; i < element.businessObject.incoming?.length; i++) {
+        if (element.businessObject.incoming[i]?.sourceRef?.product) {
+          for (let j = 0; j < element.businessObject.incoming[i]?.sourceRef?.product.length; j++) {
+            if (element.businessObject.incoming[i]?.sourceRef?.product[j]?.batch <= 1) {
+              hasBatchIncoming = false;
+              break;
+            }
+          }
+        }
+      }
+
+      //check if all outgoing executor have products that have batch > 1
+      for (let i = 0; i < element.businessObject.outgoing?.length; i++) {
+        if (element.businessObject.outgoing[i]?.targetRef?.product) {
+          for (let j = 0; j < element.businessObject.outgoing[i]?.targetRef?.product.length; j++) {
+            if (element.businessObject.outgoing[i]?.targetRef?.product[j]?.batch <= 1) {
+              hasBatchOutgoing = false;
+              break;
+            }
+          }
+        }
+      }
+
+    
+      if (hasBatchIncoming && hasBatchOutgoing) {
+        color = "none";
+      } else {
+        color = "orange";
+      }
+
+      /*var attrs = {
+        fill: getFillColor(element, this.defaultFillColor),
+        stroke: getStrokeColor(element, this.defaultStrokeColor),
+        fillOpacity: DEFAULT_FILL_OPACITY
+      };*/
+
+      //create gear icon
+      var pathGear = this.pathMap.getScaledPath('TASK_TYPE_SERVICE', {
+        abspos: {
+          x: 12,
+          y: 18,
+          scale: 2
+        }
+      });
+
+      //draw gear icon
+      const gear = this.drawPath(parentNode, pathGear, {
+        fill: color,
+        stroke: "black",
+        strokeWidth: 1
+        //fill: getFillColor(element, this.defaultFillColor, attrs.fill),
+        //stroke: getStrokeColor(element, this.defaultStrokeColor, attrs.stroke),
+      });
+
+      //scale gear icon
+      svgAttr(gear, {
+        transform: "scale(1.2)"
+      });
+
       return shape;
     }
     else {
@@ -89,6 +160,28 @@ export default class CustomRenderer extends BaseRenderer {
     return connectionElement;
   }
 
+
+  drawPath(parentGfx, d, attrs) {
+    attrs = this.lineStyle(attrs);
+
+    var path = svgCreate('path', {
+      ...attrs,
+      d
+    });
+
+    svgAppend(parentGfx, path);
+
+    return path;
+  }
+
+  lineStyle(attrs) {
+    return this.computeStyle(attrs, ['no-fill'], {
+      strokeLinecap: 'round',
+      strokeLinejoin: 'round',
+      stroke: 'red',
+      strokeWidth: 2
+    });
+  }
 
   getShapePath(shape) {
     if (is(shape, "custom:Executor")) {
@@ -146,7 +239,8 @@ CustomRenderer.$inject = [
   "eventBus",
   "bpmnRenderer",
   "textRenderer",
-  "styles"
+  "styles",
+  "pathMap"
 ];
 
 // helpers //////////

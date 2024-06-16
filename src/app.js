@@ -49,19 +49,6 @@ const propertiesPanel = new PropertiesPanel({
 
 modeler.importXML(diagramXML);
 
-function downloadXML(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
-}
-
 
 if (zoomIn) {
   zoomIn.addEventListener('click', function () {
@@ -69,6 +56,7 @@ if (zoomIn) {
     return false;
   });
 }
+
 if (zoomOut) {
   zoomOut.addEventListener('click', function () {
     modeler.get('zoomScroll').stepZoom(-1);
@@ -89,27 +77,6 @@ function show(content) {
 }
 
 
-var href = new URL(window.location.href);
-var src = href.searchParams.get('src');
-if (src) {
-  loadBPMN(src);
-}
-
-function loadBPMN(URL) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      show(xhttp.responseText);
-    }
-    else {
-      console.warn('Failed to get file. ReadyState: ' + xhttp.readyState + ', Status: ' + xhttp.status);
-    }
-  };
-  xhttp.open('GET', URL, true);
-  xhttp.send();
-}
-
-
 
 if (uploadBPMN) {
   uploadBPMN.value = '';
@@ -124,13 +91,11 @@ if (uploadBPMN) {
     };
 
     reader.readAsText(event.target.files[0]);
-    modelName = event.target.files[0].name.split('.')[0];
   });
 }
 
 if (downloadBPMN) {
   downloadBPMN.addEventListener('click', function () {
-
     modeler.saveXML({ format: true }).then(function (result) {
       download(result.xml, 'diagram.bpmn', 'application/xml');
     }).catch(function (err) {
@@ -186,3 +151,4 @@ $hideWarningButton.addEventListener('change', function () {
     modeler.get('linting').toggle(true);
   }
 });
+

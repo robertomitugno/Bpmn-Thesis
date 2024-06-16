@@ -60,7 +60,9 @@ function ConnectedProducts({ element, modeler }) {
 
     function handleTimeChange(e, index) {
         const newTime = e.target.value;
+
         const newProducts = { ...selectedProducts };
+
         newProducts[index].time = newTime;
 
         const modeling = modeler.get('modeling');
@@ -99,6 +101,37 @@ function ConnectedProducts({ element, modeler }) {
         setSelectedProducts(newProducts);
     }
 
+
+
+
+    function handleBatchChange(e, index) {
+        let newBatch = e.target.value;
+
+        if (newBatch.startsWith('1') && e.nativeEvent.data !== '0') {
+            newBatch = newBatch.substring(1);
+        } else if (newBatch < '1') {
+            newBatch = 1;
+        }
+
+        const newProducts = { ...selectedProducts };
+        newProducts[index].batch = newBatch;
+
+        const modeling = modeler.get('modeling');
+        const executorElement = modeler.get('elementRegistry').get(element.id);
+
+        const productArray = executorElement.businessObject.product;
+
+        if (productArray) {
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
+        }
+
+        setSelectedProducts(newProducts);
+
+    };
+
+
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -114,7 +147,7 @@ function ConnectedProducts({ element, modeler }) {
                                     <React.Fragment key={index}>
                                         <div>
                                             <div className="selection" onClick={(event) => {
-                                                handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity); 
+                                                handleProductExpansion(selectedProducts[index]?.id, selectedProducts[index]?.idActivity);
                                                 event.stopPropagation();
                                             }}>
 
@@ -131,6 +164,7 @@ function ConnectedProducts({ element, modeler }) {
                                                         <span>Time : </span>
                                                         <input type="number"
                                                             value={selectedProducts[index]?.time || 0}
+                                                            onClick={(event) => event.stopPropagation()}
                                                             onChange={(e) => handleTimeChange(e, index)} />
 
                                                         <select value={selectedProducts[index]?.timeUnit || 's'} onChange={(e) => handleTimeUnitChange(e, index)}>
@@ -141,6 +175,15 @@ function ConnectedProducts({ element, modeler }) {
                                                         </select>
 
                                                     </div>
+                                                    {is(modeler.get('elementRegistry').get(selectedProducts[index]?.idActivity), 'custom:Batch') && (
+                                                        <div className="batch-input">
+                                                            <span>Batch : </span>
+                                                            <input type="text"
+                                                                value={selectedProducts[index]?.batch}
+                                                                onClick={(event) => event.stopPropagation()}
+                                                                onChange={(e) => handleBatchChange(e, index)} />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

@@ -358,10 +358,12 @@ function ConnectedExecutors({ element, modeler, products }) {
 
     const handleBatchChange = useCallback((e, executorId, productId) => {
         let newBatch = e.target.value;
-
-        if (newBatch === '') {
-            newBatch = 1; // Imposta il valore minimo a 1 se il campo è vuoto
-        } 
+      
+        if (newBatch.startsWith('1') && e.nativeEvent.data !== '0') {
+          newBatch = newBatch.substring(1);
+        } else if (newBatch < '1') {
+          newBatch = 1;
+        }
       
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
@@ -372,10 +374,27 @@ function ConnectedExecutors({ element, modeler, products }) {
           (product) => product.id === productId && product.idActivity === element.id
         );
         if (productToUpdate) {
+          const prevBatch = productToUpdate.batch;
           productToUpdate.batch = newBatch;
-          modeling.updateProperties(executorElement, {
-            product: productArray,
-          });
+      
+          if ((prevBatch > 1 && newBatch == 1) || (prevBatch == '1' && newBatch > '1')) {
+            const newType = {
+              type: 'custom:Batch'
+            };
+            const newBusinessObject = {
+              ...element.businessObject,
+              ...newType.businessObject
+            };
+            modeling.updateModdleProperties(element, {
+              type: newType,
+              businessObject: newBusinessObject
+            });
+
+            modeling.updateProperties(executorElement, {
+                product: productArray,
+              });
+          }
+    
         }
       
         setSelectedProducts((prevSelectedProducts) => ({
@@ -386,8 +405,8 @@ function ConnectedExecutors({ element, modeler, products }) {
               : product
           ),
         }));
+      
       }, []);
-
 
     return (
         <div className="element-properties" key={element ? element.id : ''}>
