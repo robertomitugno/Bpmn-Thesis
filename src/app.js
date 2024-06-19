@@ -3,7 +3,7 @@ import PropertiesPanel from './properties-panel';
 import customModdleExtension from './custom-modeler/custom.json';
 
 import diagramXML from './diagram.bpmn';
-import customControlsModule from './BPMNExtensions';
+import bpmnExtension from './BPMNExtensions';
 import './app.css';
 
 import lintModule from "bpmn-js-bpmnlint";
@@ -32,11 +32,8 @@ const modeler = new Modeler({
     bpmnlint: bpmnlintConfig,
     active: true
   },
-  keyboard: {
-    bindTo: document.body
-  },
   additionalModules: [
-    customControlsModule,
+    bpmnExtension,
     lintModule
   ]
 });

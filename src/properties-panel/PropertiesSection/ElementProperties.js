@@ -1,6 +1,6 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ElementProperties.css';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import ConnectedExecutors from './ConnectedExecutors/ConnectedExecutors';
 import ConnectedProducts from './ConnectedProducts/ConnectedProducts';
@@ -13,49 +13,6 @@ function ElementProperties({ element, modeler, products }) {
         }
         return '';
     });
-
-    if (element && element.labelTarget) {
-        element = element.labelTarget;
-    }
-
-
-    const isExecutorConnected = useCallback(() => {
-        if (is(element, 'custom:Executor')) {
-            const executor = element.id;
-            const batches = modeler.get('elementRegistry').filter((el) => is(el, 'custom:Batch'));
-            
-            for (const batch of batches) {
-                const incomingConnections = batch.incoming;
-                const outgoingConnections = batch.outgoing;
-
-                if (incomingConnections) {
-                    for (const connection of incomingConnections) {
-                        if (is(connection, 'custom:Connection') && (connection.source.id === executor || connection.target.id === executor)) {
-                            return true;
-                        }
-                    }
-                }
-
-                if (outgoingConnections) {
-                    for (const connection of outgoingConnections) {
-                        if (is(connection, 'custom:Connection') && (connection.source.id === executor || connection.target.id === executor)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }, [element, modeler]);
-
-
-
-    useEffect(() => {
-        if (element) {
-            setName(element.businessObject.name || '');
-        }
-    }, [element, isExecutorConnected]);
 
     const getElementType = useCallback(() => {
         if (element && element.type) {
@@ -93,18 +50,14 @@ function ElementProperties({ element, modeler, products }) {
                             <ConnectedProducts element={element} modeler={modeler} products={products} />
                         </div>
                     )}
-                    {is(element, 'bpmn:Task') && element.type === 'bpmn:Task' && (
-                        <div className="properties-list">
-                            <ConnectedExecutors element={element} modeler={modeler} products={products} />
-                            <Priority element={element} modeler={modeler} />
-                        </div>
-                    )}
-                    {is(element, 'custom:Batch') && (
-                        <div className="properties-list">
-                            <ConnectedExecutors element={element} modeler={modeler} products={products} />
-                            <Priority element={element} modeler={modeler} />
-                        </div>
-                    )}
+                    {
+                        (element.type === 'bpmn:Task' || is(element, 'custom:Batch')) && (
+                            <div className="properties-list">
+                                <ConnectedExecutors element={element} modeler={modeler} products={products} />
+                                <Priority element={element} modeler={modeler} />
+                            </div>
+                        )
+                    }
                 </>
             )}
         </div>

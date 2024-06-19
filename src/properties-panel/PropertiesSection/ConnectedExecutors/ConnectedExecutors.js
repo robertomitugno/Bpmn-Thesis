@@ -29,7 +29,6 @@ function ConnectedExecutors({ element, modeler, products }) {
     const [executorExpanded, setExecutorExpanded] = useState({});
     const [productExpandedExec, setProductExpandedExec] = useState({});
 
-    const [batch, setBatch] = useState();
     const [isExecutorConnectedToBatch, setIsExecutorConnectedToBatch] = useState(false);
 
 
