@@ -16,9 +16,7 @@ import {
 import { is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
-const HIGH_PRIORITY = 1500,
-  TASK_BORDER_RADIUS = 6,
-  DEFAULT_FILL_OPACITY = 0.95;
+const HIGH_PRIORITY = 1500;
 
 export default class CustomRenderer extends BaseRenderer {
   constructor(config, eventBus, bpmnRenderer, textRenderer, styles, pathMap) {
@@ -43,13 +41,8 @@ export default class CustomRenderer extends BaseRenderer {
     var rect;
 
     if (is(element, "custom:Executor")) {
-      var attrs = {
-        fill: getFillColor(element, this.defaultFillColor),
-        stroke: getStrokeColor(element, this.defaultStrokeColor),
-        fillOpacity: DEFAULT_FILL_OPACITY
-      };
 
-      rect = drawHexagon(parentNode, 120, 60, TASK_BORDER_RADIUS, attrs);
+      rect = drawHexagon(parentNode, element.width, element.height);
 
       this.renderEmbeddedLabel(
         parentNode,
@@ -65,10 +58,6 @@ export default class CustomRenderer extends BaseRenderer {
       element.height = 80;
       const shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
       element.type = "custom:Batch";
-
-      if (element.name) {
-        element.businessObject.name = element.name;
-      }
 
       let color;
 
@@ -106,18 +95,11 @@ export default class CustomRenderer extends BaseRenderer {
         color = "orange";
       }
 
-      /*var attrs = {
-        fill: getFillColor(element, this.defaultFillColor),
-        stroke: getStrokeColor(element, this.defaultStrokeColor),
-        fillOpacity: DEFAULT_FILL_OPACITY
-      };*/
-
       //create gear icon
       var pathGear = this.pathMap.getScaledPath('TASK_TYPE_SERVICE', {
         abspos: {
           x: 12,
           y: 18,
-          scale: 2
         }
       });
 
@@ -126,8 +108,6 @@ export default class CustomRenderer extends BaseRenderer {
         fill: color,
         stroke: "black",
         strokeWidth: 1
-        //fill: getFillColor(element, this.defaultFillColor, attrs.fill),
-        //stroke: getStrokeColor(element, this.defaultStrokeColor, attrs.stroke),
       });
 
       //scale gear icon
@@ -185,7 +165,7 @@ export default class CustomRenderer extends BaseRenderer {
 
   getShapePath(shape) {
     if (is(shape, "custom:Executor")) {
-      return getRoundRectPath(shape, TASK_BORDER_RADIUS);
+      return getRoundRectPath(shape, 6);
     }
     return this.bpmnRenderer.getShapePath(shape);
   }

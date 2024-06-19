@@ -186,7 +186,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             const currentProducts = executorElement.businessObject.product || [];
             const updatedProducts = currentProducts.filter(p => p.id !== product.id || p.idActivity !== idActivity);
             modeling.updateProperties(executorElement, {
-                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('custom:Products', { values: [] })
+                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('custom:Product', { values: [] })
             });
         }
     }, [modeler, setSelectedProducts]);

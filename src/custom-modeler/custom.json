@@ -62,16 +62,6 @@
       ]
     },
     {
-      "name": "Products",
-      "properties": [
-        {
-          "name": "products",
-          "type": "Product",
-          "isMany": true
-        }
-      ]
-    },
-    {
       "name": "Batch",
       "superClass": [
         "bpmn:Task"

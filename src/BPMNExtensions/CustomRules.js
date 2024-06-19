@@ -41,8 +41,8 @@ CustomRules.prototype.init = function () {
       return;
     }
 
-    // allow creation on processes
-    return is(target, 'bpmn:Process') || is(target, 'bpmn:Participant') || is(target, 'bpmn:Collaboration');
+    // allow creation on process
+    return is(target, 'bpmn:Process');
   }
 
   /**
