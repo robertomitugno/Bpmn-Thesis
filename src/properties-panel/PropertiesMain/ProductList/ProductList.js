@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import './ProductList.css';
 
-const generateUniqueId = () => {
-  const randomString = Math.random().toString(36).substring(2, 9); 
-  return `Product_${randomString}`;
-};
 
 const ProductList = ({ products, onAddProduct }) => {
   const [productName, setProductName] = useState('');
@@ -19,6 +15,11 @@ const ProductList = ({ products, onAddProduct }) => {
       onAddProduct(newProduct);
       setProductName('');
     }
+  };
+
+  const generateUniqueId = () => {
+    const randomString = Math.random().toString(36).substring(2, 9);
+    return `Product_${randomString}`;
   };
 
   return (

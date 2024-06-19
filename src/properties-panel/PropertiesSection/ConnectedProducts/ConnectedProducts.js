@@ -176,9 +176,9 @@ function ConnectedProducts({ element, modeler }) {
 
                                                     </div>
                                                     {is(modeler.get('elementRegistry').get(selectedProducts[index]?.idActivity), 'custom:Batch') && (
-                                                        <div className="batch-input">
-                                                            <span>Batch : </span>
-                                                            <input type="text"
+                                                        <div className="time-input">
+                                                            <span>Number of element for batch: </span>
+                                                            <input type="number"
                                                                 value={selectedProducts[index]?.batch}
                                                                 onClick={(event) => event.stopPropagation()}
                                                                 onChange={(e) => handleBatchChange(e, index)} />

@@ -16,6 +16,8 @@ export default function PropertiesMain({ modeler }) {
     const executorElement = elementRegistry.find(element => element.type === 'custom:Executor');
     if (executorElement) {
       const productElement = executorElement.businessObject.get('custom:product');
+
+      // Remove duplicates products from the list
       if (productElement) {
         const uniqueProductsSet = new Set(productElement.map(product => product.id));
 
@@ -26,26 +28,21 @@ export default function PropertiesMain({ modeler }) {
         setProducts(uniqueProducts);
       }
     }
-
-    return () => {
-      modeler.off('selection.changed', handleSelectionChange);
-    };
   }, []);
+
 
   const handleSelectionChange = e => {
     setSelectedElements(e.newSelection);
     setElement(e.newSelection[0]);
   };
 
-
-  const handleAddProduct = (newProduct) => {
+  // Add a new product to the list
+  const onAddProduct = (newProduct) => {
     if (newProduct) {
       setProducts(prevProducts => [...prevProducts, newProduct]);
     } else if (productName.trim() !== '') {
       const newProduct = { id: productId, name: productName };
       setProducts(prevProducts => [...prevProducts, newProduct]);
-      setProductName('');
-      setProductId(prevId => prevId + 1);
     }
   };
 
@@ -53,7 +50,7 @@ export default function PropertiesMain({ modeler }) {
     <div className="PropertiesMain">
       {selectedElements.length === 1 && (
         <div>
-          <ElementProperties modeler={modeler} element={element} products={products} onAddProduct={handleAddProduct} />
+          <ElementProperties modeler={modeler} element={element} products={products}/>
         </div>
       )}
       {selectedElements.length === 0 && (
@@ -62,7 +59,7 @@ export default function PropertiesMain({ modeler }) {
             <ExecutorsList modeler={modeler} />
           </div>
           <div className="ProductList">
-            <ProductList products={products} onAddProduct={handleAddProduct} />
+            <ProductList products={products} onAddProduct={onAddProduct} />
           </div>
         </>
       )}

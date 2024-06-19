@@ -25,7 +25,7 @@ export default class CustomPalette {
       };
     }
 
-    const newEntry = {
+    const additionalEntries = {
       "create.Executor": {
         group: "custom",
         className: "icon-custom-executor",
@@ -44,7 +44,7 @@ export default class CustomPalette {
       delete entries["create.data-store"];
       delete entries["create.participant-expanded"];
 
-      return {...entries, ...newEntry};
+      return {...entries, ...additionalEntries};
     };
   }
 }

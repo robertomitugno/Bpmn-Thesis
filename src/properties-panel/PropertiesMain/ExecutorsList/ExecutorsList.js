@@ -1,32 +1,25 @@
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import './ExecutorsList.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function ExecutorsList({ modeler }) {
-  const [activities, setActivities] = useState([]);
-  const modelerRef = useRef(modeler);
+  const [executors, setExecutors] = useState([]);
 
   useEffect(() => {
-    modelerRef.current = modeler;
-  }, [modeler]);
+    modeler.on('selection.changed', updateExecutors);
 
-  useEffect(() => {
-    const eventBus = modelerRef.current.get('eventBus');
-
-    eventBus.on('elements.changed', updateActivities);
-
-    updateActivities();
+    updateExecutors();
 
     return () => {
-      eventBus.off('elements.changed', updateActivities);
+      modeler.off('elements.changed', updateExecutors);
     };
   }, []);
 
-  const updateActivities = () => {
-    const elementRegistry = modelerRef.current.get('elementRegistry');
+  const updateExecutors = () => {
+    const elementRegistry = modeler.get('elementRegistry');
     const elements = elementRegistry.filter(element => is(element, 'custom:Executor'));
-    const activities = elements.map(element => ({ id: element.id, name: element.businessObject.name }));
-    setActivities(activities);
+    const executors = elements.map(element => ({ id: element.id, name: element.businessObject.name }));
+    setExecutors(executors);
   };
 
   return (
@@ -40,10 +33,10 @@ function ExecutorsList({ modeler }) {
           </tr>
         </thead>
         <tbody>
-          {activities.map(activity => (
-            <tr key={activity.id}>
-              <td>{activity.name}</td>
-              <td>{activity.id}</td>
+          {executors.map(executor => (
+            <tr key={executor.id}>
+              <td>{executor.name}</td>
+              <td>{executor.id}</td>
             </tr>
           ))}
         </tbody>
