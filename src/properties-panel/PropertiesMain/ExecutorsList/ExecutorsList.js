@@ -17,7 +17,7 @@ function ExecutorsList({ modeler }) {
 
   const updateExecutors = () => {
     const elementRegistry = modeler.get('elementRegistry');
-    const elements = elementRegistry.filter(element => is(element, 'custom:Executor'));
+    const elements = elementRegistry.filter(element => is(element, 'factory:Executor'));
     const executors = elements.map(element => ({ id: element.id, name: element.businessObject.name }));
     setExecutors(executors);
   };

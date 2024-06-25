@@ -21,7 +21,7 @@ export default function CustomContextPadProvider(injector, connect, translate) {
       injector.get('modeling').removeElements([element]);
     }
 
-    if (isAny(businessObject, ['custom:Executor'])) {
+    if (isAny(businessObject, ['factory:Executor'])) {
       
       if (businessObject.padProvider !== element) {
         actions = {

@@ -145,7 +145,7 @@ function copyWaypoints(connection) {
 }
 
 function isCustom(element) {
-  return element && /custom:/.test(element.type);
+  return element && /factory:/.test(element.type);
 }
 
 function ifCustomElement(fn) {

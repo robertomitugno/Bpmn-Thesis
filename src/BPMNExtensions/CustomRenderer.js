@@ -34,13 +34,13 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   canRender(element) {
-    return isAny(element, ["custom:Executor", "custom:Connection", "custom:Batch"]) && !element.labelTarget;
+    return isAny(element, ["factory:Executor", "factory:Connection", "factory:Batch"]) && !element.labelTarget;
   }
 
   drawShape(parentNode, element, handler) {
     var rect;
 
-    if (is(element, "custom:Executor")) {
+    if (is(element, "factory:Executor")) {
 
       rect = drawHexagon(parentNode, element.width, element.height);
 
@@ -52,12 +52,12 @@ export default class CustomRenderer extends BaseRenderer {
       );
 
       return rect;
-    } else if (is(element, "custom:Batch")) {
+    } else if (is(element, "factory:Batch")) {
       element.type = "bpmn:Task";
       element.width = 100;
       element.height = 80;
       const shape = this.bpmnRenderer.drawShape(parentNode, element, handler);
-      element.type = "custom:Batch";
+      element.type = "factory:Batch";
 
       let color;
 
@@ -164,7 +164,7 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   getShapePath(shape) {
-    if (is(shape, "custom:Executor")) {
+    if (is(shape, "factory:Executor")) {
       return getRoundRectPath(shape, 6);
     }
     return this.bpmnRenderer.getShapePath(shape);
@@ -207,7 +207,7 @@ export default class CustomRenderer extends BaseRenderer {
   }
 
   _renderer(type) {
-    if (type === 'custom:Connection') {
+    if (type === 'factory:Connection') {
       return this.drawConnection;
     }
     return super._renderer(type);

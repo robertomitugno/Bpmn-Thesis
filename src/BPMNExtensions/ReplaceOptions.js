@@ -4,7 +4,7 @@ export var ACTIVITY_INTO_BATCH = [
     actionName: "replace-with-batch",
     className: "bpmn-icon-service",
     target: {
-      type: "custom:Batch"
+      type: "factory:Batch"
     }
   }
 ];

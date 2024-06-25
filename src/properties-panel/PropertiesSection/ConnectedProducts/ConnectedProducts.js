@@ -18,11 +18,11 @@ function ConnectedProducts({ element, modeler }) {
         const connectedExecutors = [];
         const elementRegistry = modeler.get('elementRegistry');
 
-        elementRegistry.filter(element => is(element, 'custom:Connection')).forEach(sequenceFlow => {
+        elementRegistry.filter(element => is(element, 'factory:Connection')).forEach(sequenceFlow => {
             if (sequenceFlow.source === element || sequenceFlow.target === element) {
                 const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
 
-                if (is(connectedElement, 'custom:Executor')) {
+                if (is(connectedElement, 'factory:Executor')) {
                     connectedExecutors.push(connectedElement);
                 }
             }
@@ -35,8 +35,8 @@ function ConnectedProducts({ element, modeler }) {
         if (element) {
             setSelectedProducts({});
         }
-        if (element.type === 'custom:Executor') {
-            const productElement = element.businessObject.get('custom:product');
+        if (element.type === 'factory:Executor') {
+            const productElement = element.businessObject.get('factory:product');
             setSelectedProducts(productElement);
         }
     }, [element, getConnectedExecutors]);
@@ -175,7 +175,7 @@ function ConnectedProducts({ element, modeler }) {
                                                         </select>
 
                                                     </div>
-                                                    {is(modeler.get('elementRegistry').get(selectedProducts[index]?.idActivity), 'custom:Batch') && (
+                                                    {is(modeler.get('elementRegistry').get(selectedProducts[index]?.idActivity), 'factory:Batch') && (
                                                         <div className="time-input">
                                                             <span>Number of element for batch: </span>
                                                             <input type="number"

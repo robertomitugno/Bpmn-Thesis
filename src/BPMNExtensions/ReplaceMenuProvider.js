@@ -44,7 +44,7 @@ CustomMenuProvider.prototype.getEntries = function (element) {
   }
 
   var differentType = isDifferentType(element);
-  if (element.type === 'custom:Batch') {
+  if (element.type === 'factory:Batch') {
     entries = filter(replaceOptions.BATCH_INTO_ACTIVITY, differentType);
   }
   else if (is(businessObject, "bpmn:Task")) {

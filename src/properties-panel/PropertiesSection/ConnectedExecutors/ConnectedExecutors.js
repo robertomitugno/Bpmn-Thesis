@@ -37,11 +37,11 @@ function ConnectedExecutors({ element, modeler, products }) {
         const connectedExecutors = [];
         const elementRegistry = modeler.get('elementRegistry');
 
-        elementRegistry.filter(element => is(element, 'custom:Connection')).forEach(sequenceFlow => {
+        elementRegistry.filter(element => is(element, 'factory:Connection')).forEach(sequenceFlow => {
             if (sequenceFlow.source === element || sequenceFlow.target === element) {
                 const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
 
-                if (is(connectedElement, 'custom:Executor')) {
+                if (is(connectedElement, 'factory:Executor')) {
                     connectedExecutors.push(connectedElement);
                 }
             }
@@ -59,18 +59,18 @@ function ConnectedExecutors({ element, modeler, products }) {
             setProductDropdownOpen(false);
             setExecutorDropdownOpen(false);
         }
-        if (element.type === 'custom:Executor') {
-            const productElement = element.businessObject.get('custom:product');
+        if (element.type === 'factory:Executor') {
+            const productElement = element.businessObject.get('factory:product');
             setSelectedProducts(productElement);
         }
-        if (element.type === 'custom:Batch') {
+        if (element.type === 'factory:Batch') {
             setIsExecutorConnectedToBatch(true);
         }
     }, [element, getConnectedExecutors]);
 
 
     useEffect(() => {
-        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor'));
+        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'factory:Executor'));
         setExecutors(allExecutors);
     }, []);
 
@@ -138,7 +138,7 @@ function ConnectedExecutors({ element, modeler, products }) {
 
         const modeling = modeler.get('modeling');
         const moddle = modeler.get('moddle');
-        const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
+        const executor = modeler.get('elementRegistry').filter(element => is(element, 'factory:Executor')).find(executor => executor.id === executorId);
 
         if (executor) {
             let extensionElements = executor.businessObject.product;
@@ -147,7 +147,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                 extensionElements = [];
             }
 
-            const newProduct = moddle.create("custom:Product");
+            const newProduct = moddle.create("factory:Product");
             newProduct.id = product.id;
             newProduct.name = product.name;
             newProduct.time = 0;
@@ -185,7 +185,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             const currentProducts = executorElement.businessObject.product || [];
             const updatedProducts = currentProducts.filter(p => p.id !== product.id || p.idActivity !== idActivity);
             modeling.updateProperties(executorElement, {
-                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('custom:Product', { values: [] })
+                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('factory:Product', { values: [] })
             });
         }
     }, [modeler, setSelectedProducts]);
@@ -208,7 +208,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             [executor.id]: !prevState[executor.id],
         }));
 
-        const productElement = executor.businessObject.get('custom:product');
+        const productElement = executor.businessObject.get('factory:product');
         let selectedProductsUpdate = {};
 
         if (productElement && productElement.length > 0) {
@@ -327,7 +327,7 @@ function ConnectedExecutors({ element, modeler, products }) {
         const targetMid = getMid(executor);
 
         const connection = {
-            type: 'custom:Connection',
+            type: 'factory:Connection',
             waypoints: [
                 sourceMid,
                 targetMid
@@ -343,7 +343,7 @@ function ConnectedExecutors({ element, modeler, products }) {
     const handleDetachExecutor = useCallback((executor) => {
         const elementRegistry = modeler.get('elementRegistry');
         const connections = elementRegistry.filter(component => {
-            return (component.type === 'custom:Connection' &&
+            return (component.type === 'factory:Connection' &&
                 (component.source === element && component.target === executor) || (component.source === executor && component.target === element));
         });
         const modeling = modeler.get('modeling');
@@ -378,7 +378,7 @@ function ConnectedExecutors({ element, modeler, products }) {
       
           if ((prevBatch > 1 && newBatch == 1) || (prevBatch == '1' && newBatch > '1')) {
             const newType = {
-              type: 'custom:Batch'
+              type: 'factory:Batch'
             };
             const newBusinessObject = {
               ...element.businessObject,

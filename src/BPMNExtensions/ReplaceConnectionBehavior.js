@@ -101,13 +101,13 @@ export default function ReplaceConnectionBehavior(eventBus, modeling, bpmnRules,
             allowed,
             replacement;
 
-        // Check if the source or target element is a custom:Executor
-        var isCustomExecutor = is(source, 'custom:Executor') || is(target, 'custom:Executor');
+        // Check if the source or target element is a factory:Executor
+        var isCustomExecutor = is(source, 'factory:Executor') || is(target, 'factory:Executor');
 
         if (isCustomExecutor) {
-            // If it is, set the allowed type to custom:Connection
+            // If it is, set the allowed type to factory:Connection
             allowed = {
-                type: 'custom:Connection',
+                type: 'factory:Connection',
             };
         } else {
             // If not, use the bpmnRules to determine the allowed connection

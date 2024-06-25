@@ -1,7 +1,7 @@
 {
   "name": "Factory",
-  "uri": "http://custom/bpi/bpmn",
-  "prefix": "custom",
+  "uri": "http://factory/bpi/bpmn",
+  "prefix": "factory",
   "xml": {
     "tagAlias": "lowerCase"
   },

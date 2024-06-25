@@ -13,11 +13,11 @@ export default class CustomPalette {
 
     function createTask() {
       return function (event) {
-        const businessObject = bpmnFactory.create("custom:Executor");
+        const businessObject = bpmnFactory.create("factory:Executor");
         businessObject.id = 'Executor' + businessObject.id;
 
         const shape = elementFactory.createShape({
-          type: "custom:Executor",
+          type: "factory:Executor",
           businessObject: businessObject
         });
 
@@ -27,7 +27,7 @@ export default class CustomPalette {
 
     const additionalEntries = {
       "create.Executor": {
-        group: "custom",
+        group: "factory",
         className: "icon-custom-executor",
         title: translate("Create Executor"),
         action: {
