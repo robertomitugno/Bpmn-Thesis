@@ -95,17 +95,24 @@ div.selection svg {
     overflow: hidden;
 }
 
-.time-input {
+.time-input,
+.batch-input,
+.worksBatch-checkbox {
     display: flex;
     align-items: center;
 }
 
 .time-input input,
-.time-input select {
+.time-input select,
+.batch-input input {
     margin-right: 15px;
 }
 
-.time-input input {
+.worksBatch-checkbox input {
+    margin-right: -60px;
+}
+.time-input input,
+.batch-input input {
     width: 45px;
 }
 
