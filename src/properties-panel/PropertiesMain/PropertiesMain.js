@@ -13,19 +13,13 @@ export default function PropertiesMain({ modeler }) {
     modeler.on('selection.changed', handleSelectionChange);
 
     const elementRegistry = modeler.get('elementRegistry');
-    const executorElement = elementRegistry.find(element => element.type === 'custom:Executor');
-    if (executorElement) {
-      const productElement = executorElement.businessObject.get('custom:product');
-
-      // Remove duplicates products from the list
+    console.log(elementRegistry);
+    const process = elementRegistry.find(element => element.type === 'bpmn:Process');
+    if (process) {
+      const productElement = process.businessObject.get('extensionElements')?.values;
+      console.log(productElement);
       if (productElement) {
-        const uniqueProductsSet = new Set(productElement.map(product => product.id));
-
-        const uniqueProducts = Array.from(uniqueProductsSet).map(id => {
-          return productElement.find(product => product.id === id);
-        });
-
-        setProducts(uniqueProducts);
+        setProducts(productElement);
       }
     }
   }, []);
@@ -38,19 +32,38 @@ export default function PropertiesMain({ modeler }) {
 
   // Add a new product to the list
   const onAddProduct = (newProduct) => {
-    if (newProduct) {
-      setProducts(prevProducts => [...prevProducts, newProduct]);
-    } else if (productName.trim() !== '') {
-      const newProduct = { id: productId, name: productName };
-      setProducts(prevProducts => [...prevProducts, newProduct]);
+    const moddle = modeler.get('moddle');
+
+    const elementRegistry = modeler.get('elementRegistry');
+    const processElement = elementRegistry.find(element => element.type === 'bpmn:Process');
+
+    if (processElement) {
+
+      let extensionElements = processElement.businessObject.get('extensionElements');
+      
+      if (!extensionElements) {
+        // If it doesn't exist, create a new ExtensionElements instance
+        extensionElements = moddle.create("bpmn:ExtensionElements");
+        processElement.businessObject.extensionElements = extensionElements;
+      }
+
+      // create the custom element (according to our json config)
+      const newP = moddle.create("custom:Product");
+      newP.name = newProduct.name;
+      newP.id = newProduct.id;
+
+      // put the custom element into the extensionElements
+      extensionElements.get("values").push(newP);
+
     }
   };
+
 
   return (
     <div className="PropertiesMain">
       {selectedElements.length === 1 && (
         <div>
-          <ElementProperties modeler={modeler} element={element} products={products}/>
+          <ElementProperties modeler={modeler} element={element} products={products} />
         </div>
       )}
       {selectedElements.length === 0 && (

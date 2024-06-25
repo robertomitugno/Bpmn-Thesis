@@ -28,6 +28,9 @@
     },
     {
       "name": "Product",
+      "superClass": [
+        "Element"
+      ],
       "properties": [
         {
           "name": "id",

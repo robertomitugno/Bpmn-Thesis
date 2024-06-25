@@ -149,7 +149,6 @@ function ConnectedExecutors({ element, modeler, products }) {
 
             const newProduct = moddle.create("custom:Product");
             newProduct.id = product.id;
-            newProduct.name = product.name;
             newProduct.time = 0;
             newProduct.timeUnit = 's';
             newProduct.batch = 1;
