@@ -13,11 +13,9 @@ export default function PropertiesMain({ modeler }) {
     modeler.on('selection.changed', handleSelectionChange);
 
     const elementRegistry = modeler.get('elementRegistry');
-    console.log(elementRegistry);
     const process = elementRegistry.find(element => element.type === 'bpmn:Process');
     if (process) {
       const productElement = process.businessObject.get('extensionElements')?.values;
-      console.log(productElement);
       if (productElement) {
         setProducts(productElement);
       }

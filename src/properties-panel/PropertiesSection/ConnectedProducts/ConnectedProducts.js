@@ -5,7 +5,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
-function ConnectedProducts({ element, modeler }) {
+function ConnectedProducts({ element, modeler, products }) {
 
     const [selectedProducts, setSelectedProducts] = useState({});
 
@@ -59,10 +59,12 @@ function ConnectedProducts({ element, modeler }) {
 
 
     function handleTimeChange(e, index) {
-        const newTime = e.target.value;
+        let newTime = e.target.value;
 
-        const newProducts = { ...selectedProducts };
-
+        let newProducts = { ...selectedProducts };
+        if (newTime.startsWith('0')) {
+            newTime = newTime.substring(1);
+        }
         newProducts[index].time = newTime;
 
         const modeling = modeler.get('modeling');
@@ -102,14 +104,12 @@ function ConnectedProducts({ element, modeler }) {
     }
 
 
-
-
-    function handleBatchChange(e, index) {
+    function handleBatchChange(e, index, oldBatch) {
         let newBatch = e.target.value;
-
-        if (newBatch.startsWith('1') && e.nativeEvent.data !== '0') {
+        if (oldBatch === '1' && e.nativeEvent.data !== '1' && e.nativeEvent.data !== '0') {
             newBatch = newBatch.substring(1);
-        } else if (newBatch < '1') {
+        }
+        if (newBatch < 1) {
             newBatch = 1;
         }
 
@@ -155,8 +155,7 @@ function ConnectedProducts({ element, modeler }) {
                                                     icon={productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] ? faAngleDown : faAngleRight}
                                                     className="expand-icon"
                                                 />
-                                                <span>{selectedProducts[index]?.name} - {getActivityName(selectedProducts[index]?.idActivity)}</span>
-                                            </div>
+                                                <span>{products.find(p => p.id === selectedProducts[index]?.id)?.name || selectedProducts[index]?.name} - {getActivityName(selectedProducts[index]?.idActivity)}</span>                                            </div>
 
                                             {productExpanded[`${selectedProducts[index]?.id}-${selectedProducts[index]?.idActivity}`] && (
                                                 <div key={index} className="products">
@@ -181,7 +180,7 @@ function ConnectedProducts({ element, modeler }) {
                                                             <input type="number"
                                                                 value={selectedProducts[index]?.batch}
                                                                 onClick={(event) => event.stopPropagation()}
-                                                                onChange={(e) => handleBatchChange(e, index)} />
+                                                                onChange={(e) => handleBatchChange(e, index, selectedProducts[index]?.batch)} />
                                                         </div>
                                                     )}
                                                 </div>

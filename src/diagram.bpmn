@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:custom="http://custom/bpi/bpmn" id="Definitions_0ex8ya2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
   <bpmn:process id="Process_03dsped" isExecutable="true">
-    <bpmn:extensionElements>
-      <custom:product id="Product_lb3ac6j" name="Frame A"/>
-      <custom:product id="Product_tyt5k55" name="Frame B"/>
-    </bpmn:extensionElements>
     <bpmn:startEvent id="Event_1w8pvk8">
       <bpmn:outgoing>Flow_1g9eme9</bpmn:outgoing>
     </bpmn:startEvent>
