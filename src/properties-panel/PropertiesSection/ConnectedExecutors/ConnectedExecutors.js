@@ -59,10 +59,6 @@ function ConnectedExecutors({ element, modeler, products }) {
             setProductDropdownOpen(false);
             setExecutorDropdownOpen(false);
         }
-        if (element.type === 'factory:Executor') {
-            const productElement = element.businessObject.get('factory:product');
-            setSelectedProducts(productElement);
-        }
         if (element.type === 'factory:Batch') {
             setIsExecutorConnectedToBatch(true);
         }
@@ -149,7 +145,6 @@ function ConnectedExecutors({ element, modeler, products }) {
 
             const newProduct = moddle.create("factory:Product");
             newProduct.id = product.id;
-            newProduct.name = product.name;
             newProduct.time = 0;
             newProduct.timeUnit = 's';
             newProduct.batch = 1;
@@ -362,87 +357,77 @@ function ConnectedExecutors({ element, modeler, products }) {
     }, [modeler, handleDeleteExecutor]);
 
 
-    const handleBatchChange = useCallback((e, executorId, productId) => {
+    const handleBatchChange = useCallback((e, index, executorId, productId, oldBatch) => {
         let newBatch = e.target.value;
+        let newProducts = { ...selectedProducts };
 
-        if (newBatch.startsWith('1') && e.nativeEvent.data !== '0') {
+        if (oldBatch == '1' && e.nativeEvent.data != '1' && e.nativeEvent.data != '0') {
             newBatch = newBatch.substring(1);
-        } else if (newBatch < '1') {
+        }
+        if (newBatch < 1) {
             newBatch = 1;
         }
+
+        setSelectedProducts(prevSelectedProducts => {
+            if (!prevSelectedProducts[executorId]) {
+                return prevSelectedProducts;
+            }
+            newProducts[executorId] = [...prevSelectedProducts[executorId]];
+            newProducts[executorId][index] = { ...newProducts[executorId][index], batch: newBatch };
+            return newProducts;
+        });
 
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
 
+
         const productArray = executorElement.businessObject.product;
+
 
         const productToUpdate = productArray.find(
             (product) => product.id === productId && product.idActivity === element.id
         );
         if (productToUpdate) {
-            const prevBatch = productToUpdate.batch;
+        
             productToUpdate.batch = newBatch;
-
-            if ((prevBatch > 1 && newBatch == 1) || (prevBatch == '1' && newBatch > '1')) {
-                const newType = {
-                    type: 'factory:Batch'
-                };
-                const newBusinessObject = {
-                    ...element.businessObject,
-                    ...newType.businessObject
-                };
-                modeling.updateModdleProperties(element, {
-                    type: newType,
-                    businessObject: newBusinessObject
-                });
-
-                modeling.updateProperties(executorElement, {
-                    product: productArray,
-                });
-            }
+            modeling.updateProperties(executorElement, {
+                product: productArray
+            });
 
         }
+        setSelectedProducts(newProducts);
 
-        setSelectedProducts((prevSelectedProducts) => ({
-            ...prevSelectedProducts,
-            [executorId]: prevSelectedProducts[executorId].map((product) =>
-                product.id === productId && product.idActivity === element.id
-                    ? { ...product, batch: newBatch }
-                    : product
-            ),
-        }));
 
     }, []);
 
+    
     const handleBatchCheckboxChange = useCallback((executorId, productId, event) => {
-    setIsBatchEnabled(prevState => ({
-        ...prevState,
-        [`${executorId}-${productId}-${element.id}`]: event.target.checked
-    }));
-
-        if (!event.target.checked) {
-            const modeling = modeler.get('modeling');
-            const executorElement = modeler.get('elementRegistry').get(executorId);
-            const productArray = executorElement.businessObject.product;
-            const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
-
-            if (productToUpdate) {
-                productToUpdate.batch = 1;
-                modeling.updateProperties(executorElement, { product: productArray });
+        setIsBatchEnabled(prevState => ({
+            ...prevState,
+            [`${executorId}-${productId}-${element.id}`]: event.target.checked
+        }));
+    
+            if (!event.target.checked) {
+                const modeling = modeler.get('modeling');
+                const executorElement = modeler.get('elementRegistry').get(executorId);
+                const productArray = executorElement.businessObject.product;
+                const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
+    
+                if (productToUpdate) {
+                    productToUpdate.batch = 1;
+                    modeling.updateProperties(executorElement, { product: productArray });
+                }
+    
+                setSelectedProducts((prevSelectedProducts) => ({
+                    ...prevSelectedProducts,
+                    [executorId]: prevSelectedProducts[executorId].map((product) =>
+                        product.id === productId && product.idActivity === element.id
+                            ? { ...product, batch: 1 }
+                            : product
+                    ),
+                }));
             }
-
-            setSelectedProducts((prevSelectedProducts) => ({
-                ...prevSelectedProducts,
-                [executorId]: prevSelectedProducts[executorId].map((product) =>
-                    product.id === productId && product.idActivity === element.id
-                        ? { ...product, batch: 1 }
-                        : product
-                ),
-            }));
-        }
-    }, []);
-
-
+        }, []);
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -507,7 +492,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                                 <div className="batch-input">
                                                                                     <span>Number of element for batch: </span>
                                                                                     <input type="number"
-                                                                                        value={product.batch}
+                                                                                        value={product.batch || 1}
                                                                                         onChange={(e) => handleBatchChange(e, executor.id, product.id)}
                                                                                         onClick={(event) => event.stopPropagation()}
                                                                                         disabled={!isBatchEnabled[`${executor.id}-${product.id}-${element.id}`]} />

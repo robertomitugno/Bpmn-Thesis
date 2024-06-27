@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './PropertiesMain.css';
 import ExecutorsList from './ExecutorsList/ExecutorsList';
 import ProductList from './ProductList/ProductList';
@@ -11,46 +11,51 @@ export default function PropertiesMain({ modeler }) {
 
   useEffect(() => {
     modeler.on('selection.changed', handleSelectionChange);
-
-    const elementRegistry = modeler.get('elementRegistry');
-    const executorElement = elementRegistry.find(element => element.type === 'factory:Executor');
-    if (executorElement) {
-      const productElement = executorElement.businessObject.get('factory:product');
-
-      // Remove duplicates products from the list
-      if (productElement) {
-        const uniqueProductsSet = new Set(productElement.map(product => product.id));
-
-        const uniqueProducts = Array.from(uniqueProductsSet).map(id => {
-          return productElement.find(product => product.id === id);
-        });
-
-        setProducts(uniqueProducts);
-      }
-    }
+    fetchProducts();
   }, []);
-
 
   const handleSelectionChange = e => {
     setSelectedElements(e.newSelection);
     setElement(e.newSelection[0]);
   };
 
-  // Add a new product to the list
-  const onAddProduct = (newProduct) => {
-    if (newProduct) {
-      setProducts(prevProducts => [...prevProducts, newProduct]);
-    } else if (productName.trim() !== '') {
-      const newProduct = { id: productId, name: productName };
-      setProducts(prevProducts => [...prevProducts, newProduct]);
+  const fetchProducts = () => {
+    const elementRegistry = modeler.get('elementRegistry');
+    const process = elementRegistry.find(element => element.type === 'bpmn:Process');
+    const productElement = process?.businessObject.get('extensionElements')?.values;
+    if (productElement) {
+      setProducts(productElement);
     }
   };
+
+  const onAddProduct = (newProduct) => {
+    const moddle = modeler.get('moddle');
+    const elementRegistry = modeler.get('elementRegistry');
+    const processElement = elementRegistry.find(element => element.type === 'bpmn:Process');
+
+    if (processElement) {
+      let extensionElements = processElement.businessObject.get('extensionElements');
+      if (!extensionElements) {
+        extensionElements = moddle.create("bpmn:ExtensionElements");
+        processElement.businessObject.extensionElements = extensionElements;
+      }
+
+      const newP = moddle.create("factory:Product");
+      newP.name = newProduct.name;
+      newP.id = newProduct.id;
+      extensionElements.get("values").push(newP);
+
+      fetchProducts();
+    }
+  };
+
+  const memoizedProducts = useMemo(() => products, [products]);
 
   return (
     <div className="PropertiesMain">
       {selectedElements.length === 1 && (
         <div>
-          <ElementProperties modeler={modeler} element={element} products={products}/>
+          <ElementProperties modeler={modeler} element={element} products={memoizedProducts} />
         </div>
       )}
       {selectedElements.length === 0 && (
@@ -59,12 +64,11 @@ export default function PropertiesMain({ modeler }) {
             <ExecutorsList modeler={modeler} />
           </div>
           <div className="ProductList">
-            <ProductList products={products} onAddProduct={onAddProduct} />
+            <ProductList products={memoizedProducts} onAddProduct={onAddProduct} />
           </div>
         </>
       )}
       {selectedElements.length > 1 && <span>Please select a single element.</span>}
     </div>
   );
-
 }
