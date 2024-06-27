@@ -212,22 +212,14 @@ function ConnectedExecutors({ element, modeler, products }) {
                 ...selectedProductsUpdate,
                 [executor.id]: [
                     ...(selectedProductsUpdate[executor.id] || []),
-                    ...filteredProducts.map(product => {
-                        if (product.batch > 1) {
-                            setIsBatchEnabled(prevIsBatchEnabled => ({
-                                ...prevIsBatchEnabled,
-                                [`${executor.id}-${product.id}-${element.id}`]: true
-                            }));
-                        }
-                        return {
-                            id: product.id,
-                            name: product.name,
-                            time: product.time,
-                            timeUnit: product.timeUnit,
-                            batch: product.batch,
-                            idActivity: product.idActivity
-                        };
-                    })
+                    ...filteredProducts.map(product => ({
+                        id: product.id,
+                        name: products.find(p => p.id === product.id)?.name || product.name,
+                        time: product.time,
+                        timeUnit: product.timeUnit,
+                        batch: product.batch,
+                        idActivity: product.idActivity
+                    }))
                 ]
             };
         }
@@ -388,7 +380,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             (product) => product.id === productId && product.idActivity === element.id
         );
         if (productToUpdate) {
-        
+
             productToUpdate.batch = newBatch;
             modeling.updateProperties(executorElement, {
                 product: productArray
@@ -400,34 +392,34 @@ function ConnectedExecutors({ element, modeler, products }) {
 
     }, []);
 
-    
+
     const handleBatchCheckboxChange = useCallback((executorId, productId, event) => {
         setIsBatchEnabled(prevState => ({
             ...prevState,
             [`${executorId}-${productId}-${element.id}`]: event.target.checked
         }));
-    
-            if (!event.target.checked) {
-                const modeling = modeler.get('modeling');
-                const executorElement = modeler.get('elementRegistry').get(executorId);
-                const productArray = executorElement.businessObject.product;
-                const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
-    
-                if (productToUpdate) {
-                    productToUpdate.batch = 1;
-                    modeling.updateProperties(executorElement, { product: productArray });
-                }
-    
-                setSelectedProducts((prevSelectedProducts) => ({
-                    ...prevSelectedProducts,
-                    [executorId]: prevSelectedProducts[executorId].map((product) =>
-                        product.id === productId && product.idActivity === element.id
-                            ? { ...product, batch: 1 }
-                            : product
-                    ),
-                }));
+
+        if (!event.target.checked) {
+            const modeling = modeler.get('modeling');
+            const executorElement = modeler.get('elementRegistry').get(executorId);
+            const productArray = executorElement.businessObject.product;
+            const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
+
+            if (productToUpdate) {
+                productToUpdate.batch = 1;
+                modeling.updateProperties(executorElement, { product: productArray });
             }
-        }, []);
+
+            setSelectedProducts((prevSelectedProducts) => ({
+                ...prevSelectedProducts,
+                [executorId]: prevSelectedProducts[executorId].map((product) =>
+                    product.id === productId && product.idActivity === element.id
+                        ? { ...product, batch: 1 }
+                        : product
+                ),
+            }));
+        }
+    }, []);
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
