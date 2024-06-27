@@ -13,7 +13,7 @@ export default function CustomOrderingProvider(eventBus, canvas) {
 
   this.getOrdering = function(element, newParent) {
 
-    if (element.type === 'custom:Connection') {
+    if (element.type === 'factory:Connection') {
 
       return {
         parent: canvas.getRootElement(),

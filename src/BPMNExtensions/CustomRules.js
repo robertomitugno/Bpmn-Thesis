@@ -14,7 +14,7 @@ var HIGH_PRIORITY = 1500;
 
 
 function isCustom(element) {
-  return element && /^custom:/.test(element.type);
+  return element && /^factory:/.test(element.type);
 }
 
 /**
@@ -55,16 +55,16 @@ CustomRules.prototype.init = function () {
       return;
     }
 
-    // allow connection between custom:Executor and custom:Batch or custom:Task
-    if (is(source, 'custom:Executor')) {
-      if (is(target, 'custom:Batch') || is(target, 'bpmn:Task')) {
-        return { type: 'custom:Connection' };
+    // allow connection between factory:Executor and factory:Batch or factory:Task
+    if (is(source, 'factory:Executor')) {
+      if (is(target, 'factory:Batch') || is(target, 'bpmn:Task')) {
+        return { type: 'factory:Connection' };
       } else {
         return false;
       }
-    } else if (is(target, 'custom:Executor')) {
-      if (is(source, 'custom:Batch') || is(source, 'bpmn:Task')) {
-        return { type: 'custom:Connection' };
+    } else if (is(target, 'factory:Executor')) {
+      if (is(source, 'factory:Batch') || is(source, 'bpmn:Task')) {
+        return { type: 'factory:Connection' };
       } else {
         return false;
       }

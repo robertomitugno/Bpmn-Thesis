@@ -13,9 +13,9 @@ export default function PropertiesMain({ modeler }) {
     modeler.on('selection.changed', handleSelectionChange);
 
     const elementRegistry = modeler.get('elementRegistry');
-    const executorElement = elementRegistry.find(element => element.type === 'custom:Executor');
+    const executorElement = elementRegistry.find(element => element.type === 'factory:Executor');
     if (executorElement) {
-      const productElement = executorElement.businessObject.get('custom:product');
+      const productElement = executorElement.businessObject.get('factory:product');
 
       // Remove duplicates products from the list
       if (productElement) {

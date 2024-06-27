@@ -30,18 +30,18 @@ function ConnectedExecutors({ element, modeler, products }) {
     const [productExpandedExec, setProductExpandedExec] = useState({});
 
     const [isExecutorConnectedToBatch, setIsExecutorConnectedToBatch] = useState(false);
-
+    const [isBatchEnabled, setIsBatchEnabled] = useState({});
 
 
     const getConnectedExecutors = useCallback(() => {
         const connectedExecutors = [];
         const elementRegistry = modeler.get('elementRegistry');
 
-        elementRegistry.filter(element => is(element, 'custom:Connection')).forEach(sequenceFlow => {
+        elementRegistry.filter(element => is(element, 'factory:Connection')).forEach(sequenceFlow => {
             if (sequenceFlow.source === element || sequenceFlow.target === element) {
                 const connectedElement = sequenceFlow.source === element ? sequenceFlow.target : sequenceFlow.source;
 
-                if (is(connectedElement, 'custom:Executor')) {
+                if (is(connectedElement, 'factory:Executor')) {
                     connectedExecutors.push(connectedElement);
                 }
             }
@@ -59,18 +59,18 @@ function ConnectedExecutors({ element, modeler, products }) {
             setProductDropdownOpen(false);
             setExecutorDropdownOpen(false);
         }
-        if (element.type === 'custom:Executor') {
-            const productElement = element.businessObject.get('custom:product');
+        if (element.type === 'factory:Executor') {
+            const productElement = element.businessObject.get('factory:product');
             setSelectedProducts(productElement);
         }
-        if (element.type === 'custom:Batch') {
+        if (element.type === 'factory:Batch') {
             setIsExecutorConnectedToBatch(true);
         }
     }, [element, getConnectedExecutors]);
 
 
     useEffect(() => {
-        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor'));
+        const allExecutors = modeler.get('elementRegistry').filter(element => is(element, 'factory:Executor'));
         setExecutors(allExecutors);
     }, []);
 
@@ -138,7 +138,7 @@ function ConnectedExecutors({ element, modeler, products }) {
 
         const modeling = modeler.get('modeling');
         const moddle = modeler.get('moddle');
-        const executor = modeler.get('elementRegistry').filter(element => is(element, 'custom:Executor')).find(executor => executor.id === executorId);
+        const executor = modeler.get('elementRegistry').filter(element => is(element, 'factory:Executor')).find(executor => executor.id === executorId);
 
         if (executor) {
             let extensionElements = executor.businessObject.product;
@@ -147,7 +147,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                 extensionElements = [];
             }
 
-            const newProduct = moddle.create("custom:Product");
+            const newProduct = moddle.create("factory:Product");
             newProduct.id = product.id;
             newProduct.name = product.name;
             newProduct.time = 0;
@@ -185,7 +185,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             const currentProducts = executorElement.businessObject.product || [];
             const updatedProducts = currentProducts.filter(p => p.id !== product.id || p.idActivity !== idActivity);
             modeling.updateProperties(executorElement, {
-                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('custom:Product', { values: [] })
+                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('factory:Product', { values: [] })
             });
         }
     }, [modeler, setSelectedProducts]);
@@ -208,7 +208,7 @@ function ConnectedExecutors({ element, modeler, products }) {
             [executor.id]: !prevState[executor.id],
         }));
 
-        const productElement = executor.businessObject.get('custom:product');
+        const productElement = executor.businessObject.get('factory:product');
         let selectedProductsUpdate = {};
 
         if (productElement && productElement.length > 0) {
@@ -217,14 +217,22 @@ function ConnectedExecutors({ element, modeler, products }) {
                 ...selectedProductsUpdate,
                 [executor.id]: [
                     ...(selectedProductsUpdate[executor.id] || []),
-                    ...filteredProducts.map(product => ({
-                        id: product.id,
-                        name: product.name,
-                        time: product.time,
-                        timeUnit: product.timeUnit,
-                        batch: product.batch,
-                        idActivity: product.idActivity
-                    }))
+                    ...filteredProducts.map(product => {
+                        if (product.batch > 1) {
+                            setIsBatchEnabled(prevIsBatchEnabled => ({
+                                ...prevIsBatchEnabled,
+                                [`${executor.id}-${product.id}-${element.id}`]: true
+                            }));
+                        }
+                        return {
+                            id: product.id,
+                            name: product.name,
+                            time: product.time,
+                            timeUnit: product.timeUnit,
+                            batch: product.batch,
+                            idActivity: product.idActivity
+                        };
+                    })
                 ]
             };
         }
@@ -327,7 +335,7 @@ function ConnectedExecutors({ element, modeler, products }) {
         const targetMid = getMid(executor);
 
         const connection = {
-            type: 'custom:Connection',
+            type: 'factory:Connection',
             waypoints: [
                 sourceMid,
                 targetMid
@@ -343,7 +351,7 @@ function ConnectedExecutors({ element, modeler, products }) {
     const handleDetachExecutor = useCallback((executor) => {
         const elementRegistry = modeler.get('elementRegistry');
         const connections = elementRegistry.filter(component => {
-            return (component.type === 'custom:Connection' &&
+            return (component.type === 'factory:Connection' &&
                 (component.source === element && component.target === executor) || (component.source === executor && component.target === element));
         });
         const modeling = modeler.get('modeling');
@@ -354,58 +362,86 @@ function ConnectedExecutors({ element, modeler, products }) {
     }, [modeler, handleDeleteExecutor]);
 
 
-
     const handleBatchChange = useCallback((e, executorId, productId) => {
         let newBatch = e.target.value;
-      
+
         if (newBatch.startsWith('1') && e.nativeEvent.data !== '0') {
-          newBatch = newBatch.substring(1);
+            newBatch = newBatch.substring(1);
         } else if (newBatch < '1') {
-          newBatch = 1;
+            newBatch = 1;
         }
-      
+
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
-      
+
         const productArray = executorElement.businessObject.product;
-      
+
         const productToUpdate = productArray.find(
-          (product) => product.id === productId && product.idActivity === element.id
+            (product) => product.id === productId && product.idActivity === element.id
         );
         if (productToUpdate) {
-          const prevBatch = productToUpdate.batch;
-          productToUpdate.batch = newBatch;
-      
-          if ((prevBatch > 1 && newBatch == 1) || (prevBatch == '1' && newBatch > '1')) {
-            const newType = {
-              type: 'custom:Batch'
-            };
-            const newBusinessObject = {
-              ...element.businessObject,
-              ...newType.businessObject
-            };
-            modeling.updateModdleProperties(element, {
-              type: newType,
-              businessObject: newBusinessObject
-            });
+            const prevBatch = productToUpdate.batch;
+            productToUpdate.batch = newBatch;
 
-            modeling.updateProperties(executorElement, {
-                product: productArray,
-              });
-          }
-    
+            if ((prevBatch > 1 && newBatch == 1) || (prevBatch == '1' && newBatch > '1')) {
+                const newType = {
+                    type: 'factory:Batch'
+                };
+                const newBusinessObject = {
+                    ...element.businessObject,
+                    ...newType.businessObject
+                };
+                modeling.updateModdleProperties(element, {
+                    type: newType,
+                    businessObject: newBusinessObject
+                });
+
+                modeling.updateProperties(executorElement, {
+                    product: productArray,
+                });
+            }
+
         }
-      
+
         setSelectedProducts((prevSelectedProducts) => ({
-          ...prevSelectedProducts,
-          [executorId]: prevSelectedProducts[executorId].map((product) =>
-            product.id === productId && product.idActivity === element.id
-              ? { ...product, batch: newBatch }
-              : product
-          ),
+            ...prevSelectedProducts,
+            [executorId]: prevSelectedProducts[executorId].map((product) =>
+                product.id === productId && product.idActivity === element.id
+                    ? { ...product, batch: newBatch }
+                    : product
+            ),
         }));
-      
-      }, []);
+
+    }, []);
+
+    const handleBatchCheckboxChange = useCallback((executorId, productId, event) => {
+    setIsBatchEnabled(prevState => ({
+        ...prevState,
+        [`${executorId}-${productId}-${element.id}`]: event.target.checked
+    }));
+
+        if (!event.target.checked) {
+            const modeling = modeler.get('modeling');
+            const executorElement = modeler.get('elementRegistry').get(executorId);
+            const productArray = executorElement.businessObject.product;
+            const productToUpdate = productArray.find(product => product.id === productId && product.idActivity === element.id);
+
+            if (productToUpdate) {
+                productToUpdate.batch = 1;
+                modeling.updateProperties(executorElement, { product: productArray });
+            }
+
+            setSelectedProducts((prevSelectedProducts) => ({
+                ...prevSelectedProducts,
+                [executorId]: prevSelectedProducts[executorId].map((product) =>
+                    product.id === productId && product.idActivity === element.id
+                        ? { ...product, batch: 1 }
+                        : product
+                ),
+            }));
+        }
+    }, []);
+
 
     return (
         <div className="element-properties" key={element ? element.id : ''}>
@@ -457,6 +493,27 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                 </div>
                                                                 {productExpandedExec[`${executor.id}-${product.id}-${element.id}`] && (
                                                                     <div key={index} className="products">
+                                                                        {isExecutorConnectedToBatch &&
+                                                                            <div>
+                                                                                <div className="worksBatch-checkbox">
+                                                                                    <span>Executor works in batch</span>
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        checked={isBatchEnabled[`${executor.id}-${product.id}-${element.id}`]}
+                                                                                        onChange={(e) => handleBatchCheckboxChange(executor.id, product.id, e)}
+                                                                                        onClick={(e) => e.stopPropagation()}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className="batch-input">
+                                                                                    <span>Number of element for batch: </span>
+                                                                                    <input type="number"
+                                                                                        value={product.batch}
+                                                                                        onChange={(e) => handleBatchChange(e, executor.id, product.id)}
+                                                                                        onClick={(event) => event.stopPropagation()}
+                                                                                        disabled={!isBatchEnabled[`${executor.id}-${product.id}-${element.id}`]} />
+                                                                                </div>
+                                                                            </div>
+                                                                        }
                                                                         <div className="time-input">
                                                                             <span>Time : </span>
                                                                             <input
@@ -472,15 +529,6 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                                 <option value="d">d</option>
                                                                             </select>
                                                                         </div>
-                                                                        {isExecutorConnectedToBatch &&
-                                                                            <div className="time-input">
-                                                                                <span>Number of element for batch: </span>
-                                                                                <input type="number"
-                                                                                    value={product.batch}
-                                                                                    onChange={(e) => handleBatchChange(e, executor.id, product.id)}
-                                                                                    onClick={(event) => event.stopPropagation()} />
-                                                                            </div>
-                                                                        }
                                                                     </div>
                                                                 )}
                                                             </div>

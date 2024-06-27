@@ -1615,15 +1615,15 @@ var superfluousGateway = function () {
 var noProductsDefined = function () {
 
   function check(node, reporter) {
-    if (!is(node, 'custom:Executor')) {
+    if (!is(node, 'factory:Executor')) {
       return;
     }
 
     // Ensure node.product is an array
     const products = Array.isArray(node.product) ? node.product : [];
 
-    // Check if there is at least one 'custom:Product' in node.product
-    if (!products.some(product => is(product, 'custom:Product'))) {
+    // Check if there is at least one 'factory:Product' in node.product
+    if (!products.some(product => is(product, 'factory:Product'))) {
       reporter.report(node.id, 'Element is missing product');
     }
   }
@@ -1639,7 +1639,7 @@ var noProductsDefined = function () {
 var noExecutorDefined = function () {
 
   function check(node, reporter) {
-    if (!is(node, 'custom:Batch')) {
+    if (!is(node, 'factory:Batch')) {
       return;
     }
 
@@ -1647,9 +1647,9 @@ var noExecutorDefined = function () {
     const incoming = Array.isArray(node.incoming) ? node.incoming : [];
     const outgoing = Array.isArray(node.outgoing) ? node.outgoing : [];
 
-    // Check if there is any incoming or outgoing connection of type "custom:Connection"
-    const hasCustomConnection = incoming.some(connection => is(connection, 'custom:Connection')) ||
-      outgoing.some(connection => is(connection, 'custom:Connection'));
+    // Check if there is any incoming or outgoing connection of type "factory:Connection"
+    const hasCustomConnection = incoming.some(connection => is(connection, 'factory:Connection')) ||
+      outgoing.some(connection => is(connection, 'factory:Connection'));
 
     if (!hasCustomConnection) {
       reporter.report(node.id, 'Element is not connected to a Executor');

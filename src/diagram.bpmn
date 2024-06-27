@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:custom="http://custom/bpi/bpmn" id="Definitions_0ex8ya2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:factory="http://factory/bpi/bpmn" id="Definitions_0ex8ya2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
   <bpmn:process id="Process_03dsped" isExecutable="true">
     <bpmn:startEvent id="Event_1w8pvk8">
       <bpmn:outgoing>Flow_1g9eme9</bpmn:outgoing>
@@ -72,96 +72,96 @@
       <bpmn:incoming>Flow_0bmnbje</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0bmnbje" sourceRef="Activity_0afgnxj" targetRef="Event_0d8zdu0" />
-    <custom:executor id="ExecutorActivity_05r7898" name="PP1">
+    <factory:executor id="ExecutorActivity_05r7898" name="PP1">
       <bpmn:outgoing>Flow_1ht147p</bpmn:outgoing>
       <bpmn:outgoing>Flow_1rmftgf</bpmn:outgoing>
       <bpmn:outgoing>Flow_0bobgbs</bpmn:outgoing>
       <bpmn:outgoing>Flow_0yeycfg</bpmn:outgoing>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="6" timeUnit="h" batch="300" idActivity="Activity_0q7j2li" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="7.5" timeUnit="h" batch="1000" idActivity="Activity_0q7j2li" />
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="7" timeUnit="h" batch="1" idActivity="Activity_1gsma1o" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="5" timeUnit="h" batch="1" idActivity="Activity_1gsma1o" />
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="10" timeUnit="h" batch="1" idActivity="Activity_11ux7hy" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="8" timeUnit="h" batch="1" idActivity="Activity_11ux7hy" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_0qvfmtq" name="PP2">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="6" timeUnit="h" batch="300" idActivity="Activity_0q7j2li" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="7.5" timeUnit="h" batch="1000" idActivity="Activity_0q7j2li" />
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="7" timeUnit="h" batch="1" idActivity="Activity_1gsma1o" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="5" timeUnit="h" batch="1" idActivity="Activity_1gsma1o" />
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="10" timeUnit="h" batch="1" idActivity="Activity_11ux7hy" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="8" timeUnit="h" batch="1" idActivity="Activity_11ux7hy" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_0qvfmtq" name="PP2">
       <bpmn:outgoing>Flow_0u889sv</bpmn:outgoing>
       <bpmn:outgoing>Flow_0v42uua</bpmn:outgoing>
       <bpmn:outgoing>Flow_1ditf2d</bpmn:outgoing>
-      <custom:product id="Product_tyt5k55" name="Frame B" time="50" timeUnit="s" batch="1" idActivity="Activity_0q7j2li" />
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="30" timeUnit="s" batch="1" idActivity="Activity_0q7j2li" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="40" timeUnit="s" batch="1" idActivity="Activity_1gsma1o" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="m" batch="1" idActivity="Activity_11ux7hy" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_07l799e" name="PP3" batch="100">
+      <factory:product id="Product_tyt5k55" name="Frame B" time="50" timeUnit="s" batch="1" idActivity="Activity_0q7j2li" />
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="30" timeUnit="s" batch="1" idActivity="Activity_0q7j2li" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="40" timeUnit="s" batch="1" idActivity="Activity_1gsma1o" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="m" batch="1" idActivity="Activity_11ux7hy" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_07l799e" name="PP3" batch="100">
       <bpmn:outgoing>Flow_1b2f6hg</bpmn:outgoing>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="50" timeUnit="s" batch="1" idActivity="Activity_0q7j2li" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="m" batch="1" idActivity="Activity_0q7j2li" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_1l4m4pa" name="O1">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="50" timeUnit="s" batch="1" idActivity="Activity_0q7j2li" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="m" batch="1" idActivity="Activity_0q7j2li" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_1l4m4pa" name="O1">
       <bpmn:incoming>Flow_0exo9up</bpmn:incoming>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="1.5" timeUnit="d" batch="1" idActivity="Activity_170knof" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="d" batch="1" idActivity="Activity_170knof" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_0rvdrl1" name="O2">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="1.5" timeUnit="d" batch="1" idActivity="Activity_170knof" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="1" timeUnit="d" batch="1" idActivity="Activity_170knof" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_0rvdrl1" name="O2">
       <bpmn:incoming>Flow_0ke6yqn</bpmn:incoming>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="100" timeUnit="s" batch="1" idActivity="Activity_170knof" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="60" timeUnit="s" batch="1" idActivity="Activity_170knof" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_0gc4r6h" name="O3">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="100" timeUnit="s" batch="1" idActivity="Activity_170knof" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="60" timeUnit="s" batch="1" idActivity="Activity_170knof" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_0gc4r6h" name="O3">
       <bpmn:incoming>Flow_1klvy9l</bpmn:incoming>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="30" timeUnit="m" batch="1" idActivity="Activity_170knof" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="36" timeUnit="m" batch="1" idActivity="Activity_170knof" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_08opw4i" name="Clean Machine">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="30" timeUnit="m" batch="1" idActivity="Activity_170knof" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="36" timeUnit="m" batch="1" idActivity="Activity_170knof" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_08opw4i" name="Clean Machine">
       <bpmn:incoming>Flow_0p8lhuc</bpmn:incoming>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="1" timeUnit="h" batch="5" idActivity="Activity_0w9lko7" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="2" timeUnit="h" batch="900" idActivity="Activity_0w9lko7" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_00r8fwg" name="O4">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="1" timeUnit="h" batch="5" idActivity="Activity_0w9lko7" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="2" timeUnit="h" batch="900" idActivity="Activity_0w9lko7" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_00r8fwg" name="O4">
       <bpmn:incoming>Flow_0701moy</bpmn:incoming>
       <bpmn:incoming>Flow_1vgkofe</bpmn:incoming>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="30" timeUnit="m" batch="1" idActivity="ExecutorActivity_00r8fwg" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="30" timeUnit="s" batch="1" idActivity="ExecutorActivity_00r8fwg" />
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="1" timeUnit="h" batch="1" idActivity="Activity_02scnhl" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="50" timeUnit="m" batch="1" idActivity="Activity_02scnhl" />
-    </custom:executor>
-    <custom:executor id="ExecutorActivity_17hwc9a" name="O5">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="30" timeUnit="m" batch="1" idActivity="ExecutorActivity_00r8fwg" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="30" timeUnit="s" batch="1" idActivity="ExecutorActivity_00r8fwg" />
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="1" timeUnit="h" batch="1" idActivity="Activity_02scnhl" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="50" timeUnit="m" batch="1" idActivity="Activity_02scnhl" />
+    </factory:executor>
+    <factory:executor id="ExecutorActivity_17hwc9a" name="O5">
       <bpmn:incoming>Flow_0i0gwu7</bpmn:incoming>
       <bpmn:incoming>Flow_0zmf1cz</bpmn:incoming>
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="100" timeUnit="s" batch="1" idActivity="ExecutorActivity_17hwc9a" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="15" timeUnit="s" batch="1" idActivity="ExecutorActivity_17hwc9a" />
-      <custom:product id="Product_lb3ac6j" name="Frame A" time="1" timeUnit="m" batch="1" idActivity="Activity_0afgnxj" />
-      <custom:product id="Product_tyt5k55" name="Frame B" time="5" timeUnit="m" batch="1" idActivity="Activity_0afgnxj" />
-    </custom:executor>
-    <custom:connection id="Flow_1ht147p" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_0q7j2li" />
-    <custom:connection id="Flow_1rmftgf" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_0q7j2li" />
-    <custom:connection id="Flow_0bobgbs" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_1gsma1o" />
-    <custom:connection id="Flow_0yeycfg" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_11ux7hy" />
-    <custom:connection id="Flow_1b2f6hg" sourceRef="ExecutorActivity_07l799e" targetRef="Activity_0q7j2li" />
-    <custom:connection id="Flow_0u889sv" sourceRef="ExecutorActivity_0qvfmtq" targetRef="Activity_0q7j2li" />
-    <custom:connection id="Flow_0v42uua" sourceRef="ExecutorActivity_0qvfmtq" targetRef="Activity_1gsma1o" />
-    <custom:connection id="Flow_1ditf2d" sourceRef="ExecutorActivity_0qvfmtq" targetRef="Activity_11ux7hy" />
-    <custom:connection id="Flow_0exo9up" sourceRef="Activity_170knof" targetRef="ExecutorActivity_1l4m4pa" />
-    <custom:connection id="Flow_0ke6yqn" sourceRef="Activity_170knof" targetRef="ExecutorActivity_0rvdrl1" />
-    <custom:connection id="Flow_1klvy9l" sourceRef="Activity_170knof" targetRef="ExecutorActivity_0gc4r6h" />
-    <custom:connection id="Flow_0p8lhuc" sourceRef="Activity_0w9lko7" targetRef="ExecutorActivity_08opw4i" />
-    <custom:connection id="Flow_0701moy" sourceRef="Activity_1nqggyk" targetRef="ExecutorActivity_00r8fwg" />
-    <custom:connection id="Flow_0i0gwu7" sourceRef="Activity_00s27tv" targetRef="ExecutorActivity_17hwc9a" />
-    <custom:connection id="Flow_1vgkofe" sourceRef="Activity_02scnhl" targetRef="ExecutorActivity_00r8fwg" />
-    <custom:connection id="Flow_0zmf1cz" sourceRef="Activity_0afgnxj" targetRef="ExecutorActivity_17hwc9a" />
-    <custom:batch id="Activity_0q7j2li" name="Print Frontal Frame" priority="4">
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="100" timeUnit="s" batch="1" idActivity="ExecutorActivity_17hwc9a" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="15" timeUnit="s" batch="1" idActivity="ExecutorActivity_17hwc9a" />
+      <factory:product id="Product_lb3ac6j" name="Frame A" time="1" timeUnit="m" batch="1" idActivity="Activity_0afgnxj" />
+      <factory:product id="Product_tyt5k55" name="Frame B" time="5" timeUnit="m" batch="1" idActivity="Activity_0afgnxj" />
+    </factory:executor>
+    <factory:connection id="Flow_1ht147p" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_0q7j2li" />
+    <factory:connection id="Flow_1rmftgf" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_0q7j2li" />
+    <factory:connection id="Flow_0bobgbs" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_1gsma1o" />
+    <factory:connection id="Flow_0yeycfg" sourceRef="ExecutorActivity_05r7898" targetRef="Activity_11ux7hy" />
+    <factory:connection id="Flow_1b2f6hg" sourceRef="ExecutorActivity_07l799e" targetRef="Activity_0q7j2li" />
+    <factory:connection id="Flow_0u889sv" sourceRef="ExecutorActivity_0qvfmtq" targetRef="Activity_0q7j2li" />
+    <factory:connection id="Flow_0v42uua" sourceRef="ExecutorActivity_0qvfmtq" targetRef="Activity_1gsma1o" />
+    <factory:connection id="Flow_1ditf2d" sourceRef="ExecutorActivity_0qvfmtq" targetRef="Activity_11ux7hy" />
+    <factory:connection id="Flow_0exo9up" sourceRef="Activity_170knof" targetRef="ExecutorActivity_1l4m4pa" />
+    <factory:connection id="Flow_0ke6yqn" sourceRef="Activity_170knof" targetRef="ExecutorActivity_0rvdrl1" />
+    <factory:connection id="Flow_1klvy9l" sourceRef="Activity_170knof" targetRef="ExecutorActivity_0gc4r6h" />
+    <factory:connection id="Flow_0p8lhuc" sourceRef="Activity_0w9lko7" targetRef="ExecutorActivity_08opw4i" />
+    <factory:connection id="Flow_0701moy" sourceRef="Activity_1nqggyk" targetRef="ExecutorActivity_00r8fwg" />
+    <factory:connection id="Flow_0i0gwu7" sourceRef="Activity_00s27tv" targetRef="ExecutorActivity_17hwc9a" />
+    <factory:connection id="Flow_1vgkofe" sourceRef="Activity_02scnhl" targetRef="ExecutorActivity_00r8fwg" />
+    <factory:connection id="Flow_0zmf1cz" sourceRef="Activity_0afgnxj" targetRef="ExecutorActivity_17hwc9a" />
+    <factory:batch id="Activity_0q7j2li" name="Print Frontal Frame" priority="4">
       <bpmn:incoming>Flow_0n2asfg</bpmn:incoming>
       <bpmn:incoming>Flow_1rmftgf</bpmn:incoming>
       <bpmn:incoming>Flow_1b2f6hg</bpmn:incoming>
       <bpmn:incoming>Flow_0u889sv</bpmn:incoming>
       <bpmn:outgoing>Flow_1s9m1e6</bpmn:outgoing>
-    </custom:batch>
-    <custom:batch id="Activity_0w9lko7" name="Clean Frame">
+    </factory:batch>
+    <factory:batch id="Activity_0w9lko7" name="Clean Frame">
       <bpmn:incoming>Flow_1t593kw</bpmn:incoming>
       <bpmn:outgoing>Flow_03utlqg</bpmn:outgoing>
       <bpmn:outgoing>Flow_0p8lhuc</bpmn:outgoing>
-    </custom:batch>
+    </factory:batch>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_03dsped">

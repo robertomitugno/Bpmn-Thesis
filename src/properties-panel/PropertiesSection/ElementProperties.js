@@ -16,7 +16,7 @@ function ElementProperties({ element, modeler, products }) {
 
     const getElementType = useCallback(() => {
         if (element && element.type) {
-            return element.type.replace('bpmn:', '').replace('custom:', '');
+            return element.type.replace('bpmn:', '').replace('factory:', '');
         }
         return 'Process';
     }, [element]);
@@ -45,13 +45,13 @@ function ElementProperties({ element, modeler, products }) {
                             <input value={name} onChange={handleNameChange} />
                         </div>
                     </div>
-                    {is(element, 'custom:Executor') && (
+                    {is(element, 'factory:Executor') && (
                         <div className="properties-list">
                             <ConnectedProducts element={element} modeler={modeler} products={products} />
                         </div>
                     )}
                     {
-                        (element.type === 'bpmn:Task' || is(element, 'custom:Batch')) && (
+                        (element.type === 'bpmn:Task' || is(element, 'factory:Batch')) && (
                             <div className="properties-list">
                                 <ConnectedExecutors element={element} modeler={modeler} products={products} />
                                 <Priority element={element} modeler={modeler} />

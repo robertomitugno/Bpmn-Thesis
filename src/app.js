@@ -26,7 +26,7 @@ var center = document.getElementById('js-center');
 const modeler = new Modeler({
   container: $modelerContainer,
   moddleExtensions: {
-    custom: customModdleExtension
+    factory: customModdleExtension
   },
   linting: {
     bpmnlint: bpmnlintConfig,
@@ -121,7 +121,7 @@ function download(content, fileName, contentType) {
 function toggleExecutorsVisibility(visible) {
   const elementRegistry = modeler.get('elementRegistry');
   elementRegistry.filter(function (element) {
-    return element.type === 'custom:Executor' || element.type === 'custom:Connection';
+    return element.type === 'factory:Executor' || element.type === 'factory:Connection';
   }).forEach(function (element) {
     const gfx = elementRegistry.getGraphics(element);
     gfx.style.display = visible ? 'block' : 'none';
