@@ -25,10 +25,11 @@ table {
 
 th,
 td {
+    position: relative;
     border: 1px solid black;
     text-align: left;
     padding: 8px;
-}
+  }
 
 th {
     background-color: #aaa8a8;

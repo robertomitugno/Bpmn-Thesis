@@ -31,6 +31,12 @@
     background-color: gray;
 }
 
-.product-list{
+.product-list {
     margin-top: 10px;
+}
+
+.delete {
+    position: absolute;
+    right: 10px;
+    top: 5px;
 }
