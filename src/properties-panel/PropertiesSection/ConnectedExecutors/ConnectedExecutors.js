@@ -199,6 +199,18 @@ function ConnectedExecutors({ element, modeler, products }) {
             return newSelectedProducts;
         });
         setExecutors(prevExecutors => [...prevExecutors, executor]);
+
+        const elementRegistry = modeler.get('elementRegistry');
+        const executorElement = elementRegistry.get(executor.id);
+        if (executorElement) {
+            const modeling = modeler.get('modeling');
+            const moddle = modeler.get('moddle');
+            const currentProducts = executorElement.businessObject.product || [];
+            const updatedProducts = currentProducts.filter(p => p.idActivity !== element.id);
+            modeling.updateProperties(executorElement, {
+                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('factory:Product', { values: [] })
+            });
+        }
     }, []);
 
     const handleExecutorClick = useCallback((executor) => {
