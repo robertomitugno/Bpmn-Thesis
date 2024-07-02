@@ -75,7 +75,10 @@ export default function PropertiesMain({ modeler }) {
         });
 
         fetchProducts();
-
+        const batches = elementRegistry.filter(element => element.type === 'factory:Batch');
+        batches.forEach(batch => {
+          modeling.updateProperties(batch, {});
+        });
       }
     }
   };

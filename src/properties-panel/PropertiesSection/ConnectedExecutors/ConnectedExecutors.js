@@ -160,6 +160,8 @@ function ConnectedExecutors({ element, modeler, products }) {
                 ...prevSelectedProducts,
                 [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
             }));
+
+            renderBatchGraphics(element);
         }
     }, []);
 
@@ -183,6 +185,8 @@ function ConnectedExecutors({ element, modeler, products }) {
                 product: updatedProducts.length > 0 ? updatedProducts : moddle.create('factory:Product', { values: [] })
             });
         }
+
+        renderBatchGraphics(element);
     }, [modeler, setSelectedProducts]);
 
 
@@ -386,7 +390,7 @@ function ConnectedExecutors({ element, modeler, products }) {
 
         }
         setSelectedProducts(newProducts);
-
+        renderBatchGraphics(element);
     }, []);
 
 
@@ -418,6 +422,12 @@ function ConnectedExecutors({ element, modeler, products }) {
         }
     }, []);
 
+
+    function renderBatchGraphics(element) {
+        const customRenderer = modeler.get('customRenderer');
+        const parent = modeler.get('canvas').getGraphics(element);
+        customRenderer.drawShape(parent, element);
+    }
 
     return (
         <div className="element-properties" key={element ? element.id : ''}>
