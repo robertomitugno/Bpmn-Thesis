@@ -49,6 +49,37 @@ export default function PropertiesMain({ modeler }) {
     }
   };
 
+
+  const onDeleteProduct = (productId) => {
+    const elementRegistry = modeler.get('elementRegistry');
+    const processElement = elementRegistry.find(element => element.type === 'bpmn:Process');
+    const modeling = modeler.get('modeling');
+
+    if (processElement) {
+      const extensionElements = processElement.businessObject.get('extensionElements');
+      if (extensionElements) {
+        // Remove product from extensionElements in Process
+        const newValues = extensionElements.get("values").filter(product => product.id !== productId);
+        extensionElements.values = newValues;
+        modeling.updateProperties(processElement, { extensionElements });
+
+        // Remove product from factory:Executor
+        const executors = elementRegistry.filter(element => element.type === 'factory:Executor');
+        executors.forEach(executor => {
+          const productList = executor.businessObject.get('product');
+          if (productList && Array.isArray(productList)) {
+            const updatedProductList = productList.filter(product => product.id !== productId);
+            executor.businessObject.product = updatedProductList;
+            modeling.updateProperties(executor, { product: updatedProductList });
+          }
+        });
+
+        fetchProducts();
+
+      }
+    }
+  };
+
   const memoizedProducts = useMemo(() => products, [products]);
 
   return (
@@ -64,7 +95,7 @@ export default function PropertiesMain({ modeler }) {
             <ExecutorsList modeler={modeler} />
           </div>
           <div className="ProductList">
-            <ProductList products={memoizedProducts} onAddProduct={onAddProduct} />
+            <ProductList products={memoizedProducts} onAddProduct={onAddProduct} onDeleteProduct={onDeleteProduct} />
           </div>
         </>
       )}

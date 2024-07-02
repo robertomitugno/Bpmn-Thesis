@@ -372,9 +372,7 @@ function ConnectedExecutors({ element, modeler, products }) {
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
 
-
         const productArray = executorElement.businessObject.product;
-
 
         const productToUpdate = productArray.find(
             (product) => product.id === productId && product.idActivity === element.id

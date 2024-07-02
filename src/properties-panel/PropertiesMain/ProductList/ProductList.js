@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './ProductList.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faXmark } from '@fortawesome/free-solid-svg-icons'
 
 
-const ProductList = ({ products, onAddProduct }) => {
+const ProductList = ({ products, onAddProduct, onDeleteProduct }) => {
   const [productName, setProductName] = useState('');
 
   const handleProductNameChange = (event) => {
@@ -15,6 +17,10 @@ const ProductList = ({ products, onAddProduct }) => {
       onAddProduct(newProduct);
       setProductName('');
     }
+  };
+
+  const handleDeleteProduct = (productId) => {
+    onDeleteProduct(productId);
   };
 
   const generateUniqueId = () => {
@@ -36,7 +42,16 @@ const ProductList = ({ products, onAddProduct }) => {
           {products.map((product) => (
             <tr key={product.id}>
               <td>{product.name}</td>
-              <td>{product.id}</td>
+              <td>
+                <div className="product-id">{product.id}</div>
+                <div className="delete">
+                  <FontAwesomeIcon
+                    icon={faXmark}
+                    className="delete-icon"
+                    onClick={() => handleDeleteProduct(product.id)}
+                  />
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
