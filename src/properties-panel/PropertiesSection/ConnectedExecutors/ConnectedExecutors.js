@@ -372,7 +372,7 @@ function ConnectedExecutors({ element, modeler, products }) {
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
 
-        const productArray = executorElement.businessObject.product;
+        const productArray = executorElement.businessObject?.product;
 
         const productToUpdate = productArray.find(
             (product) => product.id === productId && product.idActivity === element.id
@@ -386,7 +386,6 @@ function ConnectedExecutors({ element, modeler, products }) {
 
         }
         setSelectedProducts(newProducts);
-
 
     }, []);
 
@@ -418,6 +417,8 @@ function ConnectedExecutors({ element, modeler, products }) {
             }));
         }
     }, []);
+
+
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -483,7 +484,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                                     <span>Number of element for batch: </span>
                                                                                     <input type="number"
                                                                                         value={product.batch || 1}
-                                                                                        onChange={(e) => handleBatchChange(e, executor.id, product.id)}
+                                                                                        onChange={(e) => handleBatchChange(e, index, executor.id, product.id, product.batch)}
                                                                                         onClick={(event) => event.stopPropagation()}
                                                                                         disabled={!isBatchEnabled[`${executor.id}-${product.id}-${element.id}`]} />
                                                                                 </div>
