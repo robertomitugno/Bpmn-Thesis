@@ -117,7 +117,9 @@ function ConnectedProducts({ element, modeler, products }) {
         newProducts[index].batch = newBatch;
 
         const modeling = modeler.get('modeling');
-        const executorElement = modeler.get('elementRegistry').get(element.id);
+        const elementRegistry = modeler.get('elementRegistry');
+
+        const executorElement = elementRegistry.get(element.id);
 
         const productArray = executorElement.businessObject.product;
 
@@ -129,6 +131,12 @@ function ConnectedProducts({ element, modeler, products }) {
 
         setSelectedProducts(newProducts);
 
+        const batches = elementRegistry.filter(element => element.type === 'factory:Batch');
+        batches.forEach(batch => {
+            const customRenderer = modeler.get('customRenderer');
+            const parent = modeler.get('canvas').getGraphics(batch);
+            customRenderer.drawShape(parent, batch);
+        });
     };
 
 

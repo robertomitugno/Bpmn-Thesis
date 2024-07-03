@@ -17,12 +17,35 @@ export default function CustomContextPadProvider(injector, connect, translate) {
       connect.start(event, element, autoActivate);
     }
 
+    function removeConnection(e, element) {
+      injector.get('modeling').removeElements([element]);
+
+      const modeling = injector.get('modeling');
+      const elementRegistry = injector.get('elementRegistry');
+
+      const executors = elementRegistry.filter(element => element.type === 'factory:Executor');
+
+      executors.forEach(executor => {
+        if (executor.incoming.length === 0 && executor.outgoing.length === 0) {
+          if (executor.businessObject && executor.businessObject.product) {
+            executor.businessObject.product = [];
+          }
+        }
+      });
+
+      const batches = elementRegistry.filter(element => element.type === 'factory:Batch');
+      batches.forEach(batch => {
+        modeling.updateProperties(batch, {});
+      });
+
+    }
+
     function removeElement(e, element) {
       injector.get('modeling').removeElements([element]);
     }
 
     if (isAny(businessObject, ['factory:Executor'])) {
-      
+
       if (businessObject.padProvider !== element) {
         actions = {
           'sequence-flow': {
@@ -44,6 +67,17 @@ export default function CustomContextPadProvider(injector, connect, translate) {
           }
         };
       }
+    } else if (isAny(businessObject, ['factory:Connection'])) {
+      actions = {
+        'delete': {
+          group: 'edit',
+          className: 'bpmn-icon-trash',
+          title: translate('Delete'),
+          action: {
+            click: removeConnection
+          }
+        }
+      };
     }
 
     return actions;
