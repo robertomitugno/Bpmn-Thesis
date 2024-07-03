@@ -160,6 +160,8 @@ function ConnectedExecutors({ element, modeler, products }) {
                 ...prevSelectedProducts,
                 [executorId]: [...(prevSelectedProducts[executorId] || []), { ...product, time: 0 }]
             }));
+
+            renderBatchGraphics(element);
         }
     }, []);
 
@@ -183,6 +185,8 @@ function ConnectedExecutors({ element, modeler, products }) {
                 product: updatedProducts.length > 0 ? updatedProducts : moddle.create('factory:Product', { values: [] })
             });
         }
+
+        renderBatchGraphics(element);
     }, [modeler, setSelectedProducts]);
 
 
@@ -195,6 +199,18 @@ function ConnectedExecutors({ element, modeler, products }) {
             return newSelectedProducts;
         });
         setExecutors(prevExecutors => [...prevExecutors, executor]);
+
+        const elementRegistry = modeler.get('elementRegistry');
+        const executorElement = elementRegistry.get(executor.id);
+        if (executorElement) {
+            const modeling = modeler.get('modeling');
+            const moddle = modeler.get('moddle');
+            const currentProducts = executorElement.businessObject.product || [];
+            const updatedProducts = currentProducts.filter(p => p.idActivity !== element.id);
+            modeling.updateProperties(executorElement, {
+                product: updatedProducts.length > 0 ? updatedProducts : moddle.create('factory:Product', { values: [] })
+            });
+        }
     }, []);
 
     const handleExecutorClick = useCallback((executor) => {
@@ -212,14 +228,22 @@ function ConnectedExecutors({ element, modeler, products }) {
                 ...selectedProductsUpdate,
                 [executor.id]: [
                     ...(selectedProductsUpdate[executor.id] || []),
-                    ...filteredProducts.map(product => ({
-                        id: product.id,
-                        name: products.find(p => p.id === product.id)?.name || product.name,
-                        time: product.time,
-                        timeUnit: product.timeUnit,
-                        batch: product.batch,
-                        idActivity: product.idActivity
-                    }))
+                    ...filteredProducts.map(product => {
+                        if (product.batch > 1) {
+                            setIsBatchEnabled(prevIsBatchEnabled => ({
+                                ...prevIsBatchEnabled,
+                                [`${executor.id}-${product.id}-${element.id}`]: true
+                            }));
+                        }
+                        return {
+                            id: product.id,
+                            name: products.find(p => p.id === product.id)?.name || product.name,
+                            time: product.time,
+                            timeUnit: product.timeUnit,
+                            batch: product.batch,
+                            idActivity: product.idActivity
+                        };
+                    })
                 ]
             };
         }
@@ -372,7 +396,7 @@ function ConnectedExecutors({ element, modeler, products }) {
         const modeling = modeler.get('modeling');
         const executorElement = modeler.get('elementRegistry').get(executorId);
 
-        const productArray = executorElement.businessObject.product;
+        const productArray = executorElement.businessObject?.product;
 
         const productToUpdate = productArray.find(
             (product) => product.id === productId && product.idActivity === element.id
@@ -386,8 +410,7 @@ function ConnectedExecutors({ element, modeler, products }) {
 
         }
         setSelectedProducts(newProducts);
-
-
+        renderBatchGraphics(element);
     }, []);
 
 
@@ -418,6 +441,16 @@ function ConnectedExecutors({ element, modeler, products }) {
             }));
         }
     }, []);
+
+
+    //Update batch elements to check gear icon
+    function renderBatchGraphics(element) {
+        const customRenderer = modeler.get('customRenderer');
+        const parent = modeler.get('canvas').getGraphics(element);
+        customRenderer.drawShape(parent, element);
+    }
+
+
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
@@ -483,7 +516,7 @@ function ConnectedExecutors({ element, modeler, products }) {
                                                                                     <span>Number of element for batch: </span>
                                                                                     <input type="number"
                                                                                         value={product.batch || 1}
-                                                                                        onChange={(e) => handleBatchChange(e, executor.id, product.id)}
+                                                                                        onChange={(e) => handleBatchChange(e, index, executor.id, product.id, product.batch)}
                                                                                         onClick={(event) => event.stopPropagation()}
                                                                                         disabled={!isBatchEnabled[`${executor.id}-${product.id}-${element.id}`]} />
                                                                                 </div>
