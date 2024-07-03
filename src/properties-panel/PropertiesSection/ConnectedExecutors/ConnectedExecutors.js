@@ -435,12 +435,14 @@ function ConnectedExecutors({ element, modeler, products }) {
     }, []);
 
 
+    //Update batch elements to check gear icon
     function renderBatchGraphics(element) {
         const customRenderer = modeler.get('customRenderer');
         const parent = modeler.get('canvas').getGraphics(element);
         customRenderer.drawShape(parent, element);
     }
 
+    
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (

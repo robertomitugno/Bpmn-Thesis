@@ -131,6 +131,7 @@ function ConnectedProducts({ element, modeler, products }) {
 
         setSelectedProducts(newProducts);
 
+      //Update batch elements to check gear icon
         const batches = elementRegistry.filter(element => element.type === 'factory:Batch');
         batches.forEach(batch => {
             const customRenderer = modeler.get('customRenderer');

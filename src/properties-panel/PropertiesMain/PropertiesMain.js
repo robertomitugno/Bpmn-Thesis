@@ -8,6 +8,7 @@ export default function PropertiesMain({ modeler }) {
   const [selectedElements, setSelectedElements] = useState([]);
   const [element, setElement] = useState(null);
   const [products, setProducts] = useState([]);
+  const memoizedProducts = useMemo(() => products, [products]);
 
   useEffect(() => {
     modeler.on('selection.changed', handleSelectionChange);
@@ -75,15 +76,18 @@ export default function PropertiesMain({ modeler }) {
         });
 
         fetchProducts();
+        
+        //Update batch elements to check gear icon
+        const customRenderer = modeler.get('customRenderer');
         const batches = elementRegistry.filter(element => element.type === 'factory:Batch');
         batches.forEach(batch => {
-          modeling.updateProperties(batch, {});
+          const parent = modeler.get('canvas').getGraphics(batch);
+          customRenderer.drawShape(parent, batch);
         });
       }
     }
   };
 
-  const memoizedProducts = useMemo(() => products, [products]);
 
   return (
     <div className="PropertiesMain">

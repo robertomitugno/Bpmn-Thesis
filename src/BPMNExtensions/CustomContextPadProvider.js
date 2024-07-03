@@ -20,11 +20,11 @@ export default function CustomContextPadProvider(injector, connect, translate) {
     function removeConnection(e, element) {
       injector.get('modeling').removeElements([element]);
 
-      const modeling = injector.get('modeling');
+      const canvas = injector.get('canvas');
       const elementRegistry = injector.get('elementRegistry');
+      const customRenderer = injector.get('customRenderer');
 
       const executors = elementRegistry.filter(element => element.type === 'factory:Executor');
-
       executors.forEach(executor => {
         if (executor.incoming.length === 0 && executor.outgoing.length === 0) {
           if (executor.businessObject && executor.businessObject.product) {
@@ -33,9 +33,11 @@ export default function CustomContextPadProvider(injector, connect, translate) {
         }
       });
 
+      //Update batch elements to check gear icon
       const batches = elementRegistry.filter(element => element.type === 'factory:Batch');
       batches.forEach(batch => {
-        modeling.updateProperties(batch, {});
+        const parent = canvas.getGraphics(batch);
+        customRenderer.drawShape(parent, batch);
       });
 
     }
