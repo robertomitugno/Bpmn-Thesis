@@ -228,14 +228,22 @@ function ConnectedExecutors({ element, modeler, products }) {
                 ...selectedProductsUpdate,
                 [executor.id]: [
                     ...(selectedProductsUpdate[executor.id] || []),
-                    ...filteredProducts.map(product => ({
-                        id: product.id,
-                        name: products.find(p => p.id === product.id)?.name || product.name,
-                        time: product.time,
-                        timeUnit: product.timeUnit,
-                        batch: product.batch,
-                        idActivity: product.idActivity
-                    }))
+                    ...filteredProducts.map(product => {
+                        if (product.batch > 1) {
+                            setIsBatchEnabled(prevIsBatchEnabled => ({
+                                ...prevIsBatchEnabled,
+                                [`${executor.id}-${product.id}-${element.id}`]: true
+                            }));
+                        }
+                        return {
+                            id: product.id,
+                            name: products.find(p => p.id === product.id)?.name || product.name,
+                            time: product.time,
+                            timeUnit: product.timeUnit,
+                            batch: product.batch,
+                            idActivity: product.idActivity
+                        };
+                    })
                 ]
             };
         }
@@ -442,7 +450,7 @@ function ConnectedExecutors({ element, modeler, products }) {
         customRenderer.drawShape(parent, element);
     }
 
-    
+
     return (
         <div className="element-properties" key={element ? element.id : ''}>
             {element && (
